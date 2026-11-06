@@ -1,0 +1,34 @@
+name: Tests et régénération des données
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installe les dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lance les tests
+        run: pytest tests/ -v
+
+      - name: Régénère docs/data.json depuis les CSV
+        run: python scripts/compute_metrics.py
+
+      - name: Vérifie l'absence de changement non commité dans data.json
+        run: |
+          if ! git diff --quiet docs/data.json; then
+            echo "docs/data.json n'est pas à jour avec les CSV — relancer compute_metrics.py et commiter."
+            git diff docs/data.json
+            exit 1
+          fi

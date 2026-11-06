@@ -237,10 +237,32 @@ def composite_scores(df: pd.DataFrame) -> dict:
     }
 
 
+def compact_rows(df: pd.DataFrame) -> list:
+    """Lignes compactes embarquées pour permettre le filtrage/recalcul côté navigateur.
+    Colonnes utiles aux filtres et graphiques uniquement (currency omise : uniforme EUR).
+    data_gb NaN (forfaits illimités) converti explicitement en None : pandas réinsère NaN
+    lors d'une simple affectation sur colonne float64, ce qui casse le JSON (NaN interdit
+    par la norme JSON, contrairement à json.dumps qui l'accepte par défaut en Python)."""
+    out = []
+    for row in df[["provider", "country_name", "data_gb", "validity_days", "price", "network", "top_up"]].itertuples(index=False):
+        gb = row.data_gb
+        out.append({
+            "provider": row.provider,
+            "country_name": row.country_name,
+            "data_gb": None if pd.isna(gb) else float(gb),
+            "validity_days": int(row.validity_days),
+            "price": float(row.price),
+            "network": row.network,
+            "top_up": row.top_up,
+        })
+    return out
+
+
 def build_dataset(source_dir: str) -> dict:
     df = load_catalog(source_dir)
     return {
         "generated_from": f"{df['provider'].nunique()} fournisseurs, {len(df)} lignes",
+        "rows": compact_rows(df),
         "base_metrics": base_metrics(df),
         "provider_breakdown": provider_breakdown(df),
         "network_breakdown": network_breakdown(df),
