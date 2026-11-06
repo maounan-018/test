@@ -9,17 +9,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-/* 60-30-10 : 60% fond neutre clair, 30% sidebar sombre + textes, 10% accent indigo */
+/* Charte MyBestSim relevée sur mybestsim.com : fond navy #0f172a, accent bleu ciel
+   #0ea5e9/#0284c7, accents chauds orange #f97316 et or #f7b500.
+   60-30-10 : 60% navy de fond, 30% surfaces et textes, 10% accent bleu ciel. */
 :root{
-  --sidebar:#0f172a; --sidebar-2:#1e293b;
-  --bg:#f8fafc; --surface:#ffffff; --border:#e2e8f0;
-  --ink:#0f172a; --ink-2:#64748b; --ink-3:#94a3b8;
-  --accent:#4f46e5; --accent-soft:#eef2ff;
-  --bar:#64748b;
-  --good:#059669; --good-soft:#ecfdf5;
-  --warn:#d97706; --warn-soft:#fffbeb;
-  --bad:#dc2626; --bad-soft:#fef2f2;
-  --net-a:#0ea5e9; --net-b:#8b5cf6;
+  --sidebar:#0b1120; --sidebar-2:#172442;
+  --bg:#0f172a; --surface:#16233f; --surface-2:#1c2b4a;
+  --border:rgba(148,163,184,.14); --border-2:rgba(148,163,184,.26);
+  /* --ink-3 éclairci par rapport au slate-500 habituel : sur le fond navy des cartes,
+     #64748b ne donnait que 3.3:1, sous le seuil WCAG AA de 4.5:1. #7d8da5 atteint 4.6:1. */
+  --ink:#f1f5f9; --ink-2:#94a3b8; --ink-3:#7d8da5;
+  --accent:#0ea5e9; --accent-2:#0284c7; --accent-soft:rgba(14,165,233,.14);
+  --bar:#475569;
+  --warm:#f97316; --gold:#f7b500;
+  --good:#34d399; --good-soft:rgba(52,211,153,.14);
+  --warn:#fbbf24; --warn-soft:rgba(251,191,36,.14);
+  --bad:#f87171; --bad-soft:rgba(248,113,113,.14);
+  --net-a:#0ea5e9; --net-b:#f97316;
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 12px 28px -12px rgba(0,0,0,.6);
+  --shadow-up:0 1px 0 rgba(255,255,255,.07) inset, 0 18px 36px -14px rgba(0,0,0,.7);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -30,17 +38,17 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 /* ---- sidebar (30%) ---- */
 .sidebar{width:230px; flex:0 0 230px; background:var(--sidebar); color:#e2e8f0; padding:22px 18px; position:sticky; top:0; height:100vh; overflow-y:auto}
 .brand{display:flex; align-items:center; gap:10px; margin-bottom:26px}
-.brand .mark{width:30px; height:30px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#fff}
+.brand .mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(140deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#fff; box-shadow:0 4px 12px -4px rgba(14,165,233,.7)}
 .brand .name{font-size:14.5px; font-weight:600; color:#fff; letter-spacing:-0.01em}
-.brand .sub{font-size:10.5px; color:#64748b; margin-top:1px}
+.brand .sub{font-size:10.5px; color:#8fa3bd; margin-top:1px}
 .nav{display:flex; flex-direction:column; gap:1px}
-.nav a{font-size:13px; color:#94a3b8; padding:8px 11px; border-radius:7px; text-decoration:none; transition:.15s}
-.nav a:hover{background:var(--sidebar-2); color:#fff}
-.nav-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:#475569; font-weight:600; margin:20px 0 7px 11px}
+.nav a{font-size:13px; color:#94a3b8; padding:8px 11px; border-radius:7px; text-decoration:none; transition:.15s; border-left:2px solid transparent}
+.nav a:hover{background:var(--accent-soft); color:#fff; border-left-color:var(--accent)}
+.nav-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:#64748b; font-weight:600; margin:20px 0 7px 11px}
 .side-stat{background:var(--sidebar-2); border-radius:9px; padding:12px 13px; margin-top:8px}
-.side-stat .k{font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600}
-.side-stat .v{font-size:19px; font-weight:700; color:#fff; margin-top:3px; font-variant-numeric:tabular-nums}
-.side-stat .n{font-size:10.5px; color:#64748b; margin-top:2px; line-height:1.35}
+.side-stat .k{font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#8fa3bd; font-weight:600}
+.side-stat .v{font-size:19px; font-weight:700; color:var(--accent); margin-top:3px; font-variant-numeric:tabular-nums}
+.side-stat .n{font-size:10.5px; color:#8fa3bd; margin-top:2px; line-height:1.35}
 
 /* ---- contenu (60%) ---- */
 .main{flex:1; min-width:0; padding:26px 30px 70px}
@@ -48,17 +56,23 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 .head h1{font-size:21px; font-weight:700; margin:0 0 4px; letter-spacing:-0.02em}
 .head p{margin:0; font-size:13px; color:var(--ink-2); max-width:70ch; line-height:1.5}
 
-.toolbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:13px 15px; margin-bottom:22px}
-.toolbar label{display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); margin-bottom:5px}
-.toolbar select{font:13px 'Inter'; padding:7px 9px; border:1px solid var(--border); border-radius:7px; background:#fff; color:var(--ink); min-width:165px}
-.toolbar .reset{margin-left:auto; font:600 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:none; border-radius:7px; padding:8px 14px; cursor:pointer}
+.toolbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 15px; margin-bottom:22px; box-shadow:var(--shadow)}
+.toolbar label{display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); margin-bottom:5px}
+.toolbar select{font:13px 'Inter'; padding:7px 9px; border:1px solid var(--border-2); border-radius:7px; background:var(--surface-2); color:var(--ink); min-width:165px}
+.toolbar select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.toolbar select option{background:var(--surface-2); color:var(--ink)}
+.toolbar select option:checked{background:var(--accent); color:#fff}
+.toolbar .reset{margin-left:auto; font:600 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:1px solid rgba(14,165,233,.3); border-radius:7px; padding:8px 14px; cursor:pointer; transition:.15s}
+.toolbar .reset:hover{background:var(--accent); color:#fff}
 
-/* niveau 1 : KPI cards épurées, couleur réservée aux pastilles de contexte */
+/* niveau 1 : KPI cards, couleur réservée aux pastilles de contexte */
 .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; margin-bottom:26px}
-.kpi{background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:16px 17px}
-.kpi .l{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3)}
-.kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1}
-.pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:#f1f5f9; color:var(--ink-2)}
+.kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2)); border:1px solid var(--border); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s}
+.kpi:hover{transform:translateY(-2px); box-shadow:var(--shadow-up); border-color:var(--border-2)}
+.kpi:first-child{border-top:2px solid var(--accent)}
+.kpi .l{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2)}
+.kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1; color:var(--ink)}
+.pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:rgba(148,163,184,.14); color:var(--ink-2)}
 .pill.good{background:var(--good-soft); color:var(--good)}
 .pill.warn{background:var(--warn-soft); color:var(--warn)}
 .pill.bad{background:var(--bad-soft); color:var(--bad)}
@@ -69,36 +83,47 @@ p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; lin
 
 .grid2{display:grid; grid-template-columns:1.35fr 1fr; gap:14px; margin-bottom:14px}
 .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px}
-.card{background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:17px}
-.card h3{margin:0 0 2px; font-size:13px; font-weight:600}
-.card .hint{margin:0 0 12px; font-size:11.5px; color:var(--ink-3)}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:17px; box-shadow:var(--shadow); transition:border-color .18s}
+.card:hover{border-color:var(--border-2)}
+.card h3{margin:0 0 2px; font-size:13px; font-weight:600; color:var(--ink)}
+.card .hint{margin:0 0 12px; font-size:11.5px; color:var(--ink-2)}
 .chart{width:100%; height:270px}
 .chart.tall{height:330px}
 
-.empty{background:var(--surface); border:1px dashed var(--border); border-radius:11px; padding:28px; text-align:center; color:var(--ink-2); font-size:13px; margin-bottom:22px}
-.chart-empty{display:flex; align-items:center; justify-content:center; height:140px; border:1px dashed var(--border); border-radius:9px; color:var(--ink-3); font-size:12.5px; text-align:center; padding:0 28px; line-height:1.5}
+.empty{background:var(--surface); border:1px dashed var(--border-2); border-radius:14px; padding:28px; text-align:center; color:var(--ink-2); font-size:13px; margin-bottom:22px}
+.chart-empty{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; height:140px; border:1px dashed var(--border-2); border-radius:9px; color:var(--ink-2); font-size:12.5px; text-align:center; padding:0 28px; line-height:1.5}
+.empty svg, .chart-empty svg{stroke:var(--ink-3); opacity:.8}
 .map-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
 .map-head h3{font-size:13px; font-weight:600}
 #map{height:430px; width:100%; border-radius:9px; z-index:0}
-.leaflet-container{font-family:'Inter',sans-serif; background:#f8fafc}
-/* Fond de carte désaturé et éclairci : rendu minimaliste type "Positron" à partir d'OSM */
-.leaflet-tile-pane{filter:grayscale(1) brightness(1.07) contrast(.88) opacity(.72)}
+.leaflet-container{font-family:'Inter',sans-serif; background:#0b1120}
+/* Fond de carte sombre obtenu depuis OSM : niveaux de gris puis inversion, ce qui évite
+   de dépendre d'un fournisseur de tuiles sombres exigeant une clé API (cas de CARTO).
+   Le filtre ne porte que sur le fond, les marqueurs gardent leur couleur. */
+.leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.78) contrast(1.1) opacity(.45)}
+.leaflet-overlay-pane path{transition:fill-opacity .45s ease-out, stroke-opacity .45s ease-out}
+.leaflet-popup-content-wrapper{background:var(--surface-2); color:var(--ink); border:1px solid var(--border-2); border-radius:10px; box-shadow:var(--shadow-up)}
+.leaflet-popup-tip{background:var(--surface-2)}
+.leaflet-control-zoom a{background:var(--surface-2); color:var(--ink); border-color:var(--border-2)}
+.leaflet-control-zoom a:hover{background:var(--accent); color:#fff}
 .map-legend{display:flex; gap:18px; align-items:center; flex-wrap:wrap; margin-top:13px; font-size:11.5px; color:var(--ink-2)}
 .map-legend .scale{display:flex; align-items:center; gap:6px}
 .map-legend .dot{border-radius:50%; background:var(--accent); opacity:.75}
 
 .tabs{display:flex; gap:3px; border-bottom:1px solid var(--border); margin-bottom:14px}
 .tabs button{font:600 12.5px 'Inter'; padding:9px 14px; background:none; border:none; color:var(--ink-3); border-bottom:2px solid transparent; cursor:pointer}
+.tabs button:hover{color:var(--ink-2)}
 .tabs button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent)}
 .tab-panel[hidden]{display:none}
-.note{font-size:12px; color:var(--ink-2); background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:11px 13px; margin-bottom:12px; line-height:1.5}
+.note{font-size:12px; color:var(--ink-2); background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:11px 13px; margin-bottom:12px; line-height:1.5; box-shadow:var(--shadow)}
 .note a{color:var(--accent); font-weight:600}
 
 table.t{width:100%; border-collapse:collapse; font-size:12.5px}
 table.t th, table.t td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
-table.t th{color:var(--ink-3); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+table.t th{color:var(--ink-2); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
 table.t td.num{text-align:right; font-variant-numeric:tabular-nums}
-table.t tbody tr:hover{background:var(--bg)}
+table.t tbody tr{transition:background .15s}
+table.t tbody tr:hover{background:var(--surface-2)}
 
 footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-3); line-height:1.6}
 
@@ -164,6 +189,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     <div class="kpis" id="kpi-row"></div>
 
     <div class="empty" id="empty-state" hidden>
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" style="display:block;margin:0 auto 10px"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg>
       Aucun produit ne correspond à cette combinaison de filtres. Élargissez la sélection ou réinitialisez.
     </div>
 
@@ -181,7 +207,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <div id="map"></div>
       <div class="map-legend">
         <div class="scale"><span class="dot" style="width:8px;height:8px"></span><span class="dot" style="width:13px;height:13px"></span><span class="dot" style="width:18px;height:18px"></span><span>Nombre d'offres</span></div>
-        <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#c7d2fe,#4338ca)"></span><span>Prix moyen croissant</span></div>
+        <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#7dd3fc,#f97316)"></span><span>Prix moyen croissant</span></div>
         <div style="color:var(--ink-3)">Les forfaits multi-pays (Europe, Asie, Monde) ne sont pas cartographiables et sont exclus de cette vue.</div>
       </div>
     </div>
@@ -201,7 +227,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <h3>Dispersion des prix par zone multi-pays</h3>
       <p class="hint">Coefficient de variation du prix/Go — plus il est élevé, plus les offres sont hétérogènes dans cette zone</p>
       <div class="chart" id="c-dispersion"></div>
-      <div class="chart-empty" id="c-dispersion-empty" hidden>Pas assez d'offres multi-pays dans cette sélection pour calculer une dispersion (il en faut au moins deux par zone).</div>
+      <div class="chart-empty" id="c-dispersion-empty" hidden><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15v-3M13 15V9M18 15v-5"/></svg>Pas assez d'offres multi-pays dans cette sélection pour calculer une dispersion (il en faut au moins deux par zone).</div>
     </div>
 
     <h2 class="sec" id="s-scores">Score de recommandation — 3 méthodologies</h2>
@@ -235,19 +261,42 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
     <footer>
       Source : 18 fichiers CSV fournisseurs (5 056 produits). Scores éditoriaux externes sourcés et datés dans <code>scripts/editorial_sources.py</code>.<br>
-      Carte : fond CARTO Positron, données OpenStreetMap. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
+      Carte : tuiles OpenStreetMap, rendu sombre appliqué côté client. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
     </footer>
   </main>
 </div>
 
 <script>
 (function(){
+  // Couleurs reprises de la charte MyBestSim (relevée sur mybestsim.com).
   const C = {
-    accent:'#4f46e5', bar:'#64748b', barSoft:'#cbd5e1',
-    good:'#059669', warn:'#d97706', bad:'#dc2626',
-    netA:'#0ea5e9', netB:'#8b5cf6',
-    ink2:'#64748b', ink3:'#94a3b8', grid:'#f1f5f9'
+    accent:'#0ea5e9', accent2:'#0284c7', bar:'#475569', barSoft:'#334155',
+    warm:'#f97316', gold:'#f7b500',
+    good:'#34d399', warn:'#fbbf24', bad:'#f87171',
+    netA:'#0ea5e9', netB:'#f97316',
+    ink:'#f1f5f9', ink2:'#94a3b8', ink3:'#7d8da5',
+    grid:'rgba(148,163,184,.12)', axis:'rgba(148,163,184,.22)',
+    surface2:'#1c2b4a'
   };
+
+  // Dégradé vertical/horizontal pour les barres : un aplat paraît plat sur fond sombre.
+  const grad = (from, to, horizontal) =>
+    ({type:'linear', x:0, y:horizontal?0:1, x2:horizontal?1:0, y2:0,
+      colorStops:[{offset:0, color:from},{offset:1, color:to}]});
+
+  // Base commune à tous les graphiques : évite de répéter (et de désynchroniser) les options.
+  const chartTheme = () => ({
+    animationDuration: 700,
+    animationEasing: 'cubicOut',
+    textStyle:{fontFamily:'Inter'},
+    tooltip:{
+      backgroundColor:C.surface2, borderColor:'rgba(148,163,184,.26)', borderWidth:1,
+      borderRadius:10, padding:[9,12],
+      textStyle:{color:C.ink, fontSize:12, fontFamily:'Inter'},
+      extraCssText:'box-shadow:0 18px 36px -14px rgba(0,0,0,.7)'
+    }
+  });
+  const splitLine = {lineStyle:{color:C.grid, type:'dashed'}};
   let DATA=null, ROWS=[], map=null, markers=null;
   const charts={};
 
@@ -257,18 +306,25 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   function bar(id, cats, vals, o={}){
     const c = getChart(id);
+    const base = o.color || C.accent;
+    const fill = o.flat ? base : grad(base, o.color2 || C.accent2, o.horizontal);
     c.setOption({
+      ...chartTheme(),
       grid:{left:46, right:18, top:12, bottom:o.zoom?46:34, containLabel:true},
-      tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter: o.fmt},
+      tooltip:{...chartTheme().tooltip, trigger:'axis', axisPointer:{type:'shadow', shadowStyle:{color:'rgba(14,165,233,.08)'}}, valueFormatter:o.fmt},
       xAxis: o.horizontal
-        ? {type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink3, fontSize:11}}
-        : {type:'category', data:cats, axisLine:{lineStyle:{color:'#e2e8f0'}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+        ? {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
+        : {type:'category', data:cats, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       yAxis: o.horizontal
-        ? {type:'category', data:cats, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
-        : {type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink3, fontSize:11}},
-      dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent', fillerColor:'rgba(79,70,229,.12)', handleStyle:{color:'#cbd5e1'}}] : undefined,
+        ? {type:'category', data:cats, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
+        : {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent',
+        backgroundColor:'rgba(148,163,184,.07)', fillerColor:'rgba(14,165,233,.16)',
+        handleStyle:{color:C.accent, borderColor:C.accent}, textStyle:{color:C.ink3, fontSize:10}}] : undefined,
       series:[{type:'bar', data:vals, barMaxWidth:26,
-        itemStyle:{color:o.color||C.bar, borderRadius:o.horizontal?[0,3,3,0]:[3,3,0,0]}}]
+        animationDelay: i => i * 18,
+        emphasis:{itemStyle:{color:C.gold}},
+        itemStyle:{color:fill, borderRadius:o.horizontal?[0,6,6,0]:[6,6,0,0]}}]
     }, true);
   }
 
@@ -276,11 +332,13 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     // Couleur liée à l'étiquette et non à l'ordre d'arrivée des catégories, qui n'est pas garanti.
     const c = getChart(id);
     c.setOption({
-      tooltip:{trigger:'item', formatter:'{b} — {c} offres ({d}%)'},
+      ...chartTheme(),
+      tooltip:{...chartTheme().tooltip, trigger:'item', formatter:'{b} — {c} offres ({d}%)'},
       legend:{bottom:0, icon:'circle', itemWidth:8, itemHeight:8, textStyle:{color:C.ink2, fontSize:11.5}},
       series:[{type:'pie', radius:['52%','74%'], center:['50%','45%'], avoidLabelOverlap:true,
         data:data.map(d=>({...d, itemStyle:{color:colorMap[d.name]||C.barSoft}})),
-        itemStyle:{borderColor:'#fff', borderWidth:3},
+        itemStyle:{borderColor:'#16233f', borderWidth:3},
+        emphasis:{scaleSize:6},
         label:{formatter:'{d}%', fontSize:11.5, color:C.ink2}}]
     }, true);
   }
@@ -288,12 +346,15 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   function line(id, cats, vals, o={}){
     const c = getChart(id);
     c.setOption({
+      ...chartTheme(),
       grid:{left:46, right:18, top:12, bottom:34, containLabel:true},
-      tooltip:{trigger:'axis', valueFormatter:o.fmt},
-      xAxis:{type:'category', data:cats, boundaryGap:false, axisLine:{lineStyle:{color:'#e2e8f0'}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
-      yAxis:{type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisLabel:{color:C.ink3, fontSize:11}},
-      series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:2.5, color:C.accent},
-        itemStyle:{color:C.accent}, areaStyle:{color:'rgba(79,70,229,.07)'}}]
+      tooltip:{...chartTheme().tooltip, trigger:'axis', valueFormatter:o.fmt,
+        axisPointer:{type:'line', lineStyle:{color:'rgba(14,165,233,.4)'}}},
+      xAxis:{type:'category', data:cats, boundaryGap:false, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      yAxis:{type:'value', splitLine, axisLine:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:3, color:C.accent},
+        itemStyle:{color:C.accent, borderColor:'#16233f', borderWidth:2},
+        areaStyle:{color:grad('rgba(14,165,233,.28)','rgba(14,165,233,0)')}}]
     }, true);
   }
 
@@ -338,22 +399,28 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const prices = pts.map(p=>p.price_avg);
     const pMin = Math.min(...prices), pMax = Math.max(...prices);
     const offMax = Math.max(...pts.map(p=>p.offers));
-    // Échelle séquentielle claire -> foncée : le prix est une magnitude, pas une polarité.
-    const ramp = ['#c7d2fe','#a5b4fc','#818cf8','#6366f1','#4338ca'];
+    // Échelle séquentielle bleu ciel -> orange (charte MyBestSim) : le prix est une
+    // magnitude, pas une polarité. Sur fond sombre, une rampe claire->foncée s'écraserait.
+    const ramp = ['#7dd3fc','#38bdf8','#0ea5e9','#fb923c','#f97316'];
     const colorFor = v => ramp[Math.min(ramp.length-1, Math.floor((v-pMin)/((pMax-pMin)||1)*ramp.length))];
 
-    pts.forEach(p => {
-      L.circleMarker([p.lat, p.lng], {
+    pts.forEach((p, i) => {
+      const m = L.circleMarker([p.lat, p.lng], {
         radius: 5 + Math.sqrt(p.offers/offMax)*13,
-        fillColor: colorFor(p.price_avg), color:'#fff', weight:1.5, opacity:1, fillOpacity:.82
+        fillColor: colorFor(p.price_avg), color:'rgba(241,245,249,.85)', weight:1.2,
+        opacity:0, fillOpacity:0
       }).addTo(markers).bindPopup(
-        `<div style="font-weight:600;margin-bottom:4px">${p.country}</div>
-         <div style="font-size:12px;color:#64748b;line-height:1.6">
-           Prix moyen : <b style="color:#0f172a">${p.price_avg.toFixed(2)} €</b><br>
-           ${p.price_per_gb!=null?`Prix/Go : <b style="color:#0f172a">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
-           Offres : <b style="color:#0f172a">${p.offers}</b><br>
-           Fournisseurs : <b style="color:#0f172a">${p.providers}</b>
+        `<div style="font-weight:600;margin-bottom:4px;color:#f1f5f9">${p.country}</div>
+         <div style="font-size:12px;color:#94a3b8;line-height:1.6">
+           Prix moyen : <b style="color:#0ea5e9">${p.price_avg.toFixed(2)} €</b><br>
+           ${p.price_per_gb!=null?`Prix/Go : <b style="color:#0ea5e9">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
+           Offres : <b style="color:#f1f5f9">${p.offers}</b><br>
+           Fournisseurs : <b style="color:#f1f5f9">${p.providers}</b>
          </div>`);
+      // Apparition en fondu : à chaque filtre la carte est redessinée, un affichage sec
+      // ne laisse pas voir qu'elle a réagi. La transition est portée par le CSS sur
+      // fill-opacity/stroke-opacity, que setStyle modifie.
+      requestAnimationFrame(() => m.setStyle({opacity:1, fillOpacity:.72}));
     });
   }
 
@@ -382,6 +449,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const card = (l,v,pill,cls='') =>
       `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
 
+    const before = [...document.querySelectorAll('#kpi-row .v')].map(e=>e.textContent);
     document.getElementById('kpi-row').innerHTML = [
       card('Produits', nf(n), `${new Set(rows.map(r=>r.provider)).size} fournisseurs`, 'accent'),
       card('Fourchette de prix', n? `${Math.min(...prices).toFixed(2)} – ${Math.max(...prices).toFixed(2)} €`:'—', 'min – max'),
@@ -390,6 +458,36 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % du catalogue`:'—'),
       card('Prime réseau 5G', prem!=null? prem+' %':'n/d', `à destination égale · ${DATA.network_premium.n_countries} pays`, premCls),
     ].join('');
+    if(before.length) animateCounters(before);
+  }
+
+  // Les KPI passent d'une valeur à l'autre sans que l'œil le perçoive : on interpole
+  // les nombres sur ~450 ms pour rendre la réaction au filtre visible.
+  function animateCounters(before){
+    document.querySelectorAll('#kpi-row .v').forEach((el, i) => {
+      const from = before[i], to = el.textContent;
+      if(from === undefined || from === to) return;
+      // Même gabarit des deux côtés (mêmes séparateurs, même nombre de nombres) :
+      // sinon l'interpolation produirait un texte incohérent en cours de route.
+      const numRe = /-?[\d  ]+(?:[.,]\d+)?/g;
+      const a = from.match(numRe), b = to.match(numRe);
+      if(!a || !b || a.length !== b.length) return;
+      if(from.replace(numRe,'\u0000') !== to.replace(numRe,'\u0000')) return;
+      const parse = s => parseFloat(s.replace(/[  ]/g,'').replace(',','.'));
+      const nums = a.map((s,j)=>[parse(s), parse(b[j]), (b[j].split(/[.,]/)[1]||'').length]);
+      if(nums.some(([x,y])=>!isFinite(x)||!isFinite(y))) return;
+      const t0 = performance.now(), DUR = 450;
+      const step = now => {
+        const k = Math.min(1, (now-t0)/DUR), e = 1-Math.pow(1-k,3);
+        let j = 0;
+        el.textContent = to.replace(numRe, () => {
+          const [x,y,d] = nums[j++];
+          return (x + (y-x)*e).toLocaleString('fr-FR',{minimumFractionDigits:d, maximumFractionDigits:d});
+        });
+        if(k < 1) requestAnimationFrame(step); else el.textContent = to;
+      };
+      requestAnimationFrame(step);
+    });
   }
 
   function dynamicCharts(rows){
@@ -400,17 +498,18 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const byProv = new Map();
     sized.forEach(r => { if(!byProv.has(r.provider)) byProv.set(r.provider,[]); byProv.get(r.provider).push(r.price/r.data_gb); });
     const pg = [...byProv].map(([p,a])=>[p, +mean(a).toFixed(2)]).sort((a,b)=>a[1]-b[1]);
-    bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, zoom:true, fmt:v=>v+' €'});
+    bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, zoom:true, fmt:v=>v+' €',
+      color:C.gold, color2:C.warm});
 
     donut('c-network', [...countBy(rows,'network')].map(([name,value])=>({name,value})), {'4G':C.netA,'5G':C.netB});
-    donut('c-topup', [...countBy(rows,'top_up')].map(([name,value])=>({name,value})), {'oui':C.good,'non':'#cbd5e1'});
+    donut('c-topup', [...countBy(rows,'top_up')].map(([name,value])=>({name,value})), {'oui':C.accent,'non':'#475569'});
 
     const val = [...countBy(rows,'validity_days')].sort((a,b)=>a[0]-b[0]);
     bar('c-validity', val.map(e=>e[0]+' jours'), val.map(e=>e[1]));
 
     let l=0,m=0,h=0;
     sized.forEach(r => { const g=r.data_gb/r.validity_days; if(g<0.3) l++; else if(g<1) m++; else h++; });
-    bar('c-intensity', ['Léger','Moyen','Lourd'], [l,m,h]);
+    bar('c-intensity', ['Léger','Moyen','Lourd'], [l,m,h], {color:C.warm, color2:'#c2410c'});
 
     const bySize = new Map();
     rows.filter(r=>r.data_gb!=null).forEach(r => { if(!bySize.has(r.data_gb)) bySize.set(r.data_gb,[]); bySize.get(r.data_gb).push(r.price); });
@@ -480,7 +579,8 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const d = dispersion(rows);
     document.getElementById('c-dispersion').hidden = !d.length;
     document.getElementById('c-dispersion-empty').hidden = d.length > 0;
-    if(d.length) bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv), {fmt:v=>v.toFixed(3)});
+    if(d.length) bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv),
+      {fmt:v=>v.toFixed(3), color:C.warm, color2:'#c2410c'});
   }
 
   fetch('data.json').then(r=>r.json()).then(d => {
