@@ -1,0 +1,1343 @@
+{
+  "generated_from": "18 fournisseurs, 5056 lignes",
+  "base_metrics": {
+    "total_products": 5056,
+    "providers_count": 18,
+    "over_100_eur": 56,
+    "price_min": 5.36,
+    "price_max": 154.63,
+    "price_avg": 29.3,
+    "data_gb_avg": 14.49,
+    "unlimited_count": 653
+  },
+  "provider_breakdown": [
+    {
+      "provider": "Airalo",
+      "count": 722
+    },
+    {
+      "provider": "Ubigi",
+      "count": 562
+    },
+    {
+      "provider": "eSIMX",
+      "count": 432
+    },
+    {
+      "provider": "Saily",
+      "count": 382
+    },
+    {
+      "provider": "GigSky",
+      "count": 342
+    },
+    {
+      "provider": "Nomad",
+      "count": 312
+    },
+    {
+      "provider": "Instabridge",
+      "count": 282
+    },
+    {
+      "provider": "aloSIM",
+      "count": 262
+    },
+    {
+      "provider": "Holafly",
+      "count": 242
+    },
+    {
+      "provider": "Yesim",
+      "count": 222
+    },
+    {
+      "provider": "Jetpac",
+      "count": 212
+    },
+    {
+      "provider": "Truphone",
+      "count": 202
+    },
+    {
+      "provider": "JamboSIM",
+      "count": 182
+    },
+    {
+      "provider": "Flexiroam",
+      "count": 172
+    },
+    {
+      "provider": "Yatelo",
+      "count": 162
+    },
+    {
+      "provider": "Maya Mobile",
+      "count": 152
+    },
+    {
+      "provider": "Roamic",
+      "count": 122
+    },
+    {
+      "provider": "4S eSIM",
+      "count": 92
+    }
+  ],
+  "network_breakdown": [
+    {
+      "network": "4G",
+      "count": 3302
+    },
+    {
+      "network": "5G",
+      "count": 1754
+    }
+  ],
+  "validity_breakdown": [
+    {
+      "validity_days": 7,
+      "count": 1679
+    },
+    {
+      "validity_days": 15,
+      "count": 1667
+    },
+    {
+      "validity_days": 30,
+      "count": 1710
+    }
+  ],
+  "size_breakdown": [
+    {
+      "data_gb": 1.0,
+      "count": 728
+    },
+    {
+      "data_gb": 3.0,
+      "count": 751
+    },
+    {
+      "data_gb": 5.0,
+      "count": 767
+    },
+    {
+      "data_gb": 10.0,
+      "count": 709
+    },
+    {
+      "data_gb": 20.0,
+      "count": 750
+    },
+    {
+      "data_gb": 50.0,
+      "count": 698
+    }
+  ],
+  "price_per_size": [
+    {
+      "data_gb": 1.0,
+      "price_avg": 7.08
+    },
+    {
+      "data_gb": 3.0,
+      "price_avg": 11.48
+    },
+    {
+      "data_gb": 5.0,
+      "price_avg": 14.81
+    },
+    {
+      "data_gb": 10.0,
+      "price_avg": 22.03
+    },
+    {
+      "data_gb": 20.0,
+      "price_avg": 33.49
+    },
+    {
+      "data_gb": 50.0,
+      "price_avg": 60.98
+    }
+  ],
+  "price_per_gb_by_provider": [
+    {
+      "provider": "JamboSIM",
+      "price_per_gb": 2.9
+    },
+    {
+      "provider": "Yesim",
+      "price_per_gb": 2.94
+    },
+    {
+      "provider": "Ubigi",
+      "price_per_gb": 3.03
+    },
+    {
+      "provider": "Jetpac",
+      "price_per_gb": 3.07
+    },
+    {
+      "provider": "GigSky",
+      "price_per_gb": 3.07
+    },
+    {
+      "provider": "Nomad",
+      "price_per_gb": 3.12
+    },
+    {
+      "provider": "Flexiroam",
+      "price_per_gb": 3.14
+    },
+    {
+      "provider": "Maya Mobile",
+      "price_per_gb": 3.14
+    },
+    {
+      "provider": "eSIMX",
+      "price_per_gb": 3.15
+    },
+    {
+      "provider": "aloSIM",
+      "price_per_gb": 3.16
+    },
+    {
+      "provider": "Instabridge",
+      "price_per_gb": 3.19
+    },
+    {
+      "provider": "Roamic",
+      "price_per_gb": 3.21
+    },
+    {
+      "provider": "Yatelo",
+      "price_per_gb": 3.22
+    },
+    {
+      "provider": "Saily",
+      "price_per_gb": 3.22
+    },
+    {
+      "provider": "Holafly",
+      "price_per_gb": 3.26
+    },
+    {
+      "provider": "Truphone",
+      "price_per_gb": 3.35
+    },
+    {
+      "provider": "Airalo",
+      "price_per_gb": 3.38
+    },
+    {
+      "provider": "4S eSIM",
+      "price_per_gb": 3.59
+    }
+  ],
+  "price_per_day_by_provider": [
+    {
+      "provider": "Holafly",
+      "price_per_day": 1.84
+    },
+    {
+      "provider": "4S eSIM",
+      "price_per_day": 1.89
+    },
+    {
+      "provider": "Maya Mobile",
+      "price_per_day": 1.93
+    },
+    {
+      "provider": "Airalo",
+      "price_per_day": 1.93
+    },
+    {
+      "provider": "Jetpac",
+      "price_per_day": 2.04
+    },
+    {
+      "provider": "Yatelo",
+      "price_per_day": 2.06
+    },
+    {
+      "provider": "Nomad",
+      "price_per_day": 2.08
+    },
+    {
+      "provider": "GigSky",
+      "price_per_day": 2.1
+    },
+    {
+      "provider": "Truphone",
+      "price_per_day": 2.13
+    },
+    {
+      "provider": "eSIMX",
+      "price_per_day": 2.14
+    },
+    {
+      "provider": "Instabridge",
+      "price_per_day": 2.15
+    },
+    {
+      "provider": "Flexiroam",
+      "price_per_day": 2.16
+    },
+    {
+      "provider": "Roamic",
+      "price_per_day": 2.17
+    },
+    {
+      "provider": "aloSIM",
+      "price_per_day": 2.2
+    },
+    {
+      "provider": "Saily",
+      "price_per_day": 2.2
+    },
+    {
+      "provider": "Yesim",
+      "price_per_day": 2.21
+    },
+    {
+      "provider": "JamboSIM",
+      "price_per_day": 2.31
+    },
+    {
+      "provider": "Ubigi",
+      "price_per_day": 2.31
+    }
+  ],
+  "usage_intensity_segments": {
+    "leger": 1493,
+    "moyen": 1481,
+    "lourd": 1429
+  },
+  "regional_dispersion": [
+    {
+      "region": "Monde",
+      "price_per_gb_avg": 3.92,
+      "cv": 0.655,
+      "n": 155
+    },
+    {
+      "region": "Europe",
+      "price_per_gb_avg": 4.24,
+      "cv": 0.646,
+      "n": 177
+    },
+    {
+      "region": "Asie",
+      "price_per_gb_avg": 4.5,
+      "cv": 0.628,
+      "n": 165
+    }
+  ],
+  "network_premium": {
+    "premium_pct": 0.5,
+    "n_countries": 54,
+    "note": "moyenne des primes calculées pays par pays (contrôle géographique), pas un agrégat global"
+  },
+  "volume_discount_curve": [
+    {
+      "provider": "4S eSIM",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.18
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.76
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.89
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.07
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.6
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.2
+        }
+      ]
+    },
+    {
+      "provider": "Airalo",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.97
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.79
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 3.08
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.2
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.67
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.21
+        }
+      ]
+    },
+    {
+      "provider": "Flexiroam",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.89
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.88
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.93
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.21
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.65
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.26
+        }
+      ]
+    },
+    {
+      "provider": "GigSky",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.8
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.86
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 3.0
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.13
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.66
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.21
+        }
+      ]
+    },
+    {
+      "provider": "Holafly",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.08
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.71
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 3.0
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.3
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.65
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.28
+        }
+      ]
+    },
+    {
+      "provider": "Instabridge",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.56
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.81
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.96
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.25
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.65
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.29
+        }
+      ]
+    },
+    {
+      "provider": "JamboSIM",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.51
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.86
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.72
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.29
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.75
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.23
+        }
+      ]
+    },
+    {
+      "provider": "Jetpac",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.1
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.9
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.88
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.1
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.72
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.18
+        }
+      ]
+    },
+    {
+      "provider": "Maya Mobile",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.44
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.59
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.88
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.12
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.76
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.27
+        }
+      ]
+    },
+    {
+      "provider": "Nomad",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.83
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.83
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.98
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.24
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.7
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.22
+        }
+      ]
+    },
+    {
+      "provider": "Roamic",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.85
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 4.2
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.84
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.19
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.71
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.22
+        }
+      ]
+    },
+    {
+      "provider": "Saily",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.06
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.79
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.91
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.27
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.71
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.19
+        }
+      ]
+    },
+    {
+      "provider": "Truphone",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.44
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.76
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.97
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.16
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.63
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.15
+        }
+      ]
+    },
+    {
+      "provider": "Ubigi",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.06
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.76
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.91
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.17
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.65
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.2
+        }
+      ]
+    },
+    {
+      "provider": "Yatelo",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 6.76
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 4.0
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.79
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.46
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.62
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.14
+        }
+      ]
+    },
+    {
+      "provider": "Yesim",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.08
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.81
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.94
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.16
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.76
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.25
+        }
+      ]
+    },
+    {
+      "provider": "aloSIM",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.39
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 4.1
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 3.11
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.17
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.61
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.24
+        }
+      ]
+    },
+    {
+      "provider": "eSIMX",
+      "points": [
+        {
+          "data_gb": 1.0,
+          "price_per_gb": 7.14
+        },
+        {
+          "data_gb": 3.0,
+          "price_per_gb": 3.8
+        },
+        {
+          "data_gb": 5.0,
+          "price_per_gb": 2.99
+        },
+        {
+          "data_gb": 10.0,
+          "price_per_gb": 2.16
+        },
+        {
+          "data_gb": 20.0,
+          "price_per_gb": 1.67
+        },
+        {
+          "data_gb": 50.0,
+          "price_per_gb": 1.24
+        }
+      ]
+    }
+  ],
+  "top_destinations": [
+    {
+      "destination": "Europe",
+      "offers": 206
+    },
+    {
+      "destination": "Asie",
+      "offers": 194
+    },
+    {
+      "destination": "Amérique du Nord",
+      "offers": 192
+    },
+    {
+      "destination": "Monde",
+      "offers": 186
+    },
+    {
+      "destination": "Indonésie",
+      "offers": 104
+    },
+    {
+      "destination": "Arabie saoudite",
+      "offers": 102
+    },
+    {
+      "destination": "Singapour",
+      "offers": 99
+    },
+    {
+      "destination": "États-Unis",
+      "offers": 98
+    },
+    {
+      "destination": "Égypte",
+      "offers": 98
+    },
+    {
+      "destination": "Kenya",
+      "offers": 96
+    },
+    {
+      "destination": "Belgique",
+      "offers": 96
+    },
+    {
+      "destination": "Colombie",
+      "offers": 95
+    },
+    {
+      "destination": "Pays-Bas",
+      "offers": 93
+    },
+    {
+      "destination": "Turquie",
+      "offers": 93
+    },
+    {
+      "destination": "Philippines",
+      "offers": 92
+    }
+  ],
+  "topup_flexibility": [
+    {
+      "provider": "Holafly",
+      "topup_pct": 58.7
+    },
+    {
+      "provider": "Instabridge",
+      "topup_pct": 57.4
+    },
+    {
+      "provider": "Ubigi",
+      "topup_pct": 56.9
+    },
+    {
+      "provider": "Saily",
+      "topup_pct": 56.8
+    },
+    {
+      "provider": "4S eSIM",
+      "topup_pct": 56.5
+    },
+    {
+      "provider": "Flexiroam",
+      "topup_pct": 55.8
+    },
+    {
+      "provider": "Nomad",
+      "topup_pct": 55.8
+    },
+    {
+      "provider": "Jetpac",
+      "topup_pct": 54.7
+    },
+    {
+      "provider": "Yesim",
+      "topup_pct": 54.5
+    },
+    {
+      "provider": "Yatelo",
+      "topup_pct": 53.7
+    },
+    {
+      "provider": "eSIMX",
+      "topup_pct": 53.2
+    },
+    {
+      "provider": "GigSky",
+      "topup_pct": 52.9
+    },
+    {
+      "provider": "aloSIM",
+      "topup_pct": 52.7
+    },
+    {
+      "provider": "Airalo",
+      "topup_pct": 52.6
+    },
+    {
+      "provider": "Roamic",
+      "topup_pct": 50.8
+    },
+    {
+      "provider": "Truphone",
+      "topup_pct": 50.0
+    },
+    {
+      "provider": "JamboSIM",
+      "topup_pct": 49.5
+    },
+    {
+      "provider": "Maya Mobile",
+      "topup_pct": 45.4
+    }
+  ],
+  "coverage_breadth": [
+    {
+      "provider": "eSIMX",
+      "countries": 53
+    },
+    {
+      "provider": "Airalo",
+      "countries": 53
+    },
+    {
+      "provider": "Flexiroam",
+      "countries": 53
+    },
+    {
+      "provider": "aloSIM",
+      "countries": 53
+    },
+    {
+      "provider": "Holafly",
+      "countries": 53
+    },
+    {
+      "provider": "Ubigi",
+      "countries": 53
+    },
+    {
+      "provider": "Jetpac",
+      "countries": 53
+    },
+    {
+      "provider": "Saily",
+      "countries": 53
+    },
+    {
+      "provider": "Yesim",
+      "countries": 52
+    },
+    {
+      "provider": "Nomad",
+      "countries": 52
+    },
+    {
+      "provider": "Instabridge",
+      "countries": 52
+    },
+    {
+      "provider": "GigSky",
+      "countries": 52
+    },
+    {
+      "provider": "Truphone",
+      "countries": 51
+    },
+    {
+      "provider": "JamboSIM",
+      "countries": 50
+    },
+    {
+      "provider": "Roamic",
+      "countries": 48
+    },
+    {
+      "provider": "Yatelo",
+      "countries": 45
+    },
+    {
+      "provider": "4S eSIM",
+      "countries": 45
+    },
+    {
+      "provider": "Maya Mobile",
+      "countries": 44
+    }
+  ],
+  "composite_scores": {
+    "version_a_mybestsim": [
+      {
+        "provider": "Yesim",
+        "score": 78.4,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "Saily",
+        "score": 72.0,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "Roamic",
+        "score": 66.8,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "Holafly",
+        "score": 66.4,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "Airalo",
+        "score": 62.1,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "4S eSIM",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Flexiroam",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "GigSky",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Instabridge",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "JamboSIM",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Jetpac",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Maya Mobile",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Nomad",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Truphone",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Ubigi",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Yatelo",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "aloSIM",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "eSIMX",
+        "score": null,
+        "editorial_source": "indisponible"
+      }
+    ],
+    "version_b_trustpilot": [
+      {
+        "provider": "Flexiroam",
+        "score": 86.0,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Saily",
+        "score": 85.2,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Yesim",
+        "score": 85.0,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Ubigi",
+        "score": 84.4,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Jetpac",
+        "score": 83.0,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Holafly",
+        "score": 82.6,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "aloSIM",
+        "score": 82.0,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "GigSky",
+        "score": 80.8,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Nomad",
+        "score": 80.8,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Roamic",
+        "score": 75.2,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Airalo",
+        "score": 69.3,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Maya Mobile",
+        "score": 68.8,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "4S eSIM",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Instabridge",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "JamboSIM",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Truphone",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "Yatelo",
+        "score": null,
+        "editorial_source": "indisponible"
+      },
+      {
+        "provider": "eSIMX",
+        "score": null,
+        "editorial_source": "indisponible"
+      }
+    ],
+    "version_c_sans_editorial": [
+      {
+        "provider": "Ubigi",
+        "score": 88.1
+      },
+      {
+        "provider": "aloSIM",
+        "score": 84.9
+      },
+      {
+        "provider": "Yesim",
+        "score": 83.6
+      },
+      {
+        "provider": "eSIMX",
+        "score": 79.9
+      },
+      {
+        "provider": "Flexiroam",
+        "score": 73.9
+      },
+      {
+        "provider": "GigSky",
+        "score": 73.1
+      },
+      {
+        "provider": "Nomad",
+        "score": 73.1
+      },
+      {
+        "provider": "JamboSIM",
+        "score": 72.4
+      },
+      {
+        "provider": "Saily",
+        "score": 72.0
+      },
+      {
+        "provider": "Jetpac",
+        "score": 66.4
+      },
+      {
+        "provider": "Holafly",
+        "score": 65.4
+      },
+      {
+        "provider": "Truphone",
+        "score": 60.1
+      },
+      {
+        "provider": "Instabridge",
+        "score": 59.0
+      },
+      {
+        "provider": "Airalo",
+        "score": 47.2
+      },
+      {
+        "provider": "Roamic",
+        "score": 46.9
+      },
+      {
+        "provider": "Yatelo",
+        "score": 39.0
+      },
+      {
+        "provider": "Maya Mobile",
+        "score": 37.1
+      },
+      {
+        "provider": "4S eSIM",
+        "score": 13.5
+      }
+    ],
+    "excluded_from_editorial": {
+      "eSIMX": "Trustpilot : 35 avis (<2500)",
+      "Instabridge": "Trustpilot : 17 avis (<2500) — match produit confirmé mais échantillon trop faible",
+      "Truphone": "Trustpilot : 182 avis (<2500), score très négatif (1.0-1.5) non confirmé par un volume suffisant",
+      "JamboSIM": "Trustpilot : 6-20 avis selon la période (<2500)",
+      "Yatelo": "Trustpilot : 9 avis (<2500)",
+      "4S eSIM": "Trustpilot : 4-5 avis (<2500)"
+    }
+  }
+}
