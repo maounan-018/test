@@ -14,6 +14,8 @@ from compute_metrics import (
     regional_dispersion,
     network_premium_by_country,
     composite_scores,
+    provider_breakdown,
+    top_destinations,
     load_catalog,
     build_dataset,
 )
@@ -138,6 +140,41 @@ class TestCompositeScores:
         for row in scores["version_a_mybestsim"]:
             assert row["editorial_source"] == "indisponible"
             assert row["score"] is None
+
+
+class TestDeterministicOrdering:
+    """Régression : value_counts() ne garantit pas d'ordre stable entre valeurs à égalité
+    (observé en CI : 'États-Unis' et 'Égypte' à 98 offres changeaient d'ordre entre une
+    exécution Windows locale et Ubuntu en CI, faisant échouer le contrôle de
+    reproductibilité). Les égalités doivent être départagées alphabétiquement, toujours
+    dans le même ordre, peu importe l'OS ou l'ordre d'arrivée des lignes."""
+
+    def test_provider_tie_broken_alphabetically(self):
+        df = pd.DataFrame([
+            {"provider": "Zebra", "price": 1.0},
+            {"provider": "Zebra", "price": 1.0},
+            {"provider": "Alpha", "price": 1.0},
+            {"provider": "Alpha", "price": 1.0},
+        ])
+        result = provider_breakdown(df)
+        assert result == [{"provider": "Alpha", "count": 2}, {"provider": "Zebra", "count": 2}]
+
+    def test_destination_tie_broken_alphabetically(self):
+        df = pd.DataFrame([
+            {"country_name": "Zanzibar"}, {"country_name": "Zanzibar"},
+            {"country_name": "Albanie"}, {"country_name": "Albanie"},
+        ])
+        result = top_destinations(df, n=5)
+        assert result == [{"destination": "Albanie", "offers": 2}, {"destination": "Zanzibar", "offers": 2}]
+
+    def test_repeated_runs_give_identical_order(self):
+        """Même calcul répété sur les mêmes données -> toujours le même ordre."""
+        if not os.path.isdir(DATA_DIR) or not os.listdir(DATA_DIR):
+            pytest.skip("dossier data/ non disponible dans cet environnement")
+        df1 = load_catalog(DATA_DIR)
+        df2 = load_catalog(DATA_DIR)
+        assert top_destinations(df1) == top_destinations(df2)
+        assert provider_breakdown(df1) == provider_breakdown(df2)
 
 
 class TestFullPipeline:

@@ -39,13 +39,21 @@ def base_metrics(df: pd.DataFrame) -> dict:
     }
 
 
+def _stable_counts_desc(series: pd.Series) -> pd.Series:
+    """value_counts() ne garantit pas d'ordre stable entre valeurs à égalité (l'ordre peut
+    varier d'une exécution/OS à l'autre). On trie d'abord par nom (stable), puis par
+    comptage décroissant avec un tri stable : les égalités restent alors alphabétiques,
+    de façon reproductible partout."""
+    return series.value_counts().sort_index().sort_values(ascending=False, kind="stable")
+
+
 def provider_breakdown(df: pd.DataFrame) -> list:
-    counts = df["provider"].value_counts()
+    counts = _stable_counts_desc(df["provider"])
     return [{"provider": p, "count": int(c)} for p, c in counts.items()]
 
 
 def network_breakdown(df: pd.DataFrame) -> list:
-    counts = df["network"].value_counts()
+    counts = _stable_counts_desc(df["network"])
     return [{"network": n, "count": int(c)} for n, c in counts.items()]
 
 
@@ -71,14 +79,14 @@ def price_per_gb_by_provider(df: pd.DataFrame) -> list:
     sized = df.dropna(subset=["data_gb"])
     sized = sized[sized["data_gb"] > 0].copy()
     sized["price_per_gb"] = sized["price"] / sized["data_gb"]
-    avg = sized.groupby("provider")["price_per_gb"].mean().sort_values()
+    avg = sized.groupby("provider")["price_per_gb"].mean().sort_values(kind="stable")
     return [{"provider": p, "price_per_gb": round(float(v), 2)} for p, v in avg.items()]
 
 
 def price_per_day_by_provider(df: pd.DataFrame) -> list:
     tmp = df.copy()
     tmp["price_per_day"] = tmp["price"] / tmp["validity_days"]
-    avg = tmp.groupby("provider")["price_per_day"].mean().sort_values()
+    avg = tmp.groupby("provider")["price_per_day"].mean().sort_values(kind="stable")
     return [{"provider": p, "price_per_day": round(float(v), 2)} for p, v in avg.items()]
 
 
@@ -109,7 +117,7 @@ def regional_dispersion(df: pd.DataFrame) -> list:
         mean = stats.mean(vals)
         cv = stats.stdev(vals) / mean if mean else 0
         out.append({"region": region, "price_per_gb_avg": round(mean, 2), "cv": round(cv, 3), "n": len(vals)})
-    return sorted(out, key=lambda r: r["cv"], reverse=True)
+    return sorted(out, key=lambda r: (-r["cv"], r["region"]))
 
 
 def network_premium_by_country(df: pd.DataFrame) -> dict:
@@ -152,7 +160,7 @@ def volume_discount_curve(df: pd.DataFrame) -> list:
 
 
 def top_destinations(df: pd.DataFrame, n: int = 15) -> list:
-    counts = df["country_name"].value_counts().head(n)
+    counts = _stable_counts_desc(df["country_name"]).head(n)
     return [{"destination": d, "offers": int(c)} for d, c in counts.items()]
 
 
@@ -161,11 +169,11 @@ def topup_flexibility(df: pd.DataFrame) -> list:
     for provider, grp in df.groupby("provider"):
         pct = (grp["top_up"] == "oui").mean() * 100
         out.append({"provider": provider, "topup_pct": round(float(pct), 1)})
-    return sorted(out, key=lambda r: r["topup_pct"], reverse=True)
+    return sorted(out, key=lambda r: (-r["topup_pct"], r["provider"]))
 
 
 def coverage_breadth(df: pd.DataFrame) -> list:
-    counts = df.groupby("provider")["country_code"].nunique().sort_values(ascending=False)
+    counts = df.groupby("provider")["country_code"].nunique().sort_index().sort_values(ascending=False, kind="stable")
     return [{"provider": p, "countries": int(c)} for p, c in counts.items()]
 
 
@@ -230,9 +238,9 @@ def composite_scores(df: pd.DataFrame) -> dict:
             version_b.append({"provider": p, "score": None, "editorial_source": "indisponible"})
 
     return {
-        "version_a_mybestsim": sorted(version_a, key=lambda r: (r["score"] is None, -(r["score"] or 0))),
-        "version_b_trustpilot": sorted(version_b, key=lambda r: (r["score"] is None, -(r["score"] or 0))),
-        "version_c_sans_editorial": sorted(version_c, key=lambda r: -r["score"]),
+        "version_a_mybestsim": sorted(version_a, key=lambda r: (r["score"] is None, -(r["score"] or 0), r["provider"])),
+        "version_b_trustpilot": sorted(version_b, key=lambda r: (r["score"] is None, -(r["score"] or 0), r["provider"])),
+        "version_c_sans_editorial": sorted(version_c, key=lambda r: (-r["score"], r["provider"])),
         "excluded_from_editorial": EDITORIAL_EXCLUDED,
     }
 

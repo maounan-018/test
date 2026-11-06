@@ -46398,19 +46398,19 @@
       "offers": 99
     },
     {
-      "destination": "États-Unis",
-      "offers": 98
-    },
-    {
       "destination": "Égypte",
       "offers": 98
     },
     {
-      "destination": "Kenya",
-      "offers": 96
+      "destination": "États-Unis",
+      "offers": 98
     },
     {
       "destination": "Belgique",
+      "offers": 96
+    },
+    {
+      "destination": "Kenya",
       "offers": 96
     },
     {
@@ -46506,10 +46506,6 @@
   ],
   "coverage_breadth": [
     {
-      "provider": "eSIMX",
-      "countries": 53
-    },
-    {
       "provider": "Airalo",
       "countries": 53
     },
@@ -46518,15 +46514,7 @@
       "countries": 53
     },
     {
-      "provider": "aloSIM",
-      "countries": 53
-    },
-    {
       "provider": "Holafly",
-      "countries": 53
-    },
-    {
-      "provider": "Ubigi",
       "countries": 53
     },
     {
@@ -46538,11 +46526,19 @@
       "countries": 53
     },
     {
-      "provider": "Yesim",
-      "countries": 52
+      "provider": "Ubigi",
+      "countries": 53
     },
     {
-      "provider": "Nomad",
+      "provider": "aloSIM",
+      "countries": 53
+    },
+    {
+      "provider": "eSIMX",
+      "countries": 53
+    },
+    {
+      "provider": "GigSky",
       "countries": 52
     },
     {
@@ -46550,7 +46546,11 @@
       "countries": 52
     },
     {
-      "provider": "GigSky",
+      "provider": "Nomad",
+      "countries": 52
+    },
+    {
+      "provider": "Yesim",
       "countries": 52
     },
     {
@@ -46566,11 +46566,11 @@
       "countries": 48
     },
     {
-      "provider": "Yatelo",
+      "provider": "4S eSIM",
       "countries": 45
     },
     {
-      "provider": "4S eSIM",
+      "provider": "Yatelo",
       "countries": 45
     },
     {
