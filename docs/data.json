@@ -51504,91 +51504,106 @@
       "destination": "Europe",
       "price_avg": 42.74,
       "price_per_gb": 2.14,
-      "offers": 206
+      "offers": 206,
+      "providers": 18
     },
     {
       "destination": "Asie",
       "price_avg": 40.9,
       "price_per_gb": 2.3,
-      "offers": 194
+      "offers": 194,
+      "providers": 18
     },
     {
       "destination": "Amérique du Nord",
       "price_avg": 42.04,
       "price_per_gb": 2.25,
-      "offers": 192
+      "offers": 192,
+      "providers": 18
     },
     {
       "destination": "Monde",
       "price_avg": 44.41,
       "price_per_gb": 2.09,
-      "offers": 186
+      "offers": 186,
+      "providers": 18
     },
     {
       "destination": "Indonésie",
       "price_avg": 24.0,
       "price_per_gb": 1.61,
-      "offers": 104
+      "offers": 104,
+      "providers": 18
     },
     {
       "destination": "Arabie saoudite",
       "price_avg": 25.35,
       "price_per_gb": 1.6,
-      "offers": 102
+      "offers": 102,
+      "providers": 18
     },
     {
       "destination": "Singapour",
       "price_avg": 27.06,
       "price_per_gb": 1.65,
-      "offers": 99
+      "offers": 99,
+      "providers": 16
     },
     {
       "destination": "Égypte",
       "price_avg": 28.01,
       "price_per_gb": 1.6,
-      "offers": 98
+      "offers": 98,
+      "providers": 18
     },
     {
       "destination": "États-Unis",
       "price_avg": 26.67,
       "price_per_gb": 1.63,
-      "offers": 98
+      "offers": 98,
+      "providers": 17
     },
     {
       "destination": "Belgique",
       "price_avg": 27.67,
       "price_per_gb": 1.6,
-      "offers": 96
+      "offers": 96,
+      "providers": 18
     },
     {
       "destination": "Kenya",
       "price_avg": 29.86,
       "price_per_gb": 1.59,
-      "offers": 96
+      "offers": 96,
+      "providers": 18
     },
     {
       "destination": "Colombie",
       "price_avg": 31.87,
       "price_per_gb": 1.53,
-      "offers": 95
+      "offers": 95,
+      "providers": 18
     },
     {
       "destination": "Pays-Bas",
       "price_avg": 22.53,
       "price_per_gb": 1.63,
-      "offers": 93
+      "offers": 93,
+      "providers": 18
     },
     {
       "destination": "Turquie",
       "price_avg": 27.7,
       "price_per_gb": 1.6,
-      "offers": 93
+      "offers": 93,
+      "providers": 18
     },
     {
       "destination": "Philippines",
       "price_avg": 24.89,
       "price_per_gb": 1.6,
-      "offers": 92
+      "offers": 92,
+      "providers": 16
     }
   ],
   "price_by_country": [
@@ -52539,62 +52554,62 @@
     "version_b_trustpilot": [
       {
         "provider": "Ubigi",
-        "score": 85.0,
+        "score": 82.3,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Flexiroam",
-        "score": 81.7,
-        "editorial_source": "trustpilot"
-      },
-      {
-        "provider": "Saily",
-        "score": 81.7,
-        "editorial_source": "trustpilot"
-      },
-      {
-        "provider": "Jetpac",
         "score": 80.8,
         "editorial_source": "trustpilot"
       },
       {
+        "provider": "Saily",
+        "score": 80.8,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Jetpac",
+        "score": 79.9,
+        "editorial_source": "trustpilot"
+      },
+      {
         "provider": "Yesim",
-        "score": 78.8,
+        "score": 76.7,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "GigSky",
-        "score": 78.3,
+        "score": 76.2,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "aloSIM",
-        "score": 77.7,
+        "score": 74.7,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Holafly",
-        "score": 74.8,
+        "score": 73.9,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Nomad",
-        "score": 72.0,
+        "score": 69.9,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Roamic",
-        "score": 66.7,
+        "score": 65.8,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Airalo",
-        "score": 64.0,
+        "score": 61.6,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Maya Mobile",
-        "score": 62.2,
+        "score": 60.7,
         "editorial_source": "trustpilot"
       },
       {

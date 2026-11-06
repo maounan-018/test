@@ -229,6 +229,11 @@ def price_by_destination(df: pd.DataFrame, n: int = 15) -> list:
     pgb = sized.groupby("country_name").apply(
         lambda g: g["price"].sum() / g["data_gb"].sum(), include_groups=False
     )
+    # Nombre de fournisseurs calculé ici plutôt que récupéré depuis price_by_country :
+    # ce dernier exclut les zones multi-pays (Europe/Asie/Monde/Amérique du Nord, pas de
+    # position unique sur une carte), alors qu'elles font partie des destinations les
+    # plus couvertes et doivent donc aussi afficher leur nombre de fournisseurs ici.
+    providers = sub.groupby("country_name")["provider"].nunique()
 
     out = []
     for d, r in grp.iterrows():
@@ -237,6 +242,7 @@ def price_by_destination(df: pd.DataFrame, n: int = 15) -> list:
             "price_avg": round(float(r.price_avg), 2),
             "price_per_gb": round(float(pgb[d]), 2) if d in pgb.index else None,
             "offers": int(r.offers),
+            "providers": int(providers[d]),
         })
     return out
 
@@ -314,9 +320,14 @@ def composite_scores(df: pd.DataFrame) -> dict:
         else:
             version_a.append({"provider": p, "score": None, "editorial_source": "indisponible"})
 
-        # Version B : éditorial = Trustpilot (/5 rescalé /100) si fiable (>2500 avis)
+        # Version B : éditorial = Trustpilot (/5 rescalé /100) si fiable (>2500 avis).
+        # Min-max sur [1, 5] et non x20 : Trustpilot ne permet pas de note à 0 étoile, le
+        # minimum réel de l'échelle est 1 étoile. Une simple proportionnalité (x20)
+        # traiterait 1/5 comme 20/100 alors que c'est la pire note possible sur la
+        # plateforme — elle devrait valoir 0/100 pour rester comparable à l'échelle des
+        # autres composantes, elles aussi bornées à leur minimum réel observé.
         if p in TRUSTPILOT_SCORES:
-            editorial = TRUSTPILOT_SCORES[p] * 20
+            editorial = (TRUSTPILOT_SCORES[p] - 1) / (5 - 1) * 100
             score_b = round(editorial * 0.60 + quant_40, 1)
             version_b.append({"provider": p, "score": score_b, "editorial_source": "trustpilot"})
         else:

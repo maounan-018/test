@@ -52,9 +52,9 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 
 /* ---- contenu (60%) ---- */
 .main{flex:1; min-width:0; padding:26px 30px 70px}
-.head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px}
+.head{display:block; margin-bottom:20px}
 .head h1{font-size:21px; font-weight:700; margin:0 0 4px; letter-spacing:-0.02em}
-.head p{margin:0; font-size:13px; color:var(--ink-2); max-width:70ch; line-height:1.5}
+.head p{margin:0; font-size:13px; color:var(--ink-2); max-width:none; line-height:1.5}
 
 .toolbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 15px; margin-bottom:22px; box-shadow:var(--shadow)}
 .toolbar label{display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); margin-bottom:5px}
@@ -62,14 +62,31 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 .toolbar select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
 .toolbar select option{background:var(--surface-2); color:var(--ink)}
 .toolbar select option:checked{background:var(--accent); color:#fff}
+
+/* Liste cliquable de fournisseurs : remplace un <select multiple>, où le clic simple ne
+   permettait de sélectionner qu'un seul élément à la fois (il aurait fallu Ctrl/Cmd-clic,
+   jamais découvert sans le savoir déjà). Ici un clic ajoute, un reclic retire. */
+.provider-picker{width:220px; max-height:150px; overflow-y:auto; border:1px solid var(--border-2); border-radius:7px; background:var(--surface-2)}
+.prov-opt{display:flex; align-items:center; gap:8px; width:100%; text-align:left; background:none; border:none; color:var(--ink); font:13px 'Inter'; padding:6px 10px; cursor:pointer; transition:.12s}
+.prov-opt:hover{background:rgba(148,163,184,.1)}
+.prov-opt.sel{background:var(--accent); color:#fff}
+.prov-opt .chk{width:13px; height:13px; border-radius:3px; border:1.5px solid var(--ink-3); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--accent)}
+.prov-opt.sel .chk{background:#fff; border-color:#fff}
+.prov-opt.sel .chk::after{content:'✓'}
 .toolbar .reset{margin-left:auto; font:600 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:1px solid rgba(14,165,233,.3); border-radius:7px; padding:8px 14px; cursor:pointer; transition:.15s}
 .toolbar .reset:hover{background:var(--accent); color:#fff}
 
 /* niveau 1 : KPI cards, couleur réservée aux pastilles de contexte */
 .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; margin-bottom:26px}
-.kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2)); border:1px solid var(--border); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s}
+/* Liseré supérieur sur TOUTES les cartes KPI, pas seulement la première : sa couleur
+   suit celle de la pastille de la carte (accent par défaut, vert/ambre/rouge pour la
+   seule carte à jugement de valeur, la prime réseau), pour que la carte et sa pastille
+   racontent la même chose d'un coup d'œil. */
+.kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2)); border:1px solid var(--border); border-top:2px solid var(--accent); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s}
+.kpi.good{border-top-color:var(--good)}
+.kpi.warn{border-top-color:var(--warn)}
+.kpi.bad{border-top-color:var(--bad)}
 .kpi:hover{transform:translateY(-2px); box-shadow:var(--shadow-up); border-color:var(--border-2)}
-.kpi:first-child{border-top:2px solid var(--accent)}
 .kpi .l{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2)}
 .kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1; color:var(--ink)}
 .pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:rgba(148,163,184,.14); color:var(--ink-2)}
@@ -123,7 +140,7 @@ p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; lin
 table.t{width:100%; border-collapse:collapse; font-size:12.5px}
 table.t th, table.t td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
 table.t th{color:var(--ink-2); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
-table.t td.num{text-align:right; font-variant-numeric:tabular-nums}
+table.t td.num, table.t th.num{text-align:right; font-variant-numeric:tabular-nums}
 table.t tbody tr{transition:background .15s}
 table.t tbody tr:hover{background:var(--surface-2)}
 
@@ -174,8 +191,8 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
     <div class="toolbar">
       <div>
-        <label for="f-provider">Fournisseur</label>
-        <select id="f-provider" multiple size="1"></select>
+        <label for="f-provider" id="f-provider-label">Fournisseur</label>
+        <div class="provider-picker" id="f-provider" role="listbox" aria-multiselectable="true" aria-labelledby="f-provider-label"></div>
       </div>
       <div>
         <label for="f-network">Réseau</label>
@@ -222,14 +239,14 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
     <div class="grid3">
       <div class="card"><h3>Durée de validité</h3><p class="hint">Nombre d'offres</p><div class="chart" id="c-validity"></div></div>
-      <div class="card"><h3>Intensité d'usage</h3><p class="hint">Go par jour de validité</p><div class="chart" id="c-intensity"></div></div>
+      <div class="card"><h3>Intensité d'usage</h3><p class="hint">Nombre d'offres par profil de consommation (Go de data / jour de validité)</p><div class="chart" id="c-intensity"></div></div>
       <div class="card"><h3>Recharge possible</h3><p class="hint">Option top-up</p><div class="chart" id="c-topup"></div></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <h3>Dispersion des prix par zone multi-pays</h3>
-      <p class="hint">Coefficient de variation du prix/Go — plus il est élevé, plus les offres sont hétérogènes dans cette zone</p>
+      <p class="hint">Pour les forfaits vendus sur une zone entière (Europe, Asie, Amérique du Nord, Monde) plutôt que sur un seul pays : le coefficient de variation (écart-type du €/Go ÷ moyenne du €/Go) mesure si les offres de cette zone se ressemblent ou non. Près de 0 : les fournisseurs pratiquent des prix proches. Au-delà de 0,5 : certaines offres coûtent nettement plus cher que d'autres pour la même zone — « hétérogène » veut dire ça, pas que la zone elle-même est chère ou bon marché.</p>
       <div class="chart" id="c-dispersion"></div>
-      <div class="chart-empty" id="c-dispersion-empty" hidden><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15v-3M13 15V9M18 15v-5"/></svg>Pas assez d'offres multi-pays dans cette sélection pour calculer une dispersion (il en faut au moins deux par zone).</div>
+      <div class="chart-empty" id="c-dispersion-empty" hidden><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15v-3M13 15V9M18 15v-5"/></svg>Le catalogue complet contient assez d'offres multi-pays, mais pas <b>cette sélection</b> : le calcul exige au moins deux offres à volume fini dans une même zone, et les filtres actifs (fournisseur, réseau ou durée) l'ont réduite sous ce seuil. Élargissez les filtres pour revoir ce graphique.</div>
     </div>
 
     <h2 class="sec" id="s-scores">Score de recommandation — 3 méthodologies</h2>
@@ -244,7 +261,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <div class="card"><div class="chart tall" id="c-score-a"></div></div>
     </div>
     <div class="tab-panel" id="panel-b" hidden>
-      <div class="note">Composante éditoriale = note Trustpilot rescalée sur 100, retenue uniquement au-delà de 2 500 avis pour écarter les échantillons non représentatifs. 12 fournisseurs sur 18 couverts.</div>
+      <div class="note">Composante éditoriale = note Trustpilot, retenue uniquement au-delà de 2 500 avis pour écarter les échantillons non représentatifs. Rescalée sur 100 par min-max entre 1 étoile (0/100) et 5 étoiles (100/100) — Trustpilot ne permettant pas de note à 0 étoile, une simple règle de trois (×20) aurait valorisé artificiellement la pire note possible. 12 fournisseurs sur 18 couverts.</div>
       <div class="card"><div class="chart tall" id="c-score-b"></div></div>
     </div>
     <div class="tab-panel" id="panel-c" hidden>
@@ -321,8 +338,12 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       xAxis: o.horizontal
         ? {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
         : {type:'category', data:cats, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      // inverse:true pour les barres horizontales : sans ça, ECharts place l'index 0 du
+      // tableau de données tout en BAS (convention Cartésienne, l'axe Y croît vers le
+      // haut), donc la première entrée — la plus attractive quand les données sont déjà
+      // triées pour la mettre en avant — se retrouvait en bas, hors du premier regard.
       yAxis: o.horizontal
-        ? {type:'category', data:cats, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
+        ? {type:'category', data:cats, inverse:true, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
         : {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent',
         backgroundColor:'rgba(148,163,184,.07)', fillerColor:'rgba(14,165,233,.16)',
@@ -433,7 +454,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     pts.forEach((p, i) => {
       const colorVal = p.price_per_gb ?? p.price_avg;
       const m = L.circleMarker([p.lat, p.lng], {
-        radius: 5 + Math.sqrt(p.offers/offMax)*13,
+        radius: 4 + Math.sqrt(p.offers/offMax)*9,
         fillColor: colorFor(colorVal), color:'rgba(241,245,249,.85)', weight:1.2,
         opacity:0, fillOpacity:0
       }).addTo(markers).bindPopup(
@@ -452,8 +473,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   }
 
   // ---------- filtres ----------
+  const selectedProviders = new Set();
+
   const filtered = () => {
-    const prov = Array.from(document.getElementById('f-provider').selectedOptions).map(o=>o.value);
+    const prov = [...selectedProviders];
     const net = document.getElementById('f-network').value;
     const val = document.getElementById('f-validity').value;
     return ROWS.filter(r =>
@@ -474,12 +497,16 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const np = networkPremium(rows);
     const prem = np.premium_pct;
     const premCls = prem==null ? '' : Math.abs(prem)<5 ? 'good' : Math.abs(prem)<20 ? 'warn' : 'bad';
-    const card = (l,v,pill,cls='') =>
-      `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
+    // cls colore à la fois la pastille et le liseré supérieur de la carte, pour que les
+    // deux racontent la même chose. Les 5 premières cartes n'ont pas de jugement de
+    // valeur propre (pas de seuil bon/mauvais) : elles restent en accent, la couleur
+    // neutre de la marque. Seule la prime réseau a un seuil et prend good/warn/bad.
+    const card = (l,v,pill,cls='accent') =>
+      `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
 
     const before = [...document.querySelectorAll('#kpi-row .v')].map(e=>e.textContent);
     document.getElementById('kpi-row').innerHTML = [
-      card('Produits', nf(n), `${new Set(rows.map(r=>r.provider)).size} fournisseurs`, 'accent'),
+      card('Produits', nf(n), `${new Set(rows.map(r=>r.provider)).size} fournisseurs`),
       card('Fourchette de prix', n? `${Math.min(...prices).toFixed(2)} – ${Math.max(...prices).toFixed(2)} €`:'—', 'min – max'),
       card('Prix moyen', n? ef(mean(prices)):'—', `médiane ${n? median(prices).toFixed(2):'—'} €`),
       card('Data moyenne', sized.length? mean(sized.map(r=>r.data_gb)).toFixed(1)+' Go':'—', `${nf(unl)} forfaits illimités`),
@@ -487,7 +514,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % de la sélection`:'—'),
       card('Prime réseau 5G', prem!=null? prem+' %':'n/d',
         prem!=null? `à destination égale · ${np.n_countries} pays`
-                  : 'moins de 3 offres 4G et 5G par pays', premCls),
+                  : 'moins de 3 offres 4G et 5G par pays', premCls || 'accent'),
     ].join('');
     if(before.length) animateCounters(before);
   }
@@ -553,13 +580,13 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   function dynamicCharts(rows){
     const prov = [...countBy(rows,'provider')].sort((a,b)=>b[1]-a[1]);
-    bar('c-providers', prov.map(e=>e[0]), prov.map(e=>e[1]), {horizontal:true, zoom:true, color:C.accent});
+    bar('c-providers', prov.map(e=>e[0]), prov.map(e=>e[1]), {horizontal:true, color:C.accent});
 
     const sized = rows.filter(r=>r.data_gb!=null && r.data_gb>0);
     const byProv = new Map();
     sized.forEach(r => { if(!byProv.has(r.provider)) byProv.set(r.provider,[]); byProv.get(r.provider).push(r.price/r.data_gb); });
     const pg = [...byProv].map(([p,a])=>[p, +mean(a).toFixed(2)]).sort((a,b)=>a[1]-b[1]);
-    bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, zoom:true, fmt:v=>v+' €',
+    bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, fmt:v=>v+' €',
       color:C.gold, color2:C.warm});
 
     donut('c-network', [...countBy(rows,'network')].map(([name,value])=>({name,value})), {'4G':C.netA,'5G':C.netB});
@@ -568,9 +595,13 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const val = [...countBy(rows,'validity_days')].sort((a,b)=>a[0]-b[0]);
     bar('c-validity', val.map(e=>e[0]+' jours'), val.map(e=>e[1]));
 
+    // Les 3 catégories seules (Léger/Moyen/Lourd) ne disaient pas où sont les seuils :
+    // on les intègre directement dans le libellé de l'axe, en Go consommés par jour de
+    // validité (ex. un forfait 10 Go / 15 jours = 0,67 Go/j, catégorie « Moyen »).
     let l=0,m=0,h=0;
     sized.forEach(r => { const g=r.data_gb/r.validity_days; if(g<0.3) l++; else if(g<1) m++; else h++; });
-    bar('c-intensity', ['Léger','Moyen','Lourd'], [l,m,h], {color:C.warm, color2:'#c2410c'});
+    bar('c-intensity', ['Léger\n< 0,3 Go/j','Moyen\n0,3 à 1 Go/j','Lourd\n≥ 1 Go/j'], [l,m,h],
+      {color:C.warm, color2:'#c2410c', fmt:v=>v+' offres'});
 
     // On trace le prix AU GO et non le prix total : le prix total croît forcément avec le
     // volume, il ne montre aucune dégressivité. C'est le €/Go qui décroît (≈7,08 €/Go à
@@ -604,20 +635,23 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   function staticCharts(){
     const score = (id, rows) => {
-      const s = rows.filter(r=>r.score!=null).sort((a,b)=>a.score-b.score);
+      // Meilleur score en premier : avec yAxis.inverse, l'index 0 est placé en haut.
+      const s = rows.filter(r=>r.score!=null).sort((a,b)=>b.score-a.score);
       bar(id, s.map(r=>r.provider), s.map(r=>r.score), {horizontal:true, color:C.accent, fmt:v=>v+' / 100'});
     };
     score('c-score-a', DATA.composite_scores.version_a_mybestsim);
     score('c-score-b', DATA.composite_scores.version_b_trustpilot);
     score('c-score-c', DATA.composite_scores.version_c_sans_editorial);
 
-    const byCode = new Map(DATA.price_by_country.map(c=>[c.country, c]));
+    // d.providers vient directement de price_by_destination, calculé sur la destination
+    // elle-même : price_by_country ne couvre pas les zones multi-pays (Europe, Asie...),
+    // qui pourtant figurent parmi les destinations les plus couvertes — leur colonne
+    // Fournisseurs restait vide avec l'ancien lookup croisé.
     document.getElementById('dest-body').innerHTML = DATA.price_by_destination.map(d => {
-      const c = byCode.get(d.destination);
       return `<tr><td>${d.destination}</td><td class="num">${nf(d.offers)}</td>
         <td class="num">${d.price_avg.toFixed(2)} €</td>
         <td class="num">${d.price_per_gb!=null? d.price_per_gb.toFixed(2)+' €':'—'}</td>
-        <td class="num">${c? c.providers : '—'}</td></tr>`;
+        <td class="num">${d.providers}</td></tr>`;
     }).join('');
   }
 
@@ -670,13 +704,41 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   fetch('data.json').then(r=>r.json()).then(d => {
     DATA=d; ROWS=d.rows;
     REGION_CODES = new Set(d.region_codes);
-    const sel = document.getElementById('f-provider');
+    const picker = document.getElementById('f-provider');
+    const label = document.getElementById('f-provider-label');
     const provs = [...new Set(ROWS.map(r=>r.provider))].sort();
-    sel.size = Math.min(6, provs.length);
-    sel.innerHTML = provs.map(p=>`<option value="${p}">${p}</option>`).join('');
-    ['f-provider','f-network','f-validity'].forEach(id=>document.getElementById(id).addEventListener('change', render));
+
+    const updateProviderLabel = () => {
+      label.textContent = selectedProviders.size
+        ? `Fournisseur (${selectedProviders.size} sélectionné${selectedProviders.size>1?'s':''})`
+        : 'Fournisseur';
+    };
+    const renderProviderOptions = () => {
+      picker.innerHTML = provs.map(p => `<button type="button" class="prov-opt${selectedProviders.has(p)?' sel':''}"
+        role="option" aria-selected="${selectedProviders.has(p)}" data-p="${p}">
+        <span class="chk"></span>${p}</button>`).join('');
+    };
+    renderProviderOptions();
+    // Un clic ajoute ou retire ce fournisseur, sans Ctrl/Cmd — c'est tout l'intérêt de
+    // remplacer le <select multiple> natif, qui ne le permet pas au clic simple.
+    picker.addEventListener('click', e => {
+      const btn = e.target.closest('.prov-opt');
+      if(!btn) return;
+      const p = btn.dataset.p;
+      selectedProviders.has(p) ? selectedProviders.delete(p) : selectedProviders.add(p);
+      btn.classList.toggle('sel');
+      btn.setAttribute('aria-selected', selectedProviders.has(p));
+      updateProviderLabel();
+      render();
+    });
+
+    ['f-network','f-validity'].forEach(id=>document.getElementById(id).addEventListener('change', render));
     document.getElementById('reset-filters').addEventListener('click', () => {
-      [...sel.options].forEach(o=>o.selected=false);
+      // Revient au catalogue complet sans recharger la page : vide la sélection de
+      // fournisseurs et les deux autres filtres, puis relance le rendu côté client.
+      selectedProviders.clear();
+      renderProviderOptions();
+      updateProviderLabel();
       document.getElementById('f-network').value='';
       document.getElementById('f-validity').value='';
       render();

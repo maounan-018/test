@@ -199,6 +199,25 @@ class TestCompositeScores:
             assert row["editorial_source"] == "indisponible"
             assert row["score"] is None
 
+    def test_trustpilot_rescaled_by_min_max_not_proportional(self):
+        """Régression : Trustpilot ne permet pas de note à 0 étoile (minimum réel = 1
+        étoile), donc la composante éditoriale B doit être rescalée par min-max sur
+        [1, 5], pas par une règle de trois (× 20) qui valoriserait artificiellement la
+        pire note possible (1/5 deviendrait 20/100 au lieu de 0/100)."""
+        df = pd.DataFrame([
+            {"provider": "Airalo", "country_code": "FR", "price": 10.0, "data_gb": 1,
+             "network": "4G", "validity_days": 7},
+            {"provider": "Airalo", "country_code": "DE", "price": 10.0, "data_gb": 1,
+             "network": "4G", "validity_days": 7},
+        ])
+        scores = composite_scores(df)
+        row = next(r for r in scores["version_b_trustpilot"] if r["provider"] == "Airalo")
+        # Airalo = 4.2/5 sur Trustpilot (scripts/editorial_sources.py).
+        # Min-max [1,5] : (4.2-1)/4*100 = 80.0, pondéré à 60% = 48.0 ; les 3 sous-scores
+        # quantitatifs valent tous 100 (seul fournisseur du jeu de test) pour 40 pts.
+        # Règle de trois (x20) aurait donné 84.0*0.6 + 40 = 90.4 à la place de 88.0.
+        assert row["score"] == pytest.approx(88.0, abs=0.1)
+
 
 class TestDeterministicOrdering:
     """Régression : value_counts() ne garantit pas d'ordre stable entre valeurs à égalité
@@ -240,8 +259,21 @@ class TestPriceByDestination:
         out = {r["destination"]: r for r in price_by_destination(small_df, n=5)}
         assert out["France"]["price_avg"] == pytest.approx(25.0, abs=0.01)  # (20+30)/2
         assert out["France"]["offers"] == 2
+        assert out["France"]["providers"] == 1  # les 2 offres France viennent du fournisseur A
         assert out["Allemagne"]["price_avg"] == pytest.approx(50.0, abs=0.01)
         assert out["Allemagne"]["offers"] == 1
+
+    def test_providers_count_for_multi_country_zone(self):
+        """Régression : le nombre de fournisseurs d'une zone multi-pays (Europe, Asie...)
+        doit être calculé directement, pas récupéré via price_by_country qui exclut ces
+        zones (pas de position unique sur une carte) — sinon la colonne restait vide."""
+        df = pd.DataFrame([
+            {"provider": "A", "country_code": "EU", "country_name": "Europe", "price": 10.0, "data_gb": 1},
+            {"provider": "A", "country_code": "EU", "country_name": "Europe", "price": 12.0, "data_gb": 1},
+            {"provider": "B", "country_code": "EU", "country_name": "Europe", "price": 15.0, "data_gb": 1},
+        ])
+        out = {r["destination"]: r for r in price_by_destination(df, n=5)}
+        assert out["Europe"]["providers"] == 2
 
     def test_price_per_gb_is_not_confounded_by_plan_size_mix(self):
         """Deux destinations au même prix/Go réel (0.5 €/Go) mais avec un mix de
