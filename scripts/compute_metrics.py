@@ -22,7 +22,16 @@ def load_catalog(source_dir: str) -> pd.DataFrame:
     files = sorted(glob.glob(os.path.join(source_dir, "*.csv")))
     if not files:
         raise FileNotFoundError(f"Aucun CSV trouvé dans {source_dir}")
-    df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    # keep_default_na=False est indispensable ici : le code pays "NA" (Amérique du Nord,
+    # 192 lignes) fait partie de la liste de valeurs manquantes par défaut de pandas et
+    # serait silencieusement converti en NaN. La zone disparaîtrait alors de la dispersion
+    # régionale et de la couverture, bien que REGION_CODES la prévoie.
+    # Seule la chaîne vide reste une valeur manquante ; data_gb est de toute façon
+    # reconverti juste après, les forfaits illimités restent donc bien NaN.
+    df = pd.concat(
+        [pd.read_csv(f, keep_default_na=False, na_values=[""]) for f in files],
+        ignore_index=True,
+    )
     df["data_gb"] = pd.to_numeric(df["data_gb"], errors="coerce")
     return df
 
@@ -126,6 +135,10 @@ def network_premium_by_country(df: pd.DataFrame) -> dict:
     corrige le biais de la première estimation globale (confondue avec la géographie)."""
     sized = df.dropna(subset=["data_gb"])
     sized = sized[sized["data_gb"] > 0].copy()
+    # « À destination égale » suppose une destination : les zones multi-pays (Europe,
+    # Asie, Monde, Amérique du Nord) ne sont pas des pays et étaient comptées comme tels
+    # dans n_countries, ce que le libellé « N pays » du dashboard contredisait.
+    sized = sized[~sized["country_code"].isin(REGION_CODES)]
     sized["price_per_gb"] = sized["price"] / sized["data_gb"]
 
     premiums = []
@@ -312,6 +325,10 @@ def build_dataset(source_dir: str) -> dict:
     df = load_catalog(source_dir)
     return {
         "generated_from": f"{df['provider'].nunique()} fournisseurs, {len(df)} lignes",
+        # Exposé pour que le dashboard n'ait pas sa propre copie de cette liste : le JS
+        # recalcule la dispersion régionale côté client et les deux définitions avaient
+        # divergé (le client ignorait NA et AF).
+        "region_codes": sorted(REGION_CODES),
         "rows": compact_rows(df),
         "base_metrics": base_metrics(df),
         "provider_breakdown": provider_breakdown(df),

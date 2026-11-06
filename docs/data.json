@@ -1,5 +1,12 @@
 {
   "generated_from": "18 fournisseurs, 5056 lignes",
+  "region_codes": [
+    "AF",
+    "AS",
+    "EU",
+    "NA",
+    "WW"
+  ],
   "rows": [
     {
       "provider": "4S eSIM",
@@ -913,7 +920,7 @@
     },
     {
       "provider": "4S eSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -1243,7 +1250,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -1673,7 +1680,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -1933,7 +1940,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -2053,7 +2060,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -2323,7 +2330,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -2383,7 +2390,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -2533,7 +2540,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -2713,7 +2720,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 7,
@@ -3313,7 +3320,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -3413,7 +3420,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -3483,7 +3490,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -3673,7 +3680,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -3823,7 +3830,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -4003,7 +4010,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -4303,7 +4310,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -4583,7 +4590,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -4843,7 +4850,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -4863,7 +4870,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 7,
@@ -5163,7 +5170,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -5193,7 +5200,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -5313,7 +5320,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -5543,7 +5550,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -5643,7 +5650,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -5913,7 +5920,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -6263,7 +6270,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -7133,7 +7140,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -7223,7 +7230,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -7253,7 +7260,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -7683,7 +7690,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -7823,7 +7830,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -7833,7 +7840,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -8043,7 +8050,7 @@
     },
     {
       "provider": "Airalo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -8243,7 +8250,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -8463,7 +8470,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -8623,7 +8630,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -8643,7 +8650,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -9143,7 +9150,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -9243,7 +9250,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -9533,7 +9540,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -9723,7 +9730,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -9733,7 +9740,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -9863,7 +9870,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -10273,7 +10280,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -10653,7 +10660,7 @@
     },
     {
       "provider": "aloSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -11063,7 +11070,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -11413,7 +11420,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -11523,7 +11530,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -11533,7 +11540,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -11653,7 +11660,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -11823,7 +11830,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -11903,7 +11910,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -12063,7 +12070,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -12893,7 +12900,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -13263,7 +13270,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -13283,7 +13290,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 15,
@@ -13713,7 +13720,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -14343,7 +14350,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 15,
@@ -14583,7 +14590,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -14633,7 +14640,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -14833,7 +14840,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -14863,7 +14870,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -15053,7 +15060,7 @@
     },
     {
       "provider": "eSIMX",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -15163,7 +15170,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -15353,7 +15360,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -15463,7 +15470,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -15583,7 +15590,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -15643,7 +15650,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -15843,7 +15850,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -16083,7 +16090,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -16723,7 +16730,7 @@
     },
     {
       "provider": "Flexiroam",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -16803,7 +16810,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -17143,7 +17150,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -17653,7 +17660,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -18173,7 +18180,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -18813,7 +18820,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -19223,7 +19230,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -19313,7 +19320,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -19533,7 +19540,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -19653,7 +19660,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -19893,7 +19900,7 @@
     },
     {
       "provider": "GigSky",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -20483,7 +20490,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 15,
@@ -20613,7 +20620,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 15,
@@ -20653,7 +20660,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -20683,7 +20690,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -20883,7 +20890,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -21413,7 +21420,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -21603,7 +21610,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -21813,7 +21820,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -22413,7 +22420,7 @@
     },
     {
       "provider": "Holafly",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -22913,7 +22920,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -22943,7 +22950,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 15,
@@ -23633,7 +23640,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 7,
@@ -23643,7 +23650,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -23763,7 +23770,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -24043,7 +24050,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -24713,7 +24720,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -24823,7 +24830,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -24953,7 +24960,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -25083,7 +25090,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -25453,7 +25460,7 @@
     },
     {
       "provider": "Instabridge",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -26013,7 +26020,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -26033,7 +26040,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -26133,7 +26140,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -26173,7 +26180,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -26273,7 +26280,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 7,
@@ -26343,7 +26350,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -27023,7 +27030,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -27163,7 +27170,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -27263,7 +27270,7 @@
     },
     {
       "provider": "JamboSIM",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -27343,7 +27350,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -27853,7 +27860,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -28083,7 +28090,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -28613,7 +28620,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -28753,7 +28760,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -29113,7 +29120,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 15,
@@ -29263,7 +29270,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -29383,7 +29390,7 @@
     },
     {
       "provider": "Jetpac",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -29693,7 +29700,7 @@
     },
     {
       "provider": "Maya Mobile",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -30173,7 +30180,7 @@
     },
     {
       "provider": "Maya Mobile",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -30493,7 +30500,7 @@
     },
     {
       "provider": "Maya Mobile",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -30793,7 +30800,7 @@
     },
     {
       "provider": "Maya Mobile",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -31433,7 +31440,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -31503,7 +31510,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -31943,7 +31950,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -32143,7 +32150,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 7,
@@ -32223,7 +32230,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -32273,7 +32280,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -32463,7 +32470,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -32713,7 +32720,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -32843,7 +32850,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -32903,7 +32910,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -33013,7 +33020,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -33503,7 +33510,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -33563,7 +33570,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -33843,7 +33850,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -33853,7 +33860,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -34023,7 +34030,7 @@
     },
     {
       "provider": "Nomad",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -34273,7 +34280,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -34403,7 +34410,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -34503,7 +34510,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 15,
@@ -34673,7 +34680,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -34803,7 +34810,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -34923,7 +34930,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 15,
@@ -35063,7 +35070,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -35093,7 +35100,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -35253,7 +35260,7 @@
     },
     {
       "provider": "Roamic",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -35533,7 +35540,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -35703,7 +35710,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -36193,7 +36200,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -36313,7 +36320,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -36343,7 +36350,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -36383,7 +36390,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -36633,7 +36640,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -37113,7 +37120,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -37733,7 +37740,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -37823,7 +37830,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -38313,7 +38320,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -38693,7 +38700,7 @@
     },
     {
       "provider": "Saily",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -39183,7 +39190,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -39253,7 +39260,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 30,
@@ -39353,7 +39360,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 30,
@@ -39623,7 +39630,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 7,
@@ -39843,7 +39850,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -40193,7 +40200,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -40453,7 +40460,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -40523,7 +40530,7 @@
     },
     {
       "provider": "Truphone",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -41333,7 +41340,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 15,
@@ -41373,7 +41380,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -41753,7 +41760,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -42163,7 +42170,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 7,
@@ -42203,7 +42210,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -42343,7 +42350,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -42573,7 +42580,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 30,
@@ -43113,7 +43120,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -43813,7 +43820,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -44683,7 +44690,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -44923,7 +44930,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -45013,7 +45020,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -45673,7 +45680,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 7,
@@ -45783,7 +45790,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -46083,7 +46090,7 @@
     },
     {
       "provider": "Ubigi",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 7,
@@ -46883,7 +46890,7 @@
     },
     {
       "provider": "Yatelo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 15,
@@ -47953,7 +47960,7 @@
     },
     {
       "provider": "Yatelo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -48173,7 +48180,7 @@
     },
     {
       "provider": "Yatelo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 3.0,
       "validity_days": 7,
@@ -48333,7 +48340,7 @@
     },
     {
       "provider": "Yatelo",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 30,
@@ -48463,7 +48470,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 5.0,
       "validity_days": 30,
@@ -48993,7 +49000,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": null,
       "validity_days": 15,
@@ -49133,7 +49140,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 20.0,
       "validity_days": 30,
@@ -49613,7 +49620,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 50.0,
       "validity_days": 30,
@@ -49773,7 +49780,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 10.0,
       "validity_days": 15,
@@ -50263,7 +50270,7 @@
     },
     {
       "provider": "Yesim",
-      "country_code": null,
+      "country_code": "NA",
       "country_name": "Amérique du Nord",
       "data_gb": 1.0,
       "validity_days": 7,
@@ -50893,11 +50900,17 @@
       "price_per_gb_avg": 4.5,
       "cv": 0.628,
       "n": 165
+    },
+    {
+      "region": "Amérique du Nord",
+      "price_per_gb_avg": 3.9,
+      "cv": 0.612,
+      "n": 164
     }
   ],
   "network_premium": {
-    "premium_pct": 0.5,
-    "n_countries": 54,
+    "premium_pct": 0.3,
+    "n_countries": 50,
     "note": "moyenne des primes calculées pays par pays (contrôle géographique), pas un agrégat global"
   },
   "volume_discount_curve": [
@@ -52344,75 +52357,75 @@
   "coverage_breadth": [
     {
       "provider": "Airalo",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "Flexiroam",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "Holafly",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "Jetpac",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "Saily",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "Ubigi",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "aloSIM",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "eSIMX",
-      "countries": 53
+      "countries": 54
     },
     {
       "provider": "GigSky",
-      "countries": 52
+      "countries": 53
     },
     {
       "provider": "Instabridge",
-      "countries": 52
+      "countries": 53
     },
     {
       "provider": "Nomad",
-      "countries": 52
+      "countries": 53
     },
     {
       "provider": "Yesim",
-      "countries": 52
+      "countries": 53
     },
     {
       "provider": "Truphone",
-      "countries": 51
+      "countries": 52
     },
     {
       "provider": "JamboSIM",
-      "countries": 50
+      "countries": 51
     },
     {
       "provider": "Roamic",
-      "countries": 48
+      "countries": 49
     },
     {
       "provider": "4S eSIM",
-      "countries": 45
+      "countries": 46
     },
     {
       "provider": "Yatelo",
-      "countries": 45
+      "countries": 46
     },
     {
       "provider": "Maya Mobile",
-      "countries": 44
+      "countries": 45
     }
   ],
   "composite_scores": {

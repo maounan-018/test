@@ -104,12 +104,12 @@ class TestNetworkPremium:
         un calcul naïf global sous-estimerait/biaiserait la prime."""
         rows = []
         for i in range(3):
-            rows.append({"provider": "X", "country_name": "France", "network": "4G",
-                         "price": 10.0, "data_gb": 1})
-            rows.append({"provider": "X", "country_name": "France", "network": "5G",
-                         "price": 20.0, "data_gb": 1})
-            rows.append({"provider": "X", "country_name": "Allemagne", "network": "4G",
-                         "price": 5.0, "data_gb": 1})
+            rows.append({"provider": "X", "country_code": "FR", "country_name": "France",
+                         "network": "4G", "price": 10.0, "data_gb": 1})
+            rows.append({"provider": "X", "country_code": "FR", "country_name": "France",
+                         "network": "5G", "price": 20.0, "data_gb": 1})
+            rows.append({"provider": "X", "country_code": "DE", "country_name": "Allemagne",
+                         "network": "4G", "price": 5.0, "data_gb": 1})
         df = pd.DataFrame(rows)
         result = network_premium_by_country(df)
         # Seule la France a 4G ET 5G avec >=3 lignes chacun -> prime = (20-10)/10 = 100%
@@ -117,9 +117,22 @@ class TestNetworkPremium:
         assert result["n_countries"] == 1
 
     def test_insufficient_data_returns_none(self):
-        df = pd.DataFrame([{"provider": "X", "country_name": "France", "network": "4G",
-                            "price": 10.0, "data_gb": 1}])
+        df = pd.DataFrame([{"provider": "X", "country_code": "FR", "country_name": "France",
+                            "network": "4G", "price": 10.0, "data_gb": 1}])
         result = network_premium_by_country(df)
+        assert result["premium_pct"] is None
+
+    def test_excludes_multi_country_zones(self):
+        """Une zone multi-pays n'est pas une destination : la compter dans n_countries
+        contredit le libellé « N pays » affiché à côté du KPI."""
+        rows = []
+        for _ in range(3):
+            rows.append({"provider": "X", "country_code": "EU", "country_name": "Europe",
+                         "network": "4G", "price": 10.0, "data_gb": 1})
+            rows.append({"provider": "X", "country_code": "EU", "country_name": "Europe",
+                         "network": "5G", "price": 20.0, "data_gb": 1})
+        result = network_premium_by_country(pd.DataFrame(rows))
+        assert result["n_countries"] == 0
         assert result["premium_pct"] is None
 
 
@@ -207,6 +220,44 @@ class TestPriceByCountry:
         codes = [r["code"] for r in price_by_country(df)]
         assert "EU" not in codes
         assert "FR" in codes
+
+
+class TestCountryCodeNA:
+    """Régression : le code pays 'NA' (Amérique du Nord) fait partie des valeurs que
+    pandas traite par défaut comme manquantes. Sans keep_default_na=False, les 192 lignes
+    'Amérique du Nord' perdaient leur code pays : la zone disparaissait de la dispersion
+    régionale (alors que REGION_CODES la prévoit) et n'était comptée dans la couverture
+    d'aucun fournisseur, ce qui alimentait les trois scores composites."""
+
+    def test_na_is_read_as_a_country_code(self):
+        if not os.path.isdir(DATA_DIR) or not os.listdir(DATA_DIR):
+            pytest.skip("dossier data/ non disponible dans cet environnement")
+        df = load_catalog(DATA_DIR)
+        assert (df["country_code"] == "NA").sum() == 192
+        assert df["country_code"].isna().sum() == 0
+
+    def test_unlimited_plans_still_have_no_data_gb(self):
+        """keep_default_na=False ne doit pas transformer les forfaits illimités en 0."""
+        if not os.path.isdir(DATA_DIR) or not os.listdir(DATA_DIR):
+            pytest.skip("dossier data/ non disponible dans cet environnement")
+        df = load_catalog(DATA_DIR)
+        assert df["data_gb"].isna().sum() == 653
+
+    def test_north_america_appears_in_regional_dispersion(self):
+        if not os.path.isdir(DATA_DIR) or not os.listdir(DATA_DIR):
+            pytest.skip("dossier data/ non disponible dans cet environnement")
+        regions = [r["region"] for r in regional_dispersion(load_catalog(DATA_DIR))]
+        assert "Amérique du Nord" in regions
+
+
+class TestRegionCodesExposed:
+    """Le dashboard recalcule la dispersion régionale côté client ; il doit lire la liste
+    des zones depuis data.json et non en garder une copie, les deux ayant divergé."""
+
+    def test_region_codes_in_dataset(self):
+        if not os.path.isdir(DATA_DIR) or not os.listdir(DATA_DIR):
+            pytest.skip("dossier data/ non disponible dans cet environnement")
+        assert set(build_dataset(DATA_DIR)["region_codes"]) == {"EU", "AS", "WW", "NA", "AF"}
 
 
 class TestFullPipeline:

@@ -44,7 +44,7 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 .nav{display:flex; flex-direction:column; gap:1px}
 .nav a{font-size:13px; color:#94a3b8; padding:8px 11px; border-radius:7px; text-decoration:none; transition:.15s; border-left:2px solid transparent}
 .nav a:hover{background:var(--accent-soft); color:#fff; border-left-color:var(--accent)}
-.nav-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:#64748b; font-weight:600; margin:20px 0 7px 11px}
+.nav-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); font-weight:600; margin:20px 0 7px 11px}
 .side-stat{background:var(--sidebar-2); border-radius:9px; padding:12px 13px; margin-top:8px}
 .side-stat .k{font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#8fa3bd; font-weight:600}
 .side-stat .v{font-size:19px; font-weight:700; color:var(--accent); margin-top:3px; font-variant-numeric:tabular-nums}
@@ -104,6 +104,8 @@ p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; lin
 .leaflet-overlay-pane path{transition:fill-opacity .45s ease-out, stroke-opacity .45s ease-out}
 .leaflet-popup-content-wrapper{background:var(--surface-2); color:var(--ink); border:1px solid var(--border-2); border-radius:10px; box-shadow:var(--shadow-up)}
 .leaflet-popup-tip{background:var(--surface-2)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--ink-2)}
+.leaflet-container a.leaflet-popup-close-button:hover{color:var(--ink)}
 .leaflet-control-zoom a{background:var(--surface-2); color:var(--ink); border-color:var(--border-2)}
 .leaflet-control-zoom a:hover{background:var(--accent); color:#fff}
 .map-legend{display:flex; gap:18px; align-items:center; flex-wrap:wrap; margin-top:13px; font-size:11.5px; color:var(--ink-2)}
@@ -215,7 +217,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     <h2 class="sec" id="s-structure">Structure du catalogue</h2>
     <p class="sec">Comment l'offre se répartit par volume de data, durée et génération réseau.</p>
     <div class="grid2">
-      <div class="card"><h3>Prix moyen par taille de data</h3><p class="hint">Dégressivité du prix avec le volume</p><div class="chart" id="c-bysize"></div></div>
+      <div class="card"><h3>Prix au Go par palier de volume</h3><p class="hint">Dégressivité réelle : le Go coûte moins cher sur les gros forfaits</p><div class="chart" id="c-bysize"></div></div>
       <div class="card"><h3>Réseau 4G / 5G</h3><p class="hint">Répartition des offres filtrées</p><div class="chart" id="c-network"></div></div>
     </div>
     <div class="grid3">
@@ -299,6 +301,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   const splitLine = {lineStyle:{color:C.grid, type:'dashed'}};
   let DATA=null, ROWS=[], map=null, markers=null;
   const charts={};
+  // Graphiques recalculés à chaque filtre, par opposition à c-score-a/b/c qui portent
+  // volontairement sur le catalogue complet et ne doivent jamais être vidés.
+  const DYNAMIC_CHARTS = ['c-providers','c-pergb','c-network','c-topup','c-validity',
+                          'c-intensity','c-bysize','c-dispersion'];
 
   const nf = n => Math.round(n).toLocaleString('fr-FR');
   const ef = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
@@ -320,7 +326,11 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
         : {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent',
         backgroundColor:'rgba(148,163,184,.07)', fillerColor:'rgba(14,165,233,.16)',
-        handleStyle:{color:C.accent, borderColor:C.accent}, textStyle:{color:C.ink3, fontSize:10}}] : undefined,
+        handleStyle:{color:C.accent, borderColor:C.accent}, textStyle:{color:C.ink3, fontSize:10},
+        // Sans cela l'aperçu des données dans le curseur garde le gris clair du thème
+        // ECharts par défaut, visible comme une bande pâle sur le fond navy.
+        dataBackground:{lineStyle:{color:'rgba(148,163,184,.3)'}, areaStyle:{color:'rgba(148,163,184,.12)'}},
+        selectedDataBackground:{lineStyle:{color:C.accent}, areaStyle:{color:'rgba(14,165,233,.2)'}}}] : undefined,
       series:[{type:'bar', data:vals, barMaxWidth:26,
         animationDelay: i => i * 18,
         emphasis:{itemStyle:{color:C.gold}},
@@ -348,8 +358,16 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     c.setOption({
       ...chartTheme(),
       grid:{left:46, right:18, top:12, bottom:34, containLabel:true},
-      tooltip:{...chartTheme().tooltip, trigger:'axis', valueFormatter:o.fmt,
-        axisPointer:{type:'line', lineStyle:{color:'rgba(14,165,233,.4)'}}},
+      // Le support est affiché dans l'infobulle : les paliers extrêmes (50, 100 Go)
+      // ne reposent que sur une poignée d'offres, une moyenne y est peu robuste.
+      tooltip:{...chartTheme().tooltip, trigger:'axis',
+        axisPointer:{type:'line', lineStyle:{color:'rgba(14,165,233,.4)'}},
+        formatter: p => {
+          const i = p[0].dataIndex;
+          const v = o.fmt ? o.fmt(p[0].value) : p[0].value;
+          return `<b>${p[0].axisValue}</b><br>${v}` +
+            (o.counts ? `<br><span style="color:#94a3b8">${o.counts[i]} offre${o.counts[i]>1?'s':''}</span>` : '');
+        }},
       xAxis:{type:'category', data:cats, boundaryGap:false, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       yAxis:{type:'value', splitLine, axisLine:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:3, color:C.accent},
@@ -444,7 +462,8 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const sized = rows.filter(r=>r.data_gb!=null);
     const over = rows.filter(r=>r.price>100).length;
     const unl = n - sized.length;
-    const prem = DATA.network_premium.premium_pct;
+    const np = networkPremium(rows);
+    const prem = np.premium_pct;
     const premCls = prem==null ? '' : Math.abs(prem)<5 ? 'good' : Math.abs(prem)<20 ? 'warn' : 'bad';
     const card = (l,v,pill,cls='') =>
       `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
@@ -455,8 +474,11 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       card('Fourchette de prix', n? `${Math.min(...prices).toFixed(2)} – ${Math.max(...prices).toFixed(2)} €`:'—', 'min – max'),
       card('Prix moyen', n? ef(mean(prices)):'—', `médiane ${n? median(prices).toFixed(2):'—'} €`),
       card('Data moyenne', sized.length? mean(sized.map(r=>r.data_gb)).toFixed(1)+' Go':'—', `${nf(unl)} forfaits illimités`),
-      card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % du catalogue`:'—'),
-      card('Prime réseau 5G', prem!=null? prem+' %':'n/d', `à destination égale · ${DATA.network_premium.n_countries} pays`, premCls),
+      // « de la sélection » et non « du catalogue » : le dénominateur est n, les lignes filtrées.
+      card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % de la sélection`:'—'),
+      card('Prime réseau 5G', prem!=null? prem+' %':'n/d',
+        prem!=null? `à destination égale · ${np.n_countries} pays`
+                  : 'moins de 3 offres 4G et 5G par pays', premCls),
     ].join('');
     if(before.length) animateCounters(before);
   }
@@ -469,7 +491,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       if(from === undefined || from === to) return;
       // Même gabarit des deux côtés (mêmes séparateurs, même nombre de nombres) :
       // sinon l'interpolation produirait un texte incohérent en cours de route.
-      const numRe = /-?[\d  ]+(?:[.,]\d+)?/g;
+      // Le motif doit COMMENCER par un chiffre : avec [\d  ]+ en tête, le séparateur
+      // « 5,36 – 154,63 » faisait matcher l'espace seul, parseFloat renvoyait NaN et
+      // l'animation était silencieusement abandonnée sur la carte « Fourchette de prix ».
+      const numRe = /-?\d[\d  ]*(?:[.,]\d+)?/g;
       const a = from.match(numRe), b = to.match(numRe);
       if(!a || !b || a.length !== b.length) return;
       if(from.replace(numRe,'\u0000') !== to.replace(numRe,'\u0000')) return;
@@ -488,6 +513,33 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       };
       requestAnimationFrame(step);
     });
+  }
+
+  // Recalculée sur la sélection, avec la même définition que network_premium_by_country()
+  // côté Python : prix/Go moyen 5G vs 4G À DESTINATION ÉGALE (par pays, seuil de 3 offres
+  // de chaque côté), puis moyenne des primes par pays. Sans ce recalcul, la carte affichait
+  // la valeur du catalogue complet au milieu de KPI filtrés — y compris en filtrant sur 4G.
+  function networkPremium(rows){
+    const byCountry = new Map();
+    for(const r of rows){
+      if(r.data_gb == null || r.data_gb <= 0) continue;
+      if(r.network !== '4G' && r.network !== '5G') continue;
+      // « à destination égale » suppose une destination : les zones multi-pays
+      // (Europe, Asie, Monde, Amérique du Nord) ne sont pas des pays et sont exclues.
+      if(REGION_CODES.has(r.country_code)) continue;
+      if(!byCountry.has(r.country_name)) byCountry.set(r.country_name, {'4G':[], '5G':[]});
+      byCountry.get(r.country_name)[r.network].push(r.price / r.data_gb);
+    }
+    const premiums = [];
+    for(const g of byCountry.values()){
+      if(g['4G'].length < 3 || g['5G'].length < 3) continue;
+      const m4 = mean(g['4G']);
+      if(!m4) continue;
+      premiums.push((mean(g['5G']) - m4) / m4);
+    }
+    return premiums.length
+      ? {premium_pct: +(mean(premiums)*100).toFixed(1), n_countries: premiums.length}
+      : {premium_pct: null, n_countries: 0};
   }
 
   function dynamicCharts(rows){
@@ -511,13 +563,20 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     sized.forEach(r => { const g=r.data_gb/r.validity_days; if(g<0.3) l++; else if(g<1) m++; else h++; });
     bar('c-intensity', ['Léger','Moyen','Lourd'], [l,m,h], {color:C.warm, color2:'#c2410c'});
 
+    // On trace le prix AU GO et non le prix total : le prix total croît forcément avec le
+    // volume, il ne montre aucune dégressivité. C'est le €/Go qui décroît (≈7,08 €/Go à
+    // 1 Go contre ≈1,22 €/Go à 50 Go) et qui porte l'information économique.
     const bySize = new Map();
-    rows.filter(r=>r.data_gb!=null).forEach(r => { if(!bySize.has(r.data_gb)) bySize.set(r.data_gb,[]); bySize.get(r.data_gb).push(r.price); });
+    sized.forEach(r => { if(!bySize.has(r.data_gb)) bySize.set(r.data_gb,[]); bySize.get(r.data_gb).push(r.price/r.data_gb); });
     const sz = [...bySize].sort((a,b)=>a[0]-b[0]);
-    line('c-bysize', sz.map(e=>e[0]+' Go'), sz.map(e=>+mean(e[1]).toFixed(2)), {fmt:v=>v+' €'});
+    line('c-bysize', sz.map(e=>e[0]+' Go'), sz.map(e=>+mean(e[1]).toFixed(2)),
+      {fmt:v=>v+' €/Go', counts: sz.map(e=>e[1].length)});
   }
 
-  const REGION_CODES = new Set(['EU','AS','WW']);
+  // Liste lue depuis data.json plutôt que redéclarée ici : une copie locale avait
+  // divergé de REGION_CODES côté Python (NA et AF manquaient), ce qui amputait
+  // silencieusement le graphique de dispersion.
+  let REGION_CODES = new Set();
   const stdev = a => { const m = mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2, 0)/(a.length-1)); };
 
   function dispersion(rows){
@@ -570,7 +629,17 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const empty = document.getElementById('empty-state');
     empty.hidden = rows.length > 0;
     kpis(rows);
-    if(!rows.length){ return; }
+    if(!rows.length){
+      // Sans ce nettoyage, le bandeau « aucun produit » s'affichait pendant que les
+      // graphiques, la carte et le compteur de pays gardaient le résultat du filtre
+      // PRÉCÉDENT : l'écran montrait des chiffres ne correspondant à aucun filtre actif.
+      // Les 3 graphiques de score sont statiques (catalogue complet) et restent intacts.
+      DYNAMIC_CHARTS.forEach(id => { if(charts[id]) charts[id].clear(); });
+      renderMap([]);
+      document.getElementById('c-dispersion').hidden = true;
+      document.getElementById('c-dispersion-empty').hidden = false;
+      return;
+    }
     dynamicCharts(rows);
     renderMap(countryPoints(rows));
 
@@ -579,12 +648,18 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const d = dispersion(rows);
     document.getElementById('c-dispersion').hidden = !d.length;
     document.getElementById('c-dispersion-empty').hidden = d.length > 0;
-    if(d.length) bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv),
-      {fmt:v=>v.toFixed(3), color:C.warm, color2:'#c2410c'});
+    if(d.length){
+      bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv),
+        {fmt:v=>v.toFixed(3), color:C.warm, color2:'#c2410c'});
+      // Si la fenêtre a été redimensionnée pendant que ce conteneur était masqué,
+      // l'instance ECharts a mémorisé une taille de 0×0 et resterait invisible.
+      charts['c-dispersion'].resize();
+    }
   }
 
   fetch('data.json').then(r=>r.json()).then(d => {
     DATA=d; ROWS=d.rows;
+    REGION_CODES = new Set(d.region_codes);
     const sel = document.getElementById('f-provider');
     const provs = [...new Set(ROWS.map(r=>r.provider))].sort();
     sel.size = Math.min(6, provs.length);
@@ -604,7 +679,15 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     sidebar(); render(); staticCharts();
   }).catch(e => console.error(e));
 
-  window.addEventListener('resize', () => { Object.values(charts).forEach(c=>c.resize()); if(map) map.invalidateSize(); });
+  // Un conteneur masqué mesure 0×0 : le redimensionner y fige une taille nulle que rien
+  // ne corrigerait à sa réapparition. On ne redimensionne que ce qui est réellement visible.
+  window.addEventListener('resize', () => {
+    Object.entries(charts).forEach(([id,c]) => {
+      const el = document.getElementById(id);
+      if(el && el.offsetParent !== null && el.clientWidth > 0) c.resize();
+    });
+    if(map) map.invalidateSize();
+  });
 })();
 </script>
 </body>
