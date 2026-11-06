@@ -291,10 +291,13 @@ def compact_rows(df: pd.DataFrame) -> list:
     lors d'une simple affectation sur colonne float64, ce qui casse le JSON (NaN interdit
     par la norme JSON, contrairement à json.dumps qui l'accepte par défaut en Python)."""
     out = []
-    for row in df[["provider", "country_name", "data_gb", "validity_days", "price", "network", "top_up"]].itertuples(index=False):
+    cols = ["provider", "country_code", "country_name", "data_gb", "validity_days", "price", "network", "top_up"]
+    for row in df[cols].itertuples(index=False):
         gb = row.data_gb
+        code = row.country_code
         out.append({
             "provider": row.provider,
+            "country_code": None if pd.isna(code) else code,
             "country_name": row.country_name,
             "data_gb": None if pd.isna(gb) else float(gb),
             "validity_days": int(row.validity_days),
@@ -325,6 +328,9 @@ def build_dataset(source_dir: str) -> dict:
         "top_destinations": top_destinations(df),
         "price_by_destination": price_by_destination(df),
         "price_by_country": price_by_country(df),
+        # Table de coordonnées exposée au navigateur : la carte est recalculée côté client
+        # à chaque changement de filtre, elle a donc besoin des centroïdes.
+        "country_coords": {code: {"lat": lat, "lng": lng} for code, (lat, lng) in COUNTRY_COORDS.items()},
         "topup_flexibility": topup_flexibility(df),
         "coverage_breadth": coverage_breadth(df),
         "composite_scores": composite_scores(df),

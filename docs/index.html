@@ -75,6 +75,10 @@ p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; lin
 .chart{width:100%; height:270px}
 .chart.tall{height:330px}
 
+.empty{background:var(--surface); border:1px dashed var(--border); border-radius:11px; padding:28px; text-align:center; color:var(--ink-2); font-size:13px; margin-bottom:22px}
+.chart-empty{display:flex; align-items:center; justify-content:center; height:140px; border:1px dashed var(--border); border-radius:9px; color:var(--ink-3); font-size:12.5px; text-align:center; padding:0 28px; line-height:1.5}
+.map-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+.map-head h3{font-size:13px; font-weight:600}
 #map{height:430px; width:100%; border-radius:9px; z-index:0}
 .leaflet-container{font-family:'Inter',sans-serif; background:#f8fafc}
 /* Fond de carte désaturé et éclairci : rendu minimaliste type "Positron" à partir d'OSM */
@@ -159,6 +163,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
     <div class="kpis" id="kpi-row"></div>
 
+    <div class="empty" id="empty-state" hidden>
+      Aucun produit ne correspond à cette combinaison de filtres. Élargissez la sélection ou réinitialisez.
+    </div>
+
     <h2 class="sec" id="s-fournisseurs">Fournisseurs</h2>
     <p class="sec">Volume d'offres et compétitivité tarifaire. Le prix au Go ne porte que sur les forfaits à volume fini : les offres illimitées n'ont pas de prix au Go définissable.</p>
     <div class="grid2">
@@ -167,8 +175,9 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
 
     <h2 class="sec" id="s-carte">Carte mondiale du catalogue</h2>
-    <p class="sec">Chaque point représente un pays couvert. La taille indique le nombre d'offres disponibles, la couleur le prix moyen — les zones les plus foncées sont les destinations les plus chères.</p>
+    <p class="sec">Chaque point représente un pays couvert. La taille indique le nombre d'offres disponibles, la couleur le prix moyen — les zones les plus foncées sont les destinations les plus chères. La carte suit les filtres.</p>
     <div class="card">
+      <div class="map-head"><h3 style="margin:0">Couverture géographique</h3><span class="pill" id="map-count">—</span></div>
       <div id="map"></div>
       <div class="map-legend">
         <div class="scale"><span class="dot" style="width:8px;height:8px"></span><span class="dot" style="width:13px;height:13px"></span><span class="dot" style="width:18px;height:18px"></span><span>Nombre d'offres</span></div>
@@ -192,10 +201,11 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <h3>Dispersion des prix par zone multi-pays</h3>
       <p class="hint">Coefficient de variation du prix/Go — plus il est élevé, plus les offres sont hétérogènes dans cette zone</p>
       <div class="chart" id="c-dispersion"></div>
+      <div class="chart-empty" id="c-dispersion-empty" hidden>Pas assez d'offres multi-pays dans cette sélection pour calculer une dispersion (il en faut au moins deux par zone).</div>
     </div>
 
     <h2 class="sec" id="s-scores">Score de recommandation — 3 méthodologies</h2>
-    <p class="sec">La qualité perçue d'un fournisseur n'existe pas dans le catalogue brut. Plutôt que d'en inventer une, trois méthodes sont calculées et comparées, chacune avec sa couverture réelle et ses limites.</p>
+    <p class="sec">La qualité perçue d'un fournisseur n'existe pas dans le catalogue brut. Plutôt que d'en inventer une, trois méthodes sont calculées et comparées, chacune avec sa couverture réelle et ses limites. <strong>Ces scores portent sur le catalogue complet et ne suivent pas les filtres</strong> : la qualité d'un fournisseur ne change pas selon qu'on regarde ses offres 4G ou 5G.</p>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="a">A · MyBestSim</button>
       <button role="tab" aria-selected="false" data-tab="b">B · Trustpilot</button>
@@ -215,6 +225,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
 
     <h2 class="sec" id="s-destinations">Destinations les plus couvertes</h2>
+    <p class="sec">Catalogue complet, filtres non appliqués — il s'agit du classement de référence des destinations.</p>
     <div class="card">
       <table class="t">
         <thead><tr><th>Destination</th><th class="num">Offres</th><th class="num">Prix moyen</th><th class="num">Fournisseurs</th></tr></thead>
@@ -287,8 +298,30 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   }
 
   // ---------- carte ----------
-  function renderMap(){
-    const pts = DATA.price_by_country;
+  function countryPoints(rows){
+    // Recalculée depuis les lignes filtrées : la carte doit suivre les filtres comme
+    // le reste du tableau de bord, sinon elle affiche un catalogue que l'utilisateur
+    // croit avoir filtré.
+    const coords = DATA.country_coords;
+    const byCode = new Map();
+    for(const r of rows){
+      const c = r.country_code;
+      if(!c || !coords[c]) continue;           // zones multi-pays : pas de point unique
+      if(!byCode.has(c)) byCode.set(c, {code:c, country:r.country_name, prices:[], perGb:[], provs:new Set()});
+      const e = byCode.get(c);
+      e.prices.push(r.price);
+      e.provs.add(r.provider);
+      if(r.data_gb != null && r.data_gb > 0) e.perGb.push(r.price / r.data_gb);
+    }
+    return [...byCode.values()].map(e => ({
+      code:e.code, country:e.country, lat:coords[e.code].lat, lng:coords[e.code].lng,
+      offers:e.prices.length, price_avg:+mean(e.prices).toFixed(2),
+      price_per_gb: e.perGb.length ? +mean(e.perGb).toFixed(2) : null,
+      providers:e.provs.size
+    })).sort((a,b)=>b.offers-a.offers);
+  }
+
+  function renderMap(pts){
     if(!map){
       map = L.map('map', {zoomControl:false, scrollWheelZoom:false, attributionControl:false}).setView([25, 10], 2);
       L.control.zoom({position:'topright'}).addTo(map);
@@ -300,6 +333,8 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       markers = L.layerGroup().addTo(map);
     }
     markers.clearLayers();
+    document.getElementById('map-count').textContent = pts.length + (pts.length>1?' pays affichés':' pays affiché');
+    if(!pts.length) return;
     const prices = pts.map(p=>p.price_avg);
     const pMin = Math.min(...prices), pMax = Math.max(...prices);
     const offMax = Math.max(...pts.map(p=>p.offers));
@@ -383,10 +418,24 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     line('c-bysize', sz.map(e=>e[0]+' Go'), sz.map(e=>+mean(e[1]).toFixed(2)), {fmt:v=>v+' €'});
   }
 
-  function staticCharts(){
-    const d = DATA.regional_dispersion;
-    bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv), {fmt:v=>v.toFixed(3)});
+  const REGION_CODES = new Set(['EU','AS','WW']);
+  const stdev = a => { const m = mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2, 0)/(a.length-1)); };
 
+  function dispersion(rows){
+    // Coefficient de variation du prix/Go par zone multi-pays, recalculé sur la sélection.
+    const by = new Map();
+    for(const r of rows){
+      if(!REGION_CODES.has(r.country_code)) continue;
+      if(r.data_gb == null || r.data_gb <= 0) continue;
+      if(!by.has(r.country_name)) by.set(r.country_name, []);
+      by.get(r.country_name).push(r.price / r.data_gb);
+    }
+    return [...by].filter(([,v]) => v.length >= 2)
+      .map(([region,v]) => ({region, cv:+(stdev(v)/mean(v)).toFixed(3)}))
+      .sort((a,b) => b.cv - a.cv || a.region.localeCompare(b.region));
+  }
+
+  function staticCharts(){
     const score = (id, rows) => {
       const s = rows.filter(r=>r.score!=null).sort((a,b)=>a.score-b.score);
       bar(id, s.map(r=>r.provider), s.map(r=>r.score), {horizontal:true, color:C.accent, fmt:v=>v+' / 100'});
@@ -402,18 +451,37 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
         <td class="num">${d.price_avg.toFixed(2)} €</td>
         <td class="num">${c? c.providers : '—'}</td></tr>`;
     }).join('');
-    renderMap();
   }
 
   function sidebar(){
     const sized = ROWS.filter(r=>r.data_gb!=null && r.data_gb>0);
     document.getElementById('sb-total').textContent = nf(ROWS.length);
     document.getElementById('sb-prov').textContent = new Set(ROWS.map(r=>r.provider)).size + ' fournisseurs · 5 056 lignes';
-    document.getElementById('sb-pergb').textContent = median(sized.map(r=>r.price/r.data_gb)).toFixed(2) + ' €';
+    // Médiane produit par produit, à ne pas confondre avec la moyenne par fournisseur
+    // affichée dans le graphique €/Go : les deux sont affichées pour lever l'ambiguïté.
+    const perGb = sized.map(r=>r.price/r.data_gb);
+    document.getElementById('sb-pergb').textContent = median(perGb).toFixed(2) + ' €';
+    document.querySelector('#sb-pergb + .n').textContent =
+      `médiane sur ${nf(perGb.length)} produits · moyenne ${mean(perGb).toFixed(2)} €`;
     document.getElementById('sb-pays').textContent = DATA.price_by_country.length;
   }
 
-  const render = () => { const rows = filtered(); kpis(rows); dynamicCharts(rows); };
+  function render(){
+    const rows = filtered();
+    const empty = document.getElementById('empty-state');
+    empty.hidden = rows.length > 0;
+    kpis(rows);
+    if(!rows.length){ return; }
+    dynamicCharts(rows);
+    renderMap(countryPoints(rows));
+
+    // Un graphique sans données affiche des axes vides sans explication : on montre
+    // plutôt pourquoi il n'y a rien à tracer.
+    const d = dispersion(rows);
+    document.getElementById('c-dispersion').hidden = !d.length;
+    document.getElementById('c-dispersion-empty').hidden = d.length > 0;
+    if(d.length) bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv), {fmt:v=>v.toFixed(3)});
+  }
 
   fetch('data.json').then(r=>r.json()).then(d => {
     DATA=d; ROWS=d.rows;
