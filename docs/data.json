@@ -46430,6 +46430,83 @@
       "offers": 92
     }
   ],
+  "price_by_destination": [
+    {
+      "destination": "Europe",
+      "price_avg": 42.74,
+      "offers": 206
+    },
+    {
+      "destination": "Asie",
+      "price_avg": 40.9,
+      "offers": 194
+    },
+    {
+      "destination": "Amérique du Nord",
+      "price_avg": 42.04,
+      "offers": 192
+    },
+    {
+      "destination": "Monde",
+      "price_avg": 44.41,
+      "offers": 186
+    },
+    {
+      "destination": "Indonésie",
+      "price_avg": 24.0,
+      "offers": 104
+    },
+    {
+      "destination": "Arabie saoudite",
+      "price_avg": 25.35,
+      "offers": 102
+    },
+    {
+      "destination": "Singapour",
+      "price_avg": 27.06,
+      "offers": 99
+    },
+    {
+      "destination": "Égypte",
+      "price_avg": 28.01,
+      "offers": 98
+    },
+    {
+      "destination": "États-Unis",
+      "price_avg": 26.67,
+      "offers": 98
+    },
+    {
+      "destination": "Belgique",
+      "price_avg": 27.67,
+      "offers": 96
+    },
+    {
+      "destination": "Kenya",
+      "price_avg": 29.86,
+      "offers": 96
+    },
+    {
+      "destination": "Colombie",
+      "price_avg": 31.87,
+      "offers": 95
+    },
+    {
+      "destination": "Pays-Bas",
+      "price_avg": 22.53,
+      "offers": 93
+    },
+    {
+      "destination": "Turquie",
+      "price_avg": 27.7,
+      "offers": 93
+    },
+    {
+      "destination": "Philippines",
+      "price_avg": 24.89,
+      "offers": 92
+    }
+  ],
   "topup_flexibility": [
     {
       "provider": "Holafly",

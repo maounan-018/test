@@ -159,6 +159,17 @@ def volume_discount_curve(df: pd.DataFrame) -> list:
     return out
 
 
+def price_by_destination(df: pd.DataFrame, n: int = 15) -> list:
+    """Prix moyen et nombre d'offres par destination, pour les destinations les plus
+    couvertes (mêmes n que top_destinations, pour cohérence visuelle entre graphiques)."""
+    top = set(d["destination"] for d in top_destinations(df, n))
+    sub = df[df["country_name"].isin(top)]
+    grp = sub.groupby("country_name").agg(price_avg=("price", "mean"), offers=("price", "size"))
+    grp = grp.sort_index().sort_values("offers", ascending=False, kind="stable")
+    return [{"destination": d, "price_avg": round(float(r.price_avg), 2), "offers": int(r.offers)}
+            for d, r in grp.iterrows()]
+
+
 def top_destinations(df: pd.DataFrame, n: int = 15) -> list:
     counts = _stable_counts_desc(df["country_name"]).head(n)
     return [{"destination": d, "offers": int(c)} for d, c in counts.items()]
@@ -284,6 +295,7 @@ def build_dataset(source_dir: str) -> dict:
         "network_premium": network_premium_by_country(df),
         "volume_discount_curve": volume_discount_curve(df),
         "top_destinations": top_destinations(df),
+        "price_by_destination": price_by_destination(df),
         "topup_flexibility": topup_flexibility(df),
         "coverage_breadth": coverage_breadth(df),
         "composite_scores": composite_scores(df),

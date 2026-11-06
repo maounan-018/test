@@ -16,6 +16,7 @@ from compute_metrics import (
     composite_scores,
     provider_breakdown,
     top_destinations,
+    price_by_destination,
     load_catalog,
     build_dataset,
 )
@@ -175,6 +176,15 @@ class TestDeterministicOrdering:
         df2 = load_catalog(DATA_DIR)
         assert top_destinations(df1) == top_destinations(df2)
         assert provider_breakdown(df1) == provider_breakdown(df2)
+
+
+class TestPriceByDestination:
+    def test_matches_known_values(self, small_df):
+        out = {r["destination"]: r for r in price_by_destination(small_df, n=5)}
+        assert out["France"]["price_avg"] == pytest.approx(25.0, abs=0.01)  # (20+30)/2
+        assert out["France"]["offers"] == 2
+        assert out["Allemagne"]["price_avg"] == pytest.approx(50.0, abs=0.01)
+        assert out["Allemagne"]["offers"] == 1
 
 
 class TestFullPipeline:
