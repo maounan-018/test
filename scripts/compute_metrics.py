@@ -13,6 +13,7 @@ import statistics as stats
 import pandas as pd
 
 from editorial_sources import MYBESTSIM_SCORES, TRUSTPILOT_SCORES, EDITORIAL_EXCLUDED
+from country_coords import COUNTRY_COORDS
 
 REGION_CODES = {"EU", "AS", "WW", "NA", "AF"}
 
@@ -159,6 +160,33 @@ def volume_discount_curve(df: pd.DataFrame) -> list:
     return out
 
 
+def price_by_country(df: pd.DataFrame) -> list:
+    """Prix moyen, prix/Go et nombre d'offres par pays réel, avec coordonnées pour la carte.
+    Les codes non géographiques (EU/AS/WW, et les lignes sans code pays) sont exclus :
+    un forfait multi-pays n'a pas de position unique sur une carte."""
+    sized = df.dropna(subset=["data_gb"]).copy()
+    sized = sized[sized["data_gb"] > 0]
+    sized["price_per_gb"] = sized["price"] / sized["data_gb"]
+
+    out = []
+    for code, grp in df.groupby("country_code"):
+        if code not in COUNTRY_COORDS:
+            continue
+        lat, lng = COUNTRY_COORDS[code]
+        gb_grp = sized[sized["country_code"] == code]
+        out.append({
+            "code": code,
+            "country": grp["country_name"].iloc[0],
+            "lat": lat,
+            "lng": lng,
+            "offers": int(len(grp)),
+            "price_avg": round(float(grp["price"].mean()), 2),
+            "price_per_gb": round(float(gb_grp["price_per_gb"].mean()), 2) if len(gb_grp) else None,
+            "providers": int(grp["provider"].nunique()),
+        })
+    return sorted(out, key=lambda r: (-r["offers"], r["country"]))
+
+
 def price_by_destination(df: pd.DataFrame, n: int = 15) -> list:
     """Prix moyen et nombre d'offres par destination, pour les destinations les plus
     couvertes (mêmes n que top_destinations, pour cohérence visuelle entre graphiques)."""
@@ -296,6 +324,7 @@ def build_dataset(source_dir: str) -> dict:
         "volume_discount_curve": volume_discount_curve(df),
         "top_destinations": top_destinations(df),
         "price_by_destination": price_by_destination(df),
+        "price_by_country": price_by_country(df),
         "topup_flexibility": topup_flexibility(df),
         "coverage_breadth": coverage_breadth(df),
         "composite_scores": composite_scores(df),

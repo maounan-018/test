@@ -46507,6 +46507,508 @@
       "offers": 92
     }
   ],
+  "price_by_country": [
+    {
+      "code": "ID",
+      "country": "Indonésie",
+      "lat": -0.7893,
+      "lng": 113.9213,
+      "offers": 104,
+      "price_avg": 24.0,
+      "price_per_gb": 3.5,
+      "providers": 18
+    },
+    {
+      "code": "SA",
+      "country": "Arabie saoudite",
+      "lat": 23.8859,
+      "lng": 45.0792,
+      "offers": 102,
+      "price_avg": 25.35,
+      "price_per_gb": 2.92,
+      "providers": 18
+    },
+    {
+      "code": "SG",
+      "country": "Singapour",
+      "lat": 1.3521,
+      "lng": 103.8198,
+      "offers": 99,
+      "price_avg": 27.06,
+      "price_per_gb": 2.98,
+      "providers": 16
+    },
+    {
+      "code": "EG",
+      "country": "Égypte",
+      "lat": 26.8206,
+      "lng": 30.8025,
+      "offers": 98,
+      "price_avg": 28.01,
+      "price_per_gb": 3.14,
+      "providers": 18
+    },
+    {
+      "code": "US",
+      "country": "États-Unis",
+      "lat": 37.0902,
+      "lng": -95.7129,
+      "offers": 98,
+      "price_avg": 26.67,
+      "price_per_gb": 2.86,
+      "providers": 17
+    },
+    {
+      "code": "BE",
+      "country": "Belgique",
+      "lat": 50.5039,
+      "lng": 4.4699,
+      "offers": 96,
+      "price_avg": 27.67,
+      "price_per_gb": 2.96,
+      "providers": 18
+    },
+    {
+      "code": "KE",
+      "country": "Kenya",
+      "lat": -0.0236,
+      "lng": 37.9062,
+      "offers": 96,
+      "price_avg": 29.86,
+      "price_per_gb": 2.92,
+      "providers": 18
+    },
+    {
+      "code": "CO",
+      "country": "Colombie",
+      "lat": 4.5709,
+      "lng": -74.2973,
+      "offers": 95,
+      "price_avg": 31.87,
+      "price_per_gb": 2.65,
+      "providers": 18
+    },
+    {
+      "code": "NL",
+      "country": "Pays-Bas",
+      "lat": 52.1326,
+      "lng": 5.2913,
+      "offers": 93,
+      "price_avg": 22.53,
+      "price_per_gb": 3.21,
+      "providers": 18
+    },
+    {
+      "code": "TR",
+      "country": "Turquie",
+      "lat": 38.9637,
+      "lng": 35.2433,
+      "offers": 93,
+      "price_avg": 27.7,
+      "price_per_gb": 2.9,
+      "providers": 18
+    },
+    {
+      "code": "PH",
+      "country": "Philippines",
+      "lat": 12.8797,
+      "lng": 121.774,
+      "offers": 92,
+      "price_avg": 24.89,
+      "price_per_gb": 2.94,
+      "providers": 16
+    },
+    {
+      "code": "DO",
+      "country": "Rép. dominicaine",
+      "lat": 18.7357,
+      "lng": -70.1627,
+      "offers": 92,
+      "price_avg": 25.14,
+      "price_per_gb": 3.29,
+      "providers": 16
+    },
+    {
+      "code": "TZ",
+      "country": "Tanzanie",
+      "lat": -6.369,
+      "lng": 34.8888,
+      "offers": 91,
+      "price_avg": 29.64,
+      "price_per_gb": 2.7,
+      "providers": 18
+    },
+    {
+      "code": "HR",
+      "country": "Croatie",
+      "lat": 45.1,
+      "lng": 15.2,
+      "offers": 90,
+      "price_avg": 30.71,
+      "price_per_gb": 2.72,
+      "providers": 17
+    },
+    {
+      "code": "NO",
+      "country": "Norvège",
+      "lat": 60.472,
+      "lng": 8.4689,
+      "offers": 89,
+      "price_avg": 26.06,
+      "price_per_gb": 2.93,
+      "providers": 17
+    },
+    {
+      "code": "PT",
+      "country": "Portugal",
+      "lat": 39.3999,
+      "lng": -8.2245,
+      "offers": 89,
+      "price_avg": 27.26,
+      "price_per_gb": 2.92,
+      "providers": 17
+    },
+    {
+      "code": "PE",
+      "country": "Pérou",
+      "lat": -9.19,
+      "lng": -75.0152,
+      "offers": 89,
+      "price_avg": 27.86,
+      "price_per_gb": 3.08,
+      "providers": 18
+    },
+    {
+      "code": "QA",
+      "country": "Qatar",
+      "lat": 25.3548,
+      "lng": 51.1839,
+      "offers": 89,
+      "price_avg": 26.29,
+      "price_per_gb": 3.03,
+      "providers": 17
+    },
+    {
+      "code": "CN",
+      "country": "Chine",
+      "lat": 35.8617,
+      "lng": 104.1954,
+      "offers": 88,
+      "price_avg": 25.7,
+      "price_per_gb": 3.11,
+      "providers": 17
+    },
+    {
+      "code": "ES",
+      "country": "Espagne",
+      "lat": 40.4637,
+      "lng": -3.7492,
+      "offers": 88,
+      "price_avg": 24.0,
+      "price_per_gb": 3.35,
+      "providers": 15
+    },
+    {
+      "code": "PL",
+      "country": "Pologne",
+      "lat": 51.9194,
+      "lng": 19.1451,
+      "offers": 88,
+      "price_avg": 26.0,
+      "price_per_gb": 3.04,
+      "providers": 17
+    },
+    {
+      "code": "DE",
+      "country": "Allemagne",
+      "lat": 51.1657,
+      "lng": 10.4515,
+      "offers": 87,
+      "price_avg": 26.84,
+      "price_per_gb": 3.32,
+      "providers": 17
+    },
+    {
+      "code": "IE",
+      "country": "Irlande",
+      "lat": 53.4129,
+      "lng": -8.2439,
+      "offers": 87,
+      "price_avg": 24.67,
+      "price_per_gb": 2.95,
+      "providers": 18
+    },
+    {
+      "code": "TH",
+      "country": "Thaïlande",
+      "lat": 15.87,
+      "lng": 100.9925,
+      "offers": 87,
+      "price_avg": 23.33,
+      "price_per_gb": 3.28,
+      "providers": 18
+    },
+    {
+      "code": "AT",
+      "country": "Autriche",
+      "lat": 47.5162,
+      "lng": 14.5501,
+      "offers": 86,
+      "price_avg": 26.34,
+      "price_per_gb": 3.12,
+      "providers": 17
+    },
+    {
+      "code": "KR",
+      "country": "Corée du Sud",
+      "lat": 35.9078,
+      "lng": 127.7669,
+      "offers": 86,
+      "price_avg": 27.0,
+      "price_per_gb": 2.88,
+      "providers": 18
+    },
+    {
+      "code": "NZ",
+      "country": "Nouvelle-Zélande",
+      "lat": -40.9006,
+      "lng": 174.886,
+      "offers": 86,
+      "price_avg": 24.86,
+      "price_per_gb": 3.08,
+      "providers": 18
+    },
+    {
+      "code": "VN",
+      "country": "Vietnam",
+      "lat": 14.0583,
+      "lng": 108.2772,
+      "offers": 86,
+      "price_avg": 26.67,
+      "price_per_gb": 3.07,
+      "providers": 18
+    },
+    {
+      "code": "FR",
+      "country": "France",
+      "lat": 46.2276,
+      "lng": 2.2137,
+      "offers": 85,
+      "price_avg": 27.68,
+      "price_per_gb": 2.78,
+      "providers": 17
+    },
+    {
+      "code": "IT",
+      "country": "Italie",
+      "lat": 41.8719,
+      "lng": 12.5674,
+      "offers": 84,
+      "price_avg": 29.18,
+      "price_per_gb": 2.9,
+      "providers": 16
+    },
+    {
+      "code": "MX",
+      "country": "Mexique",
+      "lat": 23.6345,
+      "lng": -102.5528,
+      "offers": 84,
+      "price_avg": 28.61,
+      "price_per_gb": 2.65,
+      "providers": 18
+    },
+    {
+      "code": "GR",
+      "country": "Grèce",
+      "lat": 39.0742,
+      "lng": 21.8243,
+      "offers": 83,
+      "price_avg": 25.82,
+      "price_per_gb": 2.89,
+      "providers": 18
+    },
+    {
+      "code": "JP",
+      "country": "Japon",
+      "lat": 36.2048,
+      "lng": 138.2529,
+      "offers": 83,
+      "price_avg": 21.75,
+      "price_per_gb": 3.34,
+      "providers": 17
+    },
+    {
+      "code": "MY",
+      "country": "Malaisie",
+      "lat": 4.2105,
+      "lng": 101.9758,
+      "offers": 83,
+      "price_avg": 29.0,
+      "price_per_gb": 2.66,
+      "providers": 18
+    },
+    {
+      "code": "ZA",
+      "country": "Afrique du Sud",
+      "lat": -30.5595,
+      "lng": 22.9375,
+      "offers": 82,
+      "price_avg": 26.73,
+      "price_per_gb": 3.26,
+      "providers": 17
+    },
+    {
+      "code": "IN",
+      "country": "Inde",
+      "lat": 20.5937,
+      "lng": 78.9629,
+      "offers": 82,
+      "price_avg": 31.15,
+      "price_per_gb": 2.57,
+      "providers": 17
+    },
+    {
+      "code": "MA",
+      "country": "Maroc",
+      "lat": 31.7917,
+      "lng": -7.0926,
+      "offers": 80,
+      "price_avg": 25.76,
+      "price_per_gb": 3.11,
+      "providers": 16
+    },
+    {
+      "code": "CH",
+      "country": "Suisse",
+      "lat": 46.8182,
+      "lng": 8.2275,
+      "offers": 80,
+      "price_avg": 29.05,
+      "price_per_gb": 3.11,
+      "providers": 18
+    },
+    {
+      "code": "SE",
+      "country": "Suède",
+      "lat": 60.1282,
+      "lng": 18.6435,
+      "offers": 80,
+      "price_avg": 24.74,
+      "price_per_gb": 3.09,
+      "providers": 17
+    },
+    {
+      "code": "AU",
+      "country": "Australie",
+      "lat": -25.2744,
+      "lng": 133.7751,
+      "offers": 78,
+      "price_avg": 31.49,
+      "price_per_gb": 3.19,
+      "providers": 15
+    },
+    {
+      "code": "NG",
+      "country": "Nigeria",
+      "lat": 9.082,
+      "lng": 8.6753,
+      "offers": 78,
+      "price_avg": 25.43,
+      "price_per_gb": 3.03,
+      "providers": 18
+    },
+    {
+      "code": "CL",
+      "country": "Chili",
+      "lat": -35.6751,
+      "lng": -71.543,
+      "offers": 76,
+      "price_avg": 27.9,
+      "price_per_gb": 3.17,
+      "providers": 18
+    },
+    {
+      "code": "IL",
+      "country": "Israël",
+      "lat": 31.0461,
+      "lng": 34.8516,
+      "offers": 76,
+      "price_avg": 26.82,
+      "price_per_gb": 2.69,
+      "providers": 17
+    },
+    {
+      "code": "JO",
+      "country": "Jordanie",
+      "lat": 30.5852,
+      "lng": 36.2384,
+      "offers": 76,
+      "price_avg": 27.48,
+      "price_per_gb": 2.58,
+      "providers": 17
+    },
+    {
+      "code": "GB",
+      "country": "Royaume-Uni",
+      "lat": 55.3781,
+      "lng": -3.436,
+      "offers": 76,
+      "price_avg": 27.32,
+      "price_per_gb": 3.02,
+      "providers": 17
+    },
+    {
+      "code": "AE",
+      "country": "Émirats arabes unis",
+      "lat": 23.4241,
+      "lng": 53.8478,
+      "offers": 76,
+      "price_avg": 27.09,
+      "price_per_gb": 3.13,
+      "providers": 16
+    },
+    {
+      "code": "AR",
+      "country": "Argentine",
+      "lat": -38.4161,
+      "lng": -63.6167,
+      "offers": 73,
+      "price_avg": 26.19,
+      "price_per_gb": 3.02,
+      "providers": 17
+    },
+    {
+      "code": "CA",
+      "country": "Canada",
+      "lat": 56.1304,
+      "lng": -106.3468,
+      "offers": 70,
+      "price_avg": 24.93,
+      "price_per_gb": 3.38,
+      "providers": 17
+    },
+    {
+      "code": "CZ",
+      "country": "Tchéquie",
+      "lat": 49.8175,
+      "lng": 15.473,
+      "offers": 66,
+      "price_avg": 30.37,
+      "price_per_gb": 2.74,
+      "providers": 18
+    },
+    {
+      "code": "BR",
+      "country": "Brésil",
+      "lat": -14.235,
+      "lng": -51.9253,
+      "offers": 63,
+      "price_avg": 27.91,
+      "price_per_gb": 2.66,
+      "providers": 16
+    }
+  ],
   "topup_flexibility": [
     {
       "provider": "Holafly",

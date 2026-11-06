@@ -17,6 +17,7 @@ from compute_metrics import (
     provider_breakdown,
     top_destinations,
     price_by_destination,
+    price_by_country,
     load_catalog,
     build_dataset,
 )
@@ -185,6 +186,27 @@ class TestPriceByDestination:
         assert out["France"]["offers"] == 2
         assert out["Allemagne"]["price_avg"] == pytest.approx(50.0, abs=0.01)
         assert out["Allemagne"]["offers"] == 1
+
+
+class TestPriceByCountry:
+    def test_has_coordinates_and_values(self, small_df):
+        out = {r["code"]: r for r in price_by_country(small_df)}
+        assert out["FR"]["price_avg"] == pytest.approx(25.0, abs=0.01)
+        assert out["FR"]["offers"] == 2
+        assert out["FR"]["lat"] == pytest.approx(46.2276, abs=0.01)
+
+    def test_excludes_non_geographic_codes(self):
+        """Les zones multi-pays n'ont pas de position unique : elles ne doivent pas
+        apparaître sur la carte plutôt que d'être placées à une coordonnée inventée."""
+        df = pd.DataFrame([
+            {"provider": "X", "country_code": "EU", "country_name": "Europe",
+             "price": 40.0, "data_gb": 5, "validity_days": 10},
+            {"provider": "X", "country_code": "FR", "country_name": "France",
+             "price": 20.0, "data_gb": 5, "validity_days": 10},
+        ])
+        codes = [r["code"] for r in price_by_country(df)]
+        assert "EU" not in codes
+        assert "FR" in codes
 
 
 class TestFullPipeline:

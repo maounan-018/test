@@ -4,403 +4,439 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catalogue eSIM — MyBestSim</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
+/* 60-30-10 : 60% fond neutre clair, 30% sidebar sombre + textes, 10% accent indigo */
 :root{
-  --bg:#f3f4f9; --surface:#ffffff; --border:#e5e7f2;
-  --ink:#131426; --ink-2:#5a5d78; --ink-3:#9497ac;
-  --accent:#4f46e5; --accent-soft:#eef0fd;
-  --price:#ea580c; --price-soft:#fef1e8;
+  --sidebar:#0f172a; --sidebar-2:#1e293b;
+  --bg:#f8fafc; --surface:#ffffff; --border:#e2e8f0;
+  --ink:#0f172a; --ink-2:#64748b; --ink-3:#94a3b8;
+  --accent:#4f46e5; --accent-soft:#eef2ff;
+  --bar:#64748b;
+  --good:#059669; --good-soft:#ecfdf5;
+  --warn:#d97706; --warn-soft:#fffbeb;
+  --bad:#dc2626; --bad-soft:#fef2f2;
   --net-a:#0ea5e9; --net-b:#8b5cf6;
-  --good:#16a34a; --good-soft:#eafaf0;
-  --warn:#d97706; --warn-soft:#fef6e7;
-  --bad:#dc2626; --bad-soft:#fdeeee;
-  --mono: ui-monospace, "SF Mono", Consolas, monospace;
-  --shadow: 0 1px 2px rgba(20,20,43,.04), 0 2px 10px rgba(20,20,43,.05);
 }
 *{box-sizing:border-box}
-body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--ink)}
-.wrap{max-width:1440px; margin:0 auto; padding:22px 26px 70px}
+html{scroll-behavior:smooth}
+body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased}
 
-header.top{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:20px}
-header.top h1{font-family:'Space Grotesk',sans-serif; font-size:25px; font-weight:700; margin:0 0 5px; letter-spacing:-0.01em}
-header.top p{margin:0; color:var(--ink-2); font-size:13.5px; max-width:64ch; line-height:1.5}
-header.top .meta{font:600 11px var(--mono); color:var(--ink-3); background:var(--surface); border:1px solid var(--border); padding:6px 11px; border-radius:7px; box-shadow:var(--shadow)}
+.shell{display:flex; min-height:100vh}
 
-.filters{display:flex; gap:12px; flex-wrap:wrap; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 16px; margin-bottom:20px; box-shadow:var(--shadow)}
-.filters label{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-3); display:block; margin-bottom:5px}
-.filters select{font:13px 'Inter'; padding:7px 9px; border:1px solid var(--border); border-radius:7px; background:#fff; min-width:170px; color:var(--ink)}
-.filters select[multiple]{min-height:36px}
-.filters .reset{margin-left:auto; align-self:flex-end; font:700 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:none; border-radius:7px; padding:8px 14px; cursor:pointer}
-.filters .reset:hover{filter:brightness(0.96)}
+/* ---- sidebar (30%) ---- */
+.sidebar{width:230px; flex:0 0 230px; background:var(--sidebar); color:#e2e8f0; padding:22px 18px; position:sticky; top:0; height:100vh; overflow-y:auto}
+.brand{display:flex; align-items:center; gap:10px; margin-bottom:26px}
+.brand .mark{width:30px; height:30px; border-radius:8px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#fff}
+.brand .name{font-size:14.5px; font-weight:600; color:#fff; letter-spacing:-0.01em}
+.brand .sub{font-size:10.5px; color:#64748b; margin-top:1px}
+.nav{display:flex; flex-direction:column; gap:1px}
+.nav a{font-size:13px; color:#94a3b8; padding:8px 11px; border-radius:7px; text-decoration:none; transition:.15s}
+.nav a:hover{background:var(--sidebar-2); color:#fff}
+.nav-label{font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:#475569; font-weight:600; margin:20px 0 7px 11px}
+.side-stat{background:var(--sidebar-2); border-radius:9px; padding:12px 13px; margin-top:8px}
+.side-stat .k{font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; font-weight:600}
+.side-stat .v{font-size:19px; font-weight:700; color:#fff; margin-top:3px; font-variant-numeric:tabular-nums}
+.side-stat .n{font-size:10.5px; color:#64748b; margin-top:2px; line-height:1.35}
 
-.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:20px}
-.kpi{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px 16px; box-shadow:var(--shadow); position:relative; overflow:hidden}
-.kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kc, var(--accent))}
-.kpi .icon{width:30px; height:30px; border-radius:8px; background:var(--kc-soft, var(--accent-soft)); display:flex; align-items:center; justify-content:center; margin-bottom:10px}
-.kpi .icon svg{width:16px; height:16px; stroke:var(--kc, var(--accent)); fill:none; stroke-width:2}
-.kpi .l{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-3); font-weight:700}
-.kpi .v{font-family:'Space Grotesk',sans-serif; font-size:23px; font-weight:700; margin-top:3px; font-variant-numeric:tabular-nums; line-height:1.15}
-.kpi .sub{font-size:11.5px; color:var(--ink-2); margin-top:3px}
-.kpi .sub b{color:var(--ink)}
+/* ---- contenu (60%) ---- */
+.main{flex:1; min-width:0; padding:26px 30px 70px}
+.head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px}
+.head h1{font-size:21px; font-weight:700; margin:0 0 4px; letter-spacing:-0.02em}
+.head p{margin:0; font-size:13px; color:var(--ink-2); max-width:70ch; line-height:1.5}
 
-.grid2{display:grid; grid-template-columns:1.3fr 1fr; gap:14px; margin-bottom:14px}
+.toolbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:13px 15px; margin-bottom:22px}
+.toolbar label{display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3); margin-bottom:5px}
+.toolbar select{font:13px 'Inter'; padding:7px 9px; border:1px solid var(--border); border-radius:7px; background:#fff; color:var(--ink); min-width:165px}
+.toolbar .reset{margin-left:auto; font:600 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:none; border-radius:7px; padding:8px 14px; cursor:pointer}
+
+/* niveau 1 : KPI cards épurées, couleur réservée aux pastilles de contexte */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; margin-bottom:26px}
+.kpi{background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:16px 17px}
+.kpi .l{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-3)}
+.kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1}
+.pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:#f1f5f9; color:var(--ink-2)}
+.pill.good{background:var(--good-soft); color:var(--good)}
+.pill.warn{background:var(--warn-soft); color:var(--warn)}
+.pill.bad{background:var(--bad-soft); color:var(--bad)}
+.pill.accent{background:var(--accent-soft); color:var(--accent)}
+
+h2.sec{font-size:15px; font-weight:700; margin:30px 0 3px; letter-spacing:-0.01em}
+p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; line-height:1.5}
+
+.grid2{display:grid; grid-template-columns:1.35fr 1fr; gap:14px; margin-bottom:14px}
 .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px}
-.card{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:17px; box-shadow:var(--shadow)}
-.card h3{margin:0 0 3px; font-size:13.5px; font-weight:700}
-.card .hint{margin:0 0 10px; font-size:11.5px; color:var(--ink-3)}
-.chart{width:100%; height:280px}
-.chart.tall{height:340px}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:17px}
+.card h3{margin:0 0 2px; font-size:13px; font-weight:600}
+.card .hint{margin:0 0 12px; font-size:11.5px; color:var(--ink-3)}
+.chart{width:100%; height:270px}
+.chart.tall{height:330px}
 
-.section-title{font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:700; margin:28px 0 4px}
-.section-sub{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:92ch}
+#map{height:430px; width:100%; border-radius:9px; z-index:0}
+.leaflet-container{font-family:'Inter',sans-serif; background:#f8fafc}
+/* Fond de carte désaturé et éclairci : rendu minimaliste type "Positron" à partir d'OSM */
+.leaflet-tile-pane{filter:grayscale(1) brightness(1.07) contrast(.88) opacity(.72)}
+.map-legend{display:flex; gap:18px; align-items:center; flex-wrap:wrap; margin-top:13px; font-size:11.5px; color:var(--ink-2)}
+.map-legend .scale{display:flex; align-items:center; gap:6px}
+.map-legend .dot{border-radius:50%; background:var(--accent); opacity:.75}
 
-.tabs{display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:14px}
-.tabs button{font:700 12.5px 'Inter'; padding:9px 14px; background:none; border:none; color:var(--ink-3); border-bottom:2px solid transparent; cursor:pointer}
+.tabs{display:flex; gap:3px; border-bottom:1px solid var(--border); margin-bottom:14px}
+.tabs button{font:600 12.5px 'Inter'; padding:9px 14px; background:none; border:none; color:var(--ink-3); border-bottom:2px solid transparent; cursor:pointer}
 .tabs button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent)}
 .tab-panel[hidden]{display:none}
-.score-note{font-size:12px; color:var(--ink-2); background:var(--accent-soft); border:1px solid var(--border); border-radius:9px; padding:11px 13px; margin-bottom:12px}
-.score-note a{color:var(--accent); font-weight:600}
+.note{font-size:12px; color:var(--ink-2); background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:11px 13px; margin-bottom:12px; line-height:1.5}
+.note a{color:var(--accent); font-weight:600}
 
-table.dest{width:100%; border-collapse:collapse; font-size:12.5px}
-table.dest th, table.dest td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
-table.dest th{color:var(--ink-3); font-size:10.5px; text-transform:uppercase; font-weight:700}
-table.dest tbody tr:hover{background:var(--bg)}
+table.t{width:100%; border-collapse:collapse; font-size:12.5px}
+table.t th, table.t td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
+table.t th{color:var(--ink-3); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+table.t td.num{text-align:right; font-variant-numeric:tabular-nums}
+table.t tbody tr:hover{background:var(--bg)}
 
-footer{margin-top:32px; font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--border); padding-top:14px}
+footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-3); line-height:1.6}
 
-@media (max-width:860px){ .grid2, .grid3{grid-template-columns:1fr} }
+@media (max-width:1000px){
+  .shell{flex-direction:column}
+  .sidebar{width:auto; flex:none; height:auto; position:static}
+  .nav{flex-direction:row; flex-wrap:wrap}
+  .nav-label, .side-stat{display:none}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .main{padding:20px 18px 50px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="shell">
 
-  <header class="top">
-    <div>
-      <h1>Catalogue eSIM — MyBestSim</h1>
-      <p>5 056 produits, 18 fournisseurs. Statistiques de base et métriques dérivées (prix/Go, dispersion régionale, prime réseau contrôlée par pays) calculées depuis les CSV fournisseurs.</p>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">M</div>
+      <div>
+        <div class="name">MyBestSim</div>
+        <div class="sub">Catalogue eSIM</div>
+      </div>
     </div>
-    <div class="meta" id="meta-badge">chargement…</div>
-  </header>
+    <nav class="nav">
+      <a href="#s-apercu">Vue d'ensemble</a>
+      <a href="#s-fournisseurs">Fournisseurs</a>
+      <a href="#s-carte">Carte mondiale</a>
+      <a href="#s-structure">Structure du catalogue</a>
+      <a href="#s-scores">Scores de recommandation</a>
+      <a href="#s-destinations">Destinations</a>
+    </nav>
+    <div class="nav-label">Catalogue complet</div>
+    <div class="side-stat"><div class="k">Produits</div><div class="v" id="sb-total">—</div><div class="n" id="sb-prov">—</div></div>
+    <div class="side-stat"><div class="k">Prix médian/Go</div><div class="v" id="sb-pergb">—</div><div class="n">tous forfaits à volume fini</div></div>
+    <div class="side-stat"><div class="k">Pays cartographiés</div><div class="v" id="sb-pays">—</div><div class="n">hors forfaits multi-pays</div></div>
+  </aside>
 
-  <div class="filters">
-    <div>
-      <label for="f-provider">Fournisseur</label>
-      <select id="f-provider" multiple size="1"></select>
+  <main class="main">
+    <div class="head">
+      <div>
+        <h1 id="s-apercu">Catalogue eSIM — vue d'ensemble</h1>
+        <p>Statistiques consolidées de 18 fournisseurs, enrichies de métriques dérivées calculées depuis les fichiers sources : prix au Go, dispersion régionale, prime réseau contrôlée par destination.</p>
+      </div>
     </div>
-    <div>
-      <label for="f-network">Réseau</label>
-      <select id="f-network"><option value="">Tous</option><option value="4G">4G</option><option value="5G">5G</option></select>
+
+    <div class="toolbar">
+      <div>
+        <label for="f-provider">Fournisseur</label>
+        <select id="f-provider" multiple size="1"></select>
+      </div>
+      <div>
+        <label for="f-network">Réseau</label>
+        <select id="f-network"><option value="">Tous</option><option value="4G">4G</option><option value="5G">5G</option></select>
+      </div>
+      <div>
+        <label for="f-validity">Durée de validité</label>
+        <select id="f-validity"><option value="">Toutes</option><option value="7">7 jours</option><option value="15">15 jours</option><option value="30">30 jours</option></select>
+      </div>
+      <button class="reset" id="reset-filters">Réinitialiser</button>
     </div>
-    <div>
-      <label for="f-validity">Durée de validité</label>
-      <select id="f-validity"><option value="">Toutes</option><option value="7">7 jours</option><option value="15">15 jours</option><option value="30">30 jours</option></select>
+
+    <div class="kpis" id="kpi-row"></div>
+
+    <h2 class="sec" id="s-fournisseurs">Fournisseurs</h2>
+    <p class="sec">Volume d'offres et compétitivité tarifaire. Le prix au Go ne porte que sur les forfaits à volume fini : les offres illimitées n'ont pas de prix au Go définissable.</p>
+    <div class="grid2">
+      <div class="card"><h3>Produits par fournisseur</h3><p class="hint">Trié par volume d'offres</p><div class="chart tall" id="c-providers"></div></div>
+      <div class="card"><h3>€/Go moyen</h3><p class="hint">Le plus bas en tête</p><div class="chart tall" id="c-pergb"></div></div>
     </div>
-    <button class="reset" id="reset-filters">Réinitialiser</button>
-  </div>
 
-  <div class="kpis" id="kpi-row"></div>
+    <h2 class="sec" id="s-carte">Carte mondiale du catalogue</h2>
+    <p class="sec">Chaque point représente un pays couvert. La taille indique le nombre d'offres disponibles, la couleur le prix moyen — les zones les plus foncées sont les destinations les plus chères.</p>
+    <div class="card">
+      <div id="map"></div>
+      <div class="map-legend">
+        <div class="scale"><span class="dot" style="width:8px;height:8px"></span><span class="dot" style="width:13px;height:13px"></span><span class="dot" style="width:18px;height:18px"></span><span>Nombre d'offres</span></div>
+        <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#c7d2fe,#4338ca)"></span><span>Prix moyen croissant</span></div>
+        <div style="color:var(--ink-3)">Les forfaits multi-pays (Europe, Asie, Monde) ne sont pas cartographiables et sont exclus de cette vue.</div>
+      </div>
+    </div>
 
-  <div class="grid2">
-    <div class="card"><h3>Produits par fournisseur</h3><p class="hint">Trié par volume d'offres</p><div class="chart tall" id="c-providers"></div></div>
-    <div class="card"><h3>Réseau 4G / 5G</h3><p class="hint">Répartition des offres filtrées</p><div class="chart tall" id="c-network"></div></div>
-  </div>
+    <h2 class="sec" id="s-structure">Structure du catalogue</h2>
+    <p class="sec">Comment l'offre se répartit par volume de data, durée et génération réseau.</p>
+    <div class="grid2">
+      <div class="card"><h3>Prix moyen par taille de data</h3><p class="hint">Dégressivité du prix avec le volume</p><div class="chart" id="c-bysize"></div></div>
+      <div class="card"><h3>Réseau 4G / 5G</h3><p class="hint">Répartition des offres filtrées</p><div class="chart" id="c-network"></div></div>
+    </div>
+    <div class="grid3">
+      <div class="card"><h3>Durée de validité</h3><p class="hint">Nombre d'offres</p><div class="chart" id="c-validity"></div></div>
+      <div class="card"><h3>Intensité d'usage</h3><p class="hint">Go par jour de validité</p><div class="chart" id="c-intensity"></div></div>
+      <div class="card"><h3>Recharge possible</h3><p class="hint">Option top-up</p><div class="chart" id="c-topup"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Dispersion des prix par zone multi-pays</h3>
+      <p class="hint">Coefficient de variation du prix/Go — plus il est élevé, plus les offres sont hétérogènes dans cette zone</p>
+      <div class="chart" id="c-dispersion"></div>
+    </div>
 
-  <div class="grid2">
-    <div class="card"><h3>€/Go moyen par fournisseur</h3><p class="hint">Rapport qualité-prix, le plus bas en tête</p><div class="chart" id="c-pergb"></div></div>
-    <div class="card"><h3>Prix moyen par taille de data</h3><p class="hint">Dégressivité du prix avec le volume</p><div class="chart" id="c-bysize"></div></div>
-  </div>
+    <h2 class="sec" id="s-scores">Score de recommandation — 3 méthodologies</h2>
+    <p class="sec">La qualité perçue d'un fournisseur n'existe pas dans le catalogue brut. Plutôt que d'en inventer une, trois méthodes sont calculées et comparées, chacune avec sa couverture réelle et ses limites.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="a">A · MyBestSim</button>
+      <button role="tab" aria-selected="false" data-tab="b">B · Trustpilot</button>
+      <button role="tab" aria-selected="false" data-tab="c">C · Sans éditorial</button>
+    </div>
+    <div class="tab-panel" id="panel-a">
+      <div class="note">Composante éditoriale = score publié par <a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">MyBestSim</a>, pondération d'origine conservée (60 % éditorial, 16 % prix, 14 % couverture, 10 % réseau 5G). Disponible pour 5 fournisseurs sur 18 — les autres sont marqués indisponibles plutôt qu'estimés.</div>
+      <div class="card"><div class="chart tall" id="c-score-a"></div></div>
+    </div>
+    <div class="tab-panel" id="panel-b" hidden>
+      <div class="note">Composante éditoriale = note Trustpilot rescalée sur 100, retenue uniquement au-delà de 2 500 avis pour écarter les échantillons non représentatifs. 12 fournisseurs sur 18 couverts.</div>
+      <div class="card"><div class="chart tall" id="c-score-b"></div></div>
+    </div>
+    <div class="tab-panel" id="panel-c" hidden>
+      <div class="note">Aucune composante éditoriale : seuls les 3 critères mesurables dans le catalogue, repondérés à 100 % en conservant leurs poids relatifs d'origine (40 % prix, 35 % couverture, 25 % réseau 5G). Seule version couvrant les 18 fournisseurs.</div>
+      <div class="card"><div class="chart tall" id="c-score-c"></div></div>
+    </div>
 
-  <h2 class="section-title">Prix moyen par destination</h2>
-  <p class="section-sub">Pour les 15 destinations les plus couvertes — la couleur du point encode le nombre d'offres disponibles (plus foncé = plus d'offres).</p>
-  <div class="card"><div class="chart tall" id="c-pricedest"></div></div>
+    <h2 class="sec" id="s-destinations">Destinations les plus couvertes</h2>
+    <div class="card">
+      <table class="t">
+        <thead><tr><th>Destination</th><th class="num">Offres</th><th class="num">Prix moyen</th><th class="num">Fournisseurs</th></tr></thead>
+        <tbody id="dest-body"></tbody>
+      </table>
+    </div>
 
-  <div class="grid3">
-    <div class="card"><h3>Durée de validité</h3><div class="chart" id="c-validity"></div></div>
-    <div class="card"><h3>Top-up disponible</h3><div class="chart" id="c-topup"></div></div>
-    <div class="card"><h3>Intensité d'usage (Go/jour)</h3><p class="hint">Léger / moyen / lourd</p><div class="chart" id="c-intensity"></div></div>
-  </div>
-
-  <h2 class="section-title">Dispersion régionale des prix</h2>
-  <p class="section-sub">Coefficient de variation (écart-type ÷ moyenne) du prix/Go par région — plus il est élevé, plus les offres sont hétérogènes dans cette zone.</p>
-  <div class="card"><div class="chart" id="c-dispersion"></div></div>
-
-  <h2 class="section-title">Score de recommandation — 3 méthodologies</h2>
-  <p class="section-sub">Le score éditorial (qualité perçue) n'est pas présent dans le catalogue brut — trois façons de le traiter sont comparées plutôt qu'une seule présentée comme vérité.</p>
-  <div class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="a">A · MyBestSim</button>
-    <button role="tab" aria-selected="false" data-tab="b">B · Trustpilot</button>
-    <button role="tab" aria-selected="false" data-tab="c">C · Sans éditorial</button>
-  </div>
-  <div class="tab-panel" id="panel-a">
-    <div class="score-note">Éditorial = score officiel publié par MyBestSim (<a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">mybestsim.com</a>), pondération 60% éditorial / 16% prix / 14% couverture / 10% réseau 5G. Disponible pour 5 des 18 fournisseurs — les autres sont marqués indisponibles plutôt qu'estimés.</div>
-    <div class="card"><div class="chart tall" id="c-score-a"></div></div>
-  </div>
-  <div class="tab-panel" id="panel-b" hidden>
-    <div class="score-note">Éditorial = note Trustpilot (rescalée /100), retenue au-delà de 2 500 avis pour garantir un échantillon représentatif. 12 des 18 fournisseurs couverts ; les 6 restants sont marqués indisponibles.</div>
-    <div class="card"><div class="chart tall" id="c-score-b"></div></div>
-  </div>
-  <div class="tab-panel" id="panel-c" hidden>
-    <div class="score-note">Aucune composante éditoriale — uniquement les 3 critères quantifiables, pondération rescalée à 100% (40% prix / 35% couverture / 25% réseau 5G). Couvre les 18 fournisseurs.</div>
-    <div class="card"><div class="chart tall" id="c-score-c"></div></div>
-  </div>
-
-  <h2 class="section-title">Top destinations</h2>
-  <div class="card">
-    <table class="dest">
-      <thead><tr><th>Destination</th><th>Offres</th></tr></thead>
-      <tbody id="dest-body"></tbody>
-    </table>
-  </div>
-
-  <footer>
-    Données : 18 fichiers CSV fournisseurs · Scores éditoriaux sourcés (MyBestSim, Trustpilot) — voir panneaux ci-dessus pour les sources exactes.
-  </footer>
+    <footer>
+      Source : 18 fichiers CSV fournisseurs (5 056 produits). Scores éditoriaux externes sourcés et datés dans <code>scripts/editorial_sources.py</code>.<br>
+      Carte : fond CARTO Positron, données OpenStreetMap. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
+    </footer>
+  </main>
 </div>
 
 <script>
 (function(){
   const C = {
-    accent:'#4f46e5', accentSoft:'#eef0fd',
-    price:'#ea580c', priceSoft:'#fef1e8',
+    accent:'#4f46e5', bar:'#64748b', barSoft:'#cbd5e1',
+    good:'#059669', warn:'#d97706', bad:'#dc2626',
     netA:'#0ea5e9', netB:'#8b5cf6',
-    good:'#16a34a', warn:'#d97706', bad:'#dc2626',
-    ink2:'#5a5d78', ink3:'#9497ac', border:'#e5e7f2'
+    ink2:'#64748b', ink3:'#94a3b8', grid:'#f1f5f9'
   };
-  const ICONS = {
-    stack:'<path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>',
-    range:'<path d="M3 12h18"/><path d="M7 8l-4 4 4 4"/><path d="M17 8l4 4-4 4"/>',
-    tag:'<path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.17L3 3v6.59a2 2 0 0 0 .59 1.41l9.59 9.59a2 2 0 0 0 2.82 0l4.59-4.59a2 2 0 0 0 0-2.82z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
-    signal:'<path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 20V4"/>',
-    flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V15"/>',
-    grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
-    wifi:'<path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M12 20h.01"/>',
-  };
+  let DATA=null, ROWS=[], map=null, markers=null;
+  const charts={};
 
-  let DATA = null;
-  let ROWS = [];
-  const charts = {};
+  const nf = n => Math.round(n).toLocaleString('fr-FR');
+  const ef = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const getChart = id => charts[id] || (charts[id] = echarts.init(document.getElementById(id)));
 
-  function fmtInt(n){ return Math.round(n).toLocaleString('fr-FR'); }
-  function fmtEuro(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €'; }
-
-  function getChart(id){
-    if(!charts[id]){ charts[id] = echarts.init(document.getElementById(id)); }
-    return charts[id];
-  }
-  function baseGrid(){ return {left:50, right:20, top:10, bottom:50, containLabel:true}; }
-
-  function barChart(id, categories, values, opts={}){
-    const chart = getChart(id);
-    chart.setOption({
-      grid: baseGrid(),
-      tooltip: {trigger:'axis', axisPointer:{type:'shadow'}},
-      xAxis: opts.horizontal ? {type:'value', axisLabel:{color:C.ink2}} : {type:'category', data:categories, axisLabel:{color:C.ink2, rotate:0, interval:0, fontSize:11}},
-      yAxis: opts.horizontal ? {type:'category', data:categories, axisLabel:{color:C.ink2, fontSize:10}} : {type:'value', axisLabel:{color:C.ink2}},
-      dataZoom: opts.zoom ? [{type:'inside'}, {type:'slider', height:14, bottom:4}] : undefined,
-      series: [{type:'bar', data:values, itemStyle:{color: opts.color || C.accent, borderRadius: opts.horizontal ? [0,4,4,0] : [4,4,0,0]}, barMaxWidth:28}]
+  function bar(id, cats, vals, o={}){
+    const c = getChart(id);
+    c.setOption({
+      grid:{left:46, right:18, top:12, bottom:o.zoom?46:34, containLabel:true},
+      tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter: o.fmt},
+      xAxis: o.horizontal
+        ? {type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink3, fontSize:11}}
+        : {type:'category', data:cats, axisLine:{lineStyle:{color:'#e2e8f0'}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      yAxis: o.horizontal
+        ? {type:'category', data:cats, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
+        : {type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink3, fontSize:11}},
+      dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent', fillerColor:'rgba(79,70,229,.12)', handleStyle:{color:'#cbd5e1'}}] : undefined,
+      series:[{type:'bar', data:vals, barMaxWidth:26,
+        itemStyle:{color:o.color||C.bar, borderRadius:o.horizontal?[0,3,3,0]:[3,3,0,0]}}]
     }, true);
   }
 
-  function donutChart(id, data, colorMap){
-    // colorMap associe chaque étiquette à sa couleur explicitement : l'ordre d'arrivée
-    // des catégories dans les données n'est pas garanti (ex: "non" peut précéder "oui"),
-    // donc une palette par position inverserait silencieusement le sens des couleurs.
-    const chart = getChart(id);
-    const colored = data.map(d => ({...d, itemStyle:{color: colorMap[d.name] || C.ink3}}));
-    chart.setOption({
-      tooltip:{trigger:'item', formatter:'{b}: {c} ({d}%)'},
-      legend:{bottom:0, textStyle:{color:C.ink2, fontSize:11}},
-      series:[{type:'pie', radius:['45%','72%'], data:colored, itemStyle:{borderColor:'#fff', borderWidth:2},
-        label:{formatter:'{d}%', fontSize:11}}]
+  function donut(id, data, colorMap){
+    // Couleur liée à l'étiquette et non à l'ordre d'arrivée des catégories, qui n'est pas garanti.
+    const c = getChart(id);
+    c.setOption({
+      tooltip:{trigger:'item', formatter:'{b} — {c} offres ({d}%)'},
+      legend:{bottom:0, icon:'circle', itemWidth:8, itemHeight:8, textStyle:{color:C.ink2, fontSize:11.5}},
+      series:[{type:'pie', radius:['52%','74%'], center:['50%','45%'], avoidLabelOverlap:true,
+        data:data.map(d=>({...d, itemStyle:{color:colorMap[d.name]||C.barSoft}})),
+        itemStyle:{borderColor:'#fff', borderWidth:3},
+        label:{formatter:'{d}%', fontSize:11.5, color:C.ink2}}]
     }, true);
   }
 
-  function lineChart(id, categories, values, opts={}){
-    const chart = getChart(id);
-    const color = opts.color || C.accent;
-    chart.setOption({
-      grid: baseGrid(),
-      tooltip:{trigger:'axis'},
-      xAxis:{type:'category', data:categories, axisLabel:{color:C.ink2}},
-      yAxis:{type:'value', axisLabel:{color:C.ink2}},
-      series:[{type:'line', data:values, smooth:true, symbolSize:7, lineStyle:{width:2.5, color},
-        itemStyle:{color}, areaStyle:{color: color+'18'}}]
+  function line(id, cats, vals, o={}){
+    const c = getChart(id);
+    c.setOption({
+      grid:{left:46, right:18, top:12, bottom:34, containLabel:true},
+      tooltip:{trigger:'axis', valueFormatter:o.fmt},
+      xAxis:{type:'category', data:cats, boundaryGap:false, axisLine:{lineStyle:{color:'#e2e8f0'}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      yAxis:{type:'value', splitLine:{lineStyle:{color:C.grid}}, axisLine:{show:false}, axisLabel:{color:C.ink3, fontSize:11}},
+      series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:2.5, color:C.accent},
+        itemStyle:{color:C.accent}, areaStyle:{color:'rgba(79,70,229,.07)'}}]
     }, true);
   }
 
-  function scatterPriceDest(id, rows){
-    const chart = getChart(id);
-    const maxOffers = Math.max(...rows.map(r=>r.offers));
-    chart.setOption({
-      grid: {left:120, right:30, top:20, bottom:40, containLabel:true},
-      tooltip:{trigger:'item', formatter: p => `${rows[p.dataIndex].destination}<br/>Prix moyen : ${p.value[0].toFixed(2)} €<br/>Offres : ${rows[p.dataIndex].offers}`},
-      xAxis:{type:'value', name:'Prix moyen (€)', nameLocation:'middle', nameGap:28, axisLabel:{color:C.ink2}},
-      yAxis:{type:'category', data:rows.map(r=>r.destination), axisLabel:{color:C.ink2, fontSize:11}},
-      visualMap:{min:0, max:maxOffers, dimension:2, show:false, inRange:{color:[C.priceSoft, C.price]}},
-      series:[{type:'scatter', symbolSize: v => 10 + (v[2]/maxOffers)*14,
-        data: rows.map((r,i) => [r.price_avg, i, r.offers]), itemStyle:{opacity:0.9}}]
-    }, true);
-  }
+  // ---------- carte ----------
+  function renderMap(){
+    const pts = DATA.price_by_country;
+    if(!map){
+      map = L.map('map', {zoomControl:false, scrollWheelZoom:false, attributionControl:false}).setView([25, 10], 2);
+      L.control.zoom({position:'topright'}).addTo(map);
+      // OSM + désaturation CSS plutôt que CARTO Positron : les basemaps CARTO rendent
+      // désormais des tuiles "API KEY REQUIRED" sans clé, y compris via l'endpoint Fastly.
+      // Le filtre ne s'applique qu'au fond de carte, les marqueurs gardent leur couleur.
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {maxZoom:10, attribution:'© OpenStreetMap'}).addTo(map);
+      markers = L.layerGroup().addTo(map);
+    }
+    markers.clearLayers();
+    const prices = pts.map(p=>p.price_avg);
+    const pMin = Math.min(...prices), pMax = Math.max(...prices);
+    const offMax = Math.max(...pts.map(p=>p.offers));
+    // Échelle séquentielle claire -> foncée : le prix est une magnitude, pas une polarité.
+    const ramp = ['#c7d2fe','#a5b4fc','#818cf8','#6366f1','#4338ca'];
+    const colorFor = v => ramp[Math.min(ramp.length-1, Math.floor((v-pMin)/((pMax-pMin)||1)*ramp.length))];
 
-  // ---- filtrage ----
-  function applyFilters(){
-    const providerSel = Array.from(document.getElementById('f-provider').selectedOptions).map(o => o.value);
-    const network = document.getElementById('f-network').value;
-    const validity = document.getElementById('f-validity').value;
-    return ROWS.filter(r => {
-      if(providerSel.length && !providerSel.includes(r.provider)) return false;
-      if(network && r.network !== network) return false;
-      if(validity && String(r.validity_days) !== validity) return false;
-      return true;
+    pts.forEach(p => {
+      L.circleMarker([p.lat, p.lng], {
+        radius: 5 + Math.sqrt(p.offers/offMax)*13,
+        fillColor: colorFor(p.price_avg), color:'#fff', weight:1.5, opacity:1, fillOpacity:.82
+      }).addTo(markers).bindPopup(
+        `<div style="font-weight:600;margin-bottom:4px">${p.country}</div>
+         <div style="font-size:12px;color:#64748b;line-height:1.6">
+           Prix moyen : <b style="color:#0f172a">${p.price_avg.toFixed(2)} €</b><br>
+           ${p.price_per_gb!=null?`Prix/Go : <b style="color:#0f172a">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
+           Offres : <b style="color:#0f172a">${p.offers}</b><br>
+           Fournisseurs : <b style="color:#0f172a">${p.providers}</b>
+         </div>`);
     });
   }
 
-  function groupCount(rows, key){
-    const m = new Map();
-    for(const r of rows){ const k = r[key]; m.set(k, (m.get(k)||0)+1); }
-    return m;
-  }
+  // ---------- filtres ----------
+  const filtered = () => {
+    const prov = Array.from(document.getElementById('f-provider').selectedOptions).map(o=>o.value);
+    const net = document.getElementById('f-network').value;
+    const val = document.getElementById('f-validity').value;
+    return ROWS.filter(r =>
+      (!prov.length || prov.includes(r.provider)) &&
+      (!net || r.network===net) &&
+      (!val || String(r.validity_days)===val));
+  };
+  const countBy = (rows,k) => rows.reduce((m,r)=>m.set(r[k],(m.get(r[k])||0)+1), new Map());
+  const mean = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+  const median = a => { if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y), m=s.length>>1;
+    return s.length%2 ? s[m] : (s[m-1]+s[m])/2; };
 
-  function icon(name){ return `<svg viewBox="0 0 24 24">${ICONS[name]}</svg>`; }
-
-  function kpiCard(opts){
-    return `<div class="kpi" style="--kc:${opts.color}; --kc-soft:${opts.soft}">
-      <div class="icon">${icon(opts.icon)}</div>
-      <div class="l">${opts.label}</div>
-      <div class="v">${opts.value}</div>
-      <div class="sub">${opts.sub || ''}</div>
-    </div>`;
-  }
-
-  function renderKPIs(rows){
-    const n = rows.length;
-    const prices = rows.map(r => r.price);
-    const avg = n ? prices.reduce((a,b)=>a+b,0) / n : 0;
-    const min = n ? Math.min(...prices) : 0;
-    const max = n ? Math.max(...prices) : 0;
-    const over100 = rows.filter(r => r.price > 100).length;
-    const providers = new Set(rows.map(r => r.provider)).size;
-    const sized = rows.filter(r => r.data_gb != null);
-    const avgData = sized.length ? sized.reduce((a,r)=>a+r.data_gb,0)/sized.length : 0;
-    const premium = DATA.network_premium.premium_pct;
-    const premiumColor = premium == null ? C.ink3 : Math.abs(premium) < 5 ? C.good : Math.abs(premium) < 20 ? C.warn : C.bad;
-    const premiumSoft = premium == null ? '#f1f1f5' : Math.abs(premium) < 5 ? '#eafaf0' : Math.abs(premium) < 20 ? '#fef6e7' : '#fdeeee';
+  function kpis(rows){
+    const n = rows.length, prices = rows.map(r=>r.price);
+    const sized = rows.filter(r=>r.data_gb!=null);
+    const over = rows.filter(r=>r.price>100).length;
+    const unl = n - sized.length;
+    const prem = DATA.network_premium.premium_pct;
+    const premCls = prem==null ? '' : Math.abs(prem)<5 ? 'good' : Math.abs(prem)<20 ? 'warn' : 'bad';
+    const card = (l,v,pill,cls='') =>
+      `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
 
     document.getElementById('kpi-row').innerHTML = [
-      kpiCard({icon:'stack', color:C.accent, soft:C.accentSoft, label:'Produits', value:fmtInt(n), sub:`sur 18 fournisseurs`}),
-      kpiCard({icon:'range', color:C.price, soft:C.priceSoft, label:'Fourchette de prix', value: n? `${min.toFixed(2)}–${max.toFixed(2)} €`:'—', sub:'min – max du catalogue'}),
-      kpiCard({icon:'tag', color:C.price, soft:C.priceSoft, label:'Prix moyen', value: n? fmtEuro(avg):'—', sub: n? `<b>${over100}</b> produits &gt; 100 €`:''}),
-      kpiCard({icon:'wifi', color:C.accent, soft:C.accentSoft, label:'Data moyenne / carte', value: sized.length? avgData.toFixed(1)+' Go':'—', sub:`${sized.length} forfaits à volume fini`}),
-      kpiCard({icon:'grid', color:C.accent, soft:C.accentSoft, label:'Fournisseurs', value:fmtInt(providers), sub:'dans la sélection filtrée'}),
-      kpiCard({icon:'signal', color:premiumColor, soft:premiumSoft, label:'Prime réseau 5G', value: premium!=null? premium+'%':'n/d', sub:`contrôlée par pays, ${DATA.network_premium.n_countries} pays comparables`}),
+      card('Produits', nf(n), `${new Set(rows.map(r=>r.provider)).size} fournisseurs`, 'accent'),
+      card('Fourchette de prix', n? `${Math.min(...prices).toFixed(2)} – ${Math.max(...prices).toFixed(2)} €`:'—', 'min – max'),
+      card('Prix moyen', n? ef(mean(prices)):'—', `médiane ${n? median(prices).toFixed(2):'—'} €`),
+      card('Data moyenne', sized.length? mean(sized.map(r=>r.data_gb)).toFixed(1)+' Go':'—', `${nf(unl)} forfaits illimités`),
+      card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % du catalogue`:'—'),
+      card('Prime réseau 5G', prem!=null? prem+' %':'n/d', `à destination égale · ${DATA.network_premium.n_countries} pays`, premCls),
     ].join('');
   }
 
-  function renderCharts(rows){
-    const byProvider = groupCount(rows, 'provider');
-    const provEntries = Array.from(byProvider.entries()).sort((a,b)=>b[1]-a[1]);
-    barChart('c-providers', provEntries.map(e=>e[0]), provEntries.map(e=>e[1]), {horizontal:true, zoom:true, color:C.accent});
+  function dynamicCharts(rows){
+    const prov = [...countBy(rows,'provider')].sort((a,b)=>b[1]-a[1]);
+    bar('c-providers', prov.map(e=>e[0]), prov.map(e=>e[1]), {horizontal:true, zoom:true, color:C.accent});
 
-    const byNetwork = groupCount(rows, 'network');
-    donutChart('c-network', Array.from(byNetwork.entries()).map(([name,value])=>({name,value})), {'4G':C.netA, '5G':C.netB});
+    const sized = rows.filter(r=>r.data_gb!=null && r.data_gb>0);
+    const byProv = new Map();
+    sized.forEach(r => { if(!byProv.has(r.provider)) byProv.set(r.provider,[]); byProv.get(r.provider).push(r.price/r.data_gb); });
+    const pg = [...byProv].map(([p,a])=>[p, +mean(a).toFixed(2)]).sort((a,b)=>a[1]-b[1]);
+    bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, zoom:true, fmt:v=>v+' €'});
 
-    const byValidity = groupCount(rows, 'validity_days');
-    const vEntries = Array.from(byValidity.entries()).sort((a,b)=>a[0]-b[0]);
-    barChart('c-validity', vEntries.map(e=>e[0]+' j'), vEntries.map(e=>e[1]), {color:C.accent});
+    donut('c-network', [...countBy(rows,'network')].map(([name,value])=>({name,value})), {'4G':C.netA,'5G':C.netB});
+    donut('c-topup', [...countBy(rows,'top_up')].map(([name,value])=>({name,value})), {'oui':C.good,'non':'#cbd5e1'});
 
-    const byTopup = groupCount(rows, 'top_up');
-    donutChart('c-topup', Array.from(byTopup.entries()).map(([name,value])=>({name,value})), {'oui':C.good, 'non':'#d7d9e6'});
+    const val = [...countBy(rows,'validity_days')].sort((a,b)=>a[0]-b[0]);
+    bar('c-validity', val.map(e=>e[0]+' jours'), val.map(e=>e[1]));
 
-    let leger=0, moyen=0, lourd=0;
-    for(const r of rows){
-      if(r.data_gb == null) continue;
-      const gpd = r.data_gb / r.validity_days;
-      if(gpd < 0.3) leger++; else if(gpd < 1.0) moyen++; else lourd++;
-    }
-    barChart('c-intensity', ['Léger','Moyen','Lourd'], [leger,moyen,lourd], {color:C.accent});
+    let l=0,m=0,h=0;
+    sized.forEach(r => { const g=r.data_gb/r.validity_days; if(g<0.3) l++; else if(g<1) m++; else h++; });
+    bar('c-intensity', ['Léger','Moyen','Lourd'], [l,m,h]);
 
-    const sized = rows.filter(r => r.data_gb != null);
     const bySize = new Map();
-    for(const r of sized){ const k=r.data_gb; if(!bySize.has(k)) bySize.set(k, []); bySize.get(k).push(r.price); }
-    const sizeEntries = Array.from(bySize.entries()).sort((a,b)=>a[0]-b[0]);
-    lineChart('c-bysize', sizeEntries.map(e=>e[0]+' Go'), sizeEntries.map(e=>{
-      const arr=e[1]; return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
-    }), {color:C.price});
-
-    const byProvGb = new Map();
-    for(const r of sized){ if(r.data_gb>0){ if(!byProvGb.has(r.provider)) byProvGb.set(r.provider, []); byProvGb.get(r.provider).push(r.price/r.data_gb); } }
-    const gbEntries = Array.from(byProvGb.entries()).map(([p,arr])=>[p, arr.reduce((a,b)=>a+b,0)/arr.length]).sort((a,b)=>a[1]-b[1]);
-    barChart('c-pergb', gbEntries.map(e=>e[0]), gbEntries.map(e=>+e[1].toFixed(2)), {horizontal:true, zoom:true, color:C.price});
+    rows.filter(r=>r.data_gb!=null).forEach(r => { if(!bySize.has(r.data_gb)) bySize.set(r.data_gb,[]); bySize.get(r.data_gb).push(r.price); });
+    const sz = [...bySize].sort((a,b)=>a[0]-b[0]);
+    line('c-bysize', sz.map(e=>e[0]+' Go'), sz.map(e=>+mean(e[1]).toFixed(2)), {fmt:v=>v+' €'});
   }
 
-  function renderStatic(){
-    const disp = DATA.regional_dispersion;
-    barChart('c-dispersion', disp.map(d=>d.region), disp.map(d=>d.cv), {color:C.bad});
+  function staticCharts(){
+    const d = DATA.regional_dispersion;
+    bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv), {fmt:v=>v.toFixed(3)});
 
-    scatterPriceDest('c-pricedest', DATA.price_by_destination);
+    const score = (id, rows) => {
+      const s = rows.filter(r=>r.score!=null).sort((a,b)=>a.score-b.score);
+      bar(id, s.map(r=>r.provider), s.map(r=>r.score), {horizontal:true, color:C.accent, fmt:v=>v+' / 100'});
+    };
+    score('c-score-a', DATA.composite_scores.version_a_mybestsim);
+    score('c-score-b', DATA.composite_scores.version_b_trustpilot);
+    score('c-score-c', DATA.composite_scores.version_c_sans_editorial);
 
-    document.getElementById('dest-body').innerHTML = DATA.top_destinations.map(d =>
-      `<tr><td>${d.destination}</td><td>${fmtInt(d.offers)}</td></tr>`).join('');
-
-    renderScoreChart('c-score-a', DATA.composite_scores.version_a_mybestsim);
-    renderScoreChart('c-score-b', DATA.composite_scores.version_b_trustpilot);
-    renderScoreChart('c-score-c', DATA.composite_scores.version_c_sans_editorial);
+    const byCode = new Map(DATA.price_by_country.map(c=>[c.country, c]));
+    document.getElementById('dest-body').innerHTML = DATA.price_by_destination.map(d => {
+      const c = byCode.get(d.destination);
+      return `<tr><td>${d.destination}</td><td class="num">${nf(d.offers)}</td>
+        <td class="num">${d.price_avg.toFixed(2)} €</td>
+        <td class="num">${c? c.providers : '—'}</td></tr>`;
+    }).join('');
+    renderMap();
   }
 
-  function renderScoreChart(id, rows){
-    const scored = rows.filter(r => r.score != null).sort((a,b)=>b.score-a.score);
-    barChart(id, scored.map(r=>r.provider), scored.map(r=>r.score), {horizontal:true, color:C.accent});
+  function sidebar(){
+    const sized = ROWS.filter(r=>r.data_gb!=null && r.data_gb>0);
+    document.getElementById('sb-total').textContent = nf(ROWS.length);
+    document.getElementById('sb-prov').textContent = new Set(ROWS.map(r=>r.provider)).size + ' fournisseurs · 5 056 lignes';
+    document.getElementById('sb-pergb').textContent = median(sized.map(r=>r.price/r.data_gb)).toFixed(2) + ' €';
+    document.getElementById('sb-pays').textContent = DATA.price_by_country.length;
   }
 
-  function renderAll(){
-    const rows = applyFilters();
-    renderKPIs(rows);
-    renderCharts(rows);
-  }
+  const render = () => { const rows = filtered(); kpis(rows); dynamicCharts(rows); };
 
-  function initFilters(){
-    const providers = Array.from(new Set(ROWS.map(r=>r.provider))).sort();
+  fetch('data.json').then(r=>r.json()).then(d => {
+    DATA=d; ROWS=d.rows;
     const sel = document.getElementById('f-provider');
-    sel.size = Math.min(8, providers.length);
-    sel.innerHTML = providers.map(p => `<option value="${p}">${p}</option>`).join('');
-    ['f-provider','f-network','f-validity'].forEach(id => {
-      document.getElementById(id).addEventListener('change', renderAll);
-    });
+    const provs = [...new Set(ROWS.map(r=>r.provider))].sort();
+    sel.size = Math.min(6, provs.length);
+    sel.innerHTML = provs.map(p=>`<option value="${p}">${p}</option>`).join('');
+    ['f-provider','f-network','f-validity'].forEach(id=>document.getElementById(id).addEventListener('change', render));
     document.getElementById('reset-filters').addEventListener('click', () => {
-      Array.from(sel.options).forEach(o => o.selected = false);
-      document.getElementById('f-network').value = '';
-      document.getElementById('f-validity').value = '';
-      renderAll();
+      [...sel.options].forEach(o=>o.selected=false);
+      document.getElementById('f-network').value='';
+      document.getElementById('f-validity').value='';
+      render();
     });
-  }
+    document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected', x===b));
+      ['a','b','c'].forEach(t=>document.getElementById('panel-'+t).hidden = t!==b.dataset.tab);
+      setTimeout(()=>getChart('c-score-'+b.dataset.tab).resize(), 0);
+    }));
+    sidebar(); render(); staticCharts();
+  }).catch(e => console.error(e));
 
-  function initTabs(){
-    document.querySelectorAll('.tabs button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b===btn ? 'true':'false'));
-        ['a','b','c'].forEach(t => document.getElementById('panel-'+t).hidden = (t !== btn.dataset.tab));
-        const id = btn.dataset.tab === 'a' ? 'c-score-a' : btn.dataset.tab === 'b' ? 'c-score-b' : 'c-score-c';
-        setTimeout(() => getChart(id).resize(), 0);
-      });
-    });
-  }
-
-  window.addEventListener('resize', () => Object.values(charts).forEach(c => c.resize()));
-
-  fetch('data.json').then(r => r.json()).then(d => {
-    DATA = d;
-    ROWS = d.rows;
-    document.getElementById('meta-badge').textContent = d.generated_from;
-    initFilters();
-    initTabs();
-    renderAll();
-    renderStatic();
-  }).catch(err => {
-    document.getElementById('meta-badge').textContent = 'erreur de chargement';
-    console.error(err);
-  });
+  window.addEventListener('resize', () => { Object.values(charts).forEach(c=>c.resize()); if(map) map.invalidateSize(); });
 })();
 </script>
 </body>
