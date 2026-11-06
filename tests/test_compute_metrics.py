@@ -20,6 +20,7 @@ from compute_metrics import (
     price_by_country,
     load_catalog,
     build_dataset,
+    _percentile_scores,
 )
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
@@ -57,11 +58,25 @@ class TestBaseMetrics:
 
 class TestPriceRatios:
     def test_price_per_gb(self, small_df):
+        """Ratio d'agrégats (somme prix / somme Go), pas moyenne des ratios par offre :
+        une moyenne pondérerait un forfait 1 Go autant qu'un forfait 20 Go."""
         result = {r["provider"]: r["price_per_gb"] for r in price_per_gb_by_provider(small_df)}
-        # A : (20/10 + 30/20) / 2 = (2.0 + 1.5) / 2 = 1.75
-        assert result["A"] == pytest.approx(1.75, abs=0.01)
+        # A : (20+30) / (10+20) = 50/30 = 1.667
+        assert result["A"] == pytest.approx(1.67, abs=0.01)
         # B : 50/5 = 10.0
         assert result["B"] == pytest.approx(10.0, abs=0.01)
+
+    def test_price_per_gb_is_aggregate_ratio_not_mean_of_ratios(self):
+        """Régression : avec une moyenne de ratios par offre, un fournisseur qui vend
+        surtout de petits forfaits chers au Go paraît moins compétitif qu'il ne l'est
+        réellement une fois le volume pris en compte."""
+        df = pd.DataFrame([
+            {"provider": "X", "price": 10.0, "data_gb": 1},    # 10 €/Go
+            {"provider": "X", "price": 10.0, "data_gb": 100},  # 0.1 €/Go
+        ])
+        result = {r["provider"]: r["price_per_gb"] for r in price_per_gb_by_provider(df)}
+        # moyenne des ratios : (10 + 0.1) / 2 = 5.05 -- ratio d'agrégats : 20/101 = 0.198
+        assert result["X"] == pytest.approx(0.20, abs=0.01)
 
     def test_price_per_gb_ignores_unlimited(self):
         df = pd.DataFrame([
@@ -136,6 +151,34 @@ class TestNetworkPremium:
         assert result["premium_pct"] is None
 
 
+class TestPercentileScores:
+    """Remplace le min-max : insensible aux valeurs extrêmes, et un petit écart réel ne
+    produit plus un grand écart de score."""
+
+    def test_higher_is_better_ranks_ascending(self):
+        scores = _percentile_scores({"A": 10, "B": 20, "C": 30})
+        assert scores["A"] < scores["B"] < scores["C"]
+        assert scores["C"] == pytest.approx(100.0)
+
+    def test_lower_is_better_inverts_ranking(self):
+        scores = _percentile_scores({"A": 10, "B": 20, "C": 30}, lower_is_better=True)
+        assert scores["A"] > scores["B"] > scores["C"]
+        assert scores["A"] == pytest.approx(100.0)
+
+    def test_insensitive_to_extreme_outlier(self):
+        """Régression : avec un min-max, retirer/ajouter un extrême change le score de
+        TOUS les autres. Avec un rang percentile, seuls les rangs voisins bougent."""
+        base = {"A": 10, "B": 11, "C": 12, "D": 13}
+        with_outlier = {**base, "E": 1000}
+        s_base = _percentile_scores(base)
+        s_outlier = _percentile_scores(with_outlier)
+        # B, C, D gardent le même rang relatif (2e, 3e, 4e) que l'extrême E soit présent
+        # ou non : un min-max aurait au contraire écrasé leurs scores vers 0 à l'ajout de E.
+        ranks_base = sorted(base, key=lambda k: s_base[k])
+        ranks_outlier = sorted(["A", "B", "C", "D"], key=lambda k: s_outlier[k])
+        assert ranks_base == ranks_outlier
+
+
 class TestCompositeScores:
     def test_three_versions_present(self, small_df):
         scores = composite_scores(small_df)
@@ -199,6 +242,23 @@ class TestPriceByDestination:
         assert out["France"]["offers"] == 2
         assert out["Allemagne"]["price_avg"] == pytest.approx(50.0, abs=0.01)
         assert out["Allemagne"]["offers"] == 1
+
+    def test_price_per_gb_is_not_confounded_by_plan_size_mix(self):
+        """Deux destinations au même prix/Go réel (0.5 €/Go) mais avec un mix de
+        tailles différent ne doivent pas être départagées par price_avg seul : c'est
+        price_per_gb qui doit rester identique, price_avg peut diverger."""
+        df = pd.DataFrame([
+            # Japon : uniquement de gros forfaits (50 Go) -> price_avg élevé
+            {"provider": "X", "country_name": "Japon", "price": 25.0, "data_gb": 50},
+            {"provider": "X", "country_name": "Japon", "price": 25.0, "data_gb": 50},
+            # Thaïlande : uniquement de petits forfaits (1 Go) -> price_avg faible
+            {"provider": "X", "country_name": "Thaïlande", "price": 0.5, "data_gb": 1},
+            {"provider": "X", "country_name": "Thaïlande", "price": 0.5, "data_gb": 1},
+        ])
+        out = {r["destination"]: r for r in price_by_destination(df, n=5)}
+        assert out["Japon"]["price_avg"] != pytest.approx(out["Thaïlande"]["price_avg"], abs=0.01)
+        assert out["Japon"]["price_per_gb"] == pytest.approx(0.5, abs=0.01)
+        assert out["Thaïlande"]["price_per_gb"] == pytest.approx(0.5, abs=0.01)
 
 
 class TestPriceByCountry:

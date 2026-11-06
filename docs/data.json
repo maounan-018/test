@@ -50731,76 +50731,76 @@
   ],
   "price_per_gb_by_provider": [
     {
-      "provider": "JamboSIM",
-      "price_per_gb": 2.9
-    },
-    {
-      "provider": "Yesim",
-      "price_per_gb": 2.94
-    },
-    {
       "provider": "Ubigi",
-      "price_per_gb": 3.03
-    },
-    {
-      "provider": "Jetpac",
-      "price_per_gb": 3.07
+      "price_per_gb": 1.63
     },
     {
       "provider": "GigSky",
-      "price_per_gb": 3.07
-    },
-    {
-      "provider": "Nomad",
-      "price_per_gb": 3.12
-    },
-    {
-      "provider": "Flexiroam",
-      "price_per_gb": 3.14
-    },
-    {
-      "provider": "Maya Mobile",
-      "price_per_gb": 3.14
-    },
-    {
-      "provider": "eSIMX",
-      "price_per_gb": 3.15
-    },
-    {
-      "provider": "aloSIM",
-      "price_per_gb": 3.16
-    },
-    {
-      "provider": "Instabridge",
-      "price_per_gb": 3.19
-    },
-    {
-      "provider": "Roamic",
-      "price_per_gb": 3.21
+      "price_per_gb": 1.63
     },
     {
       "provider": "Yatelo",
-      "price_per_gb": 3.22
+      "price_per_gb": 1.63
     },
     {
-      "provider": "Saily",
-      "price_per_gb": 3.22
+      "provider": "Yesim",
+      "price_per_gb": 1.64
     },
     {
-      "provider": "Holafly",
-      "price_per_gb": 3.26
+      "provider": "Jetpac",
+      "price_per_gb": 1.65
     },
     {
       "provider": "Truphone",
-      "price_per_gb": 3.35
+      "price_per_gb": 1.65
+    },
+    {
+      "provider": "JamboSIM",
+      "price_per_gb": 1.67
+    },
+    {
+      "provider": "eSIMX",
+      "price_per_gb": 1.68
+    },
+    {
+      "provider": "Flexiroam",
+      "price_per_gb": 1.69
+    },
+    {
+      "provider": "aloSIM",
+      "price_per_gb": 1.69
+    },
+    {
+      "provider": "Nomad",
+      "price_per_gb": 1.7
+    },
+    {
+      "provider": "Saily",
+      "price_per_gb": 1.72
+    },
+    {
+      "provider": "Instabridge",
+      "price_per_gb": 1.74
+    },
+    {
+      "provider": "Roamic",
+      "price_per_gb": 1.77
+    },
+    {
+      "provider": "Maya Mobile",
+      "price_per_gb": 1.78
+    },
+    {
+      "provider": "Holafly",
+      "price_per_gb": 1.79
     },
     {
       "provider": "Airalo",
-      "price_per_gb": 3.38
+      "price_per_gb": 1.8
     },
     {
       "provider": "4S eSIM",
-      "price_per_gb": 3.59
+      "price_per_gb": 1.88
     }
   ],
   "price_per_day_by_provider": [
@@ -51503,76 +51503,91 @@
     {
       "destination": "Europe",
       "price_avg": 42.74,
+      "price_per_gb": 2.14,
       "offers": 206
     },
     {
       "destination": "Asie",
       "price_avg": 40.9,
+      "price_per_gb": 2.3,
       "offers": 194
     },
     {
       "destination": "Amérique du Nord",
       "price_avg": 42.04,
+      "price_per_gb": 2.25,
       "offers": 192
     },
     {
       "destination": "Monde",
       "price_avg": 44.41,
+      "price_per_gb": 2.09,
       "offers": 186
     },
     {
       "destination": "Indonésie",
       "price_avg": 24.0,
+      "price_per_gb": 1.61,
       "offers": 104
     },
     {
       "destination": "Arabie saoudite",
       "price_avg": 25.35,
+      "price_per_gb": 1.6,
       "offers": 102
     },
     {
       "destination": "Singapour",
       "price_avg": 27.06,
+      "price_per_gb": 1.65,
       "offers": 99
     },
     {
       "destination": "Égypte",
       "price_avg": 28.01,
+      "price_per_gb": 1.6,
       "offers": 98
     },
     {
       "destination": "États-Unis",
       "price_avg": 26.67,
+      "price_per_gb": 1.63,
       "offers": 98
     },
     {
       "destination": "Belgique",
       "price_avg": 27.67,
+      "price_per_gb": 1.6,
       "offers": 96
     },
     {
       "destination": "Kenya",
       "price_avg": 29.86,
+      "price_per_gb": 1.59,
       "offers": 96
     },
     {
       "destination": "Colombie",
       "price_avg": 31.87,
+      "price_per_gb": 1.53,
       "offers": 95
     },
     {
       "destination": "Pays-Bas",
       "price_avg": 22.53,
+      "price_per_gb": 1.63,
       "offers": 93
     },
     {
       "destination": "Turquie",
       "price_avg": 27.7,
+      "price_per_gb": 1.6,
       "offers": 93
     },
     {
       "destination": "Philippines",
       "price_avg": 24.89,
+      "price_per_gb": 1.6,
       "offers": 92
     }
   ],
@@ -51584,7 +51599,7 @@
       "lng": 113.9213,
       "offers": 104,
       "price_avg": 24.0,
-      "price_per_gb": 3.5,
+      "price_per_gb": 1.61,
       "providers": 18
     },
     {
@@ -51594,7 +51609,7 @@
       "lng": 45.0792,
       "offers": 102,
       "price_avg": 25.35,
-      "price_per_gb": 2.92,
+      "price_per_gb": 1.6,
       "providers": 18
     },
     {
@@ -51604,7 +51619,7 @@
       "lng": 103.8198,
       "offers": 99,
       "price_avg": 27.06,
-      "price_per_gb": 2.98,
+      "price_per_gb": 1.65,
       "providers": 16
     },
     {
@@ -51614,7 +51629,7 @@
       "lng": 30.8025,
       "offers": 98,
       "price_avg": 28.01,
-      "price_per_gb": 3.14,
+      "price_per_gb": 1.6,
       "providers": 18
     },
     {
@@ -51624,7 +51639,7 @@
       "lng": -95.7129,
       "offers": 98,
       "price_avg": 26.67,
-      "price_per_gb": 2.86,
+      "price_per_gb": 1.63,
       "providers": 17
     },
     {
@@ -51634,7 +51649,7 @@
       "lng": 4.4699,
       "offers": 96,
       "price_avg": 27.67,
-      "price_per_gb": 2.96,
+      "price_per_gb": 1.6,
       "providers": 18
     },
     {
@@ -51644,7 +51659,7 @@
       "lng": 37.9062,
       "offers": 96,
       "price_avg": 29.86,
-      "price_per_gb": 2.92,
+      "price_per_gb": 1.59,
       "providers": 18
     },
     {
@@ -51654,7 +51669,7 @@
       "lng": -74.2973,
       "offers": 95,
       "price_avg": 31.87,
-      "price_per_gb": 2.65,
+      "price_per_gb": 1.53,
       "providers": 18
     },
     {
@@ -51664,7 +51679,7 @@
       "lng": 5.2913,
       "offers": 93,
       "price_avg": 22.53,
-      "price_per_gb": 3.21,
+      "price_per_gb": 1.63,
       "providers": 18
     },
     {
@@ -51674,7 +51689,7 @@
       "lng": 35.2433,
       "offers": 93,
       "price_avg": 27.7,
-      "price_per_gb": 2.9,
+      "price_per_gb": 1.6,
       "providers": 18
     },
     {
@@ -51684,7 +51699,7 @@
       "lng": 121.774,
       "offers": 92,
       "price_avg": 24.89,
-      "price_per_gb": 2.94,
+      "price_per_gb": 1.6,
       "providers": 16
     },
     {
@@ -51694,7 +51709,7 @@
       "lng": -70.1627,
       "offers": 92,
       "price_avg": 25.14,
-      "price_per_gb": 3.29,
+      "price_per_gb": 1.73,
       "providers": 16
     },
     {
@@ -51704,7 +51719,7 @@
       "lng": 34.8888,
       "offers": 91,
       "price_avg": 29.64,
-      "price_per_gb": 2.7,
+      "price_per_gb": 1.45,
       "providers": 18
     },
     {
@@ -51714,7 +51729,7 @@
       "lng": 15.2,
       "offers": 90,
       "price_avg": 30.71,
-      "price_per_gb": 2.72,
+      "price_per_gb": 1.51,
       "providers": 17
     },
     {
@@ -51724,7 +51739,7 @@
       "lng": 8.4689,
       "offers": 89,
       "price_avg": 26.06,
-      "price_per_gb": 2.93,
+      "price_per_gb": 1.61,
       "providers": 17
     },
     {
@@ -51734,7 +51749,7 @@
       "lng": -8.2245,
       "offers": 89,
       "price_avg": 27.26,
-      "price_per_gb": 2.92,
+      "price_per_gb": 1.6,
       "providers": 17
     },
     {
@@ -51744,7 +51759,7 @@
       "lng": -75.0152,
       "offers": 89,
       "price_avg": 27.86,
-      "price_per_gb": 3.08,
+      "price_per_gb": 1.64,
       "providers": 18
     },
     {
@@ -51754,7 +51769,7 @@
       "lng": 51.1839,
       "offers": 89,
       "price_avg": 26.29,
-      "price_per_gb": 3.03,
+      "price_per_gb": 1.61,
       "providers": 17
     },
     {
@@ -51764,7 +51779,7 @@
       "lng": 104.1954,
       "offers": 88,
       "price_avg": 25.7,
-      "price_per_gb": 3.11,
+      "price_per_gb": 1.64,
       "providers": 17
     },
     {
@@ -51774,7 +51789,7 @@
       "lng": -3.7492,
       "offers": 88,
       "price_avg": 24.0,
-      "price_per_gb": 3.35,
+      "price_per_gb": 1.65,
       "providers": 15
     },
     {
@@ -51784,7 +51799,7 @@
       "lng": 19.1451,
       "offers": 88,
       "price_avg": 26.0,
-      "price_per_gb": 3.04,
+      "price_per_gb": 1.64,
       "providers": 17
     },
     {
@@ -51794,7 +51809,7 @@
       "lng": 10.4515,
       "offers": 87,
       "price_avg": 26.84,
-      "price_per_gb": 3.32,
+      "price_per_gb": 1.63,
       "providers": 17
     },
     {
@@ -51804,7 +51819,7 @@
       "lng": -8.2439,
       "offers": 87,
       "price_avg": 24.67,
-      "price_per_gb": 2.95,
+      "price_per_gb": 1.73,
       "providers": 18
     },
     {
@@ -51814,7 +51829,7 @@
       "lng": 100.9925,
       "offers": 87,
       "price_avg": 23.33,
-      "price_per_gb": 3.28,
+      "price_per_gb": 1.76,
       "providers": 18
     },
     {
@@ -51824,7 +51839,7 @@
       "lng": 14.5501,
       "offers": 86,
       "price_avg": 26.34,
-      "price_per_gb": 3.12,
+      "price_per_gb": 1.6,
       "providers": 17
     },
     {
@@ -51834,7 +51849,7 @@
       "lng": 127.7669,
       "offers": 86,
       "price_avg": 27.0,
-      "price_per_gb": 2.88,
+      "price_per_gb": 1.62,
       "providers": 18
     },
     {
@@ -51844,7 +51859,7 @@
       "lng": 174.886,
       "offers": 86,
       "price_avg": 24.86,
-      "price_per_gb": 3.08,
+      "price_per_gb": 1.64,
       "providers": 18
     },
     {
@@ -51854,7 +51869,7 @@
       "lng": 108.2772,
       "offers": 86,
       "price_avg": 26.67,
-      "price_per_gb": 3.07,
+      "price_per_gb": 1.6,
       "providers": 18
     },
     {
@@ -51864,7 +51879,7 @@
       "lng": 2.2137,
       "offers": 85,
       "price_avg": 27.68,
-      "price_per_gb": 2.78,
+      "price_per_gb": 1.64,
       "providers": 17
     },
     {
@@ -51874,7 +51889,7 @@
       "lng": 12.5674,
       "offers": 84,
       "price_avg": 29.18,
-      "price_per_gb": 2.9,
+      "price_per_gb": 1.64,
       "providers": 16
     },
     {
@@ -51884,7 +51899,7 @@
       "lng": -102.5528,
       "offers": 84,
       "price_avg": 28.61,
-      "price_per_gb": 2.65,
+      "price_per_gb": 1.52,
       "providers": 18
     },
     {
@@ -51894,7 +51909,7 @@
       "lng": 21.8243,
       "offers": 83,
       "price_avg": 25.82,
-      "price_per_gb": 2.89,
+      "price_per_gb": 1.75,
       "providers": 18
     },
     {
@@ -51904,7 +51919,7 @@
       "lng": 138.2529,
       "offers": 83,
       "price_avg": 21.75,
-      "price_per_gb": 3.34,
+      "price_per_gb": 1.8,
       "providers": 17
     },
     {
@@ -51914,7 +51929,7 @@
       "lng": 101.9758,
       "offers": 83,
       "price_avg": 29.0,
-      "price_per_gb": 2.66,
+      "price_per_gb": 1.57,
       "providers": 18
     },
     {
@@ -51924,7 +51939,7 @@
       "lng": 22.9375,
       "offers": 82,
       "price_avg": 26.73,
-      "price_per_gb": 3.26,
+      "price_per_gb": 1.68,
       "providers": 17
     },
     {
@@ -51934,7 +51949,7 @@
       "lng": 78.9629,
       "offers": 82,
       "price_avg": 31.15,
-      "price_per_gb": 2.57,
+      "price_per_gb": 1.48,
       "providers": 17
     },
     {
@@ -51944,7 +51959,7 @@
       "lng": -7.0926,
       "offers": 80,
       "price_avg": 25.76,
-      "price_per_gb": 3.11,
+      "price_per_gb": 1.53,
       "providers": 16
     },
     {
@@ -51954,7 +51969,7 @@
       "lng": 8.2275,
       "offers": 80,
       "price_avg": 29.05,
-      "price_per_gb": 3.11,
+      "price_per_gb": 1.5,
       "providers": 18
     },
     {
@@ -51964,7 +51979,7 @@
       "lng": 18.6435,
       "offers": 80,
       "price_avg": 24.74,
-      "price_per_gb": 3.09,
+      "price_per_gb": 1.68,
       "providers": 17
     },
     {
@@ -51974,7 +51989,7 @@
       "lng": 133.7751,
       "offers": 78,
       "price_avg": 31.49,
-      "price_per_gb": 3.19,
+      "price_per_gb": 1.45,
       "providers": 15
     },
     {
@@ -51984,7 +51999,7 @@
       "lng": 8.6753,
       "offers": 78,
       "price_avg": 25.43,
-      "price_per_gb": 3.03,
+      "price_per_gb": 1.83,
       "providers": 18
     },
     {
@@ -51994,7 +52009,7 @@
       "lng": -71.543,
       "offers": 76,
       "price_avg": 27.9,
-      "price_per_gb": 3.17,
+      "price_per_gb": 1.67,
       "providers": 18
     },
     {
@@ -52004,7 +52019,7 @@
       "lng": 34.8516,
       "offers": 76,
       "price_avg": 26.82,
-      "price_per_gb": 2.69,
+      "price_per_gb": 1.56,
       "providers": 17
     },
     {
@@ -52014,7 +52029,7 @@
       "lng": 36.2384,
       "offers": 76,
       "price_avg": 27.48,
-      "price_per_gb": 2.58,
+      "price_per_gb": 1.48,
       "providers": 17
     },
     {
@@ -52024,7 +52039,7 @@
       "lng": -3.436,
       "offers": 76,
       "price_avg": 27.32,
-      "price_per_gb": 3.02,
+      "price_per_gb": 1.59,
       "providers": 17
     },
     {
@@ -52034,7 +52049,7 @@
       "lng": 53.8478,
       "offers": 76,
       "price_avg": 27.09,
-      "price_per_gb": 3.13,
+      "price_per_gb": 1.63,
       "providers": 16
     },
     {
@@ -52044,7 +52059,7 @@
       "lng": -63.6167,
       "offers": 73,
       "price_avg": 26.19,
-      "price_per_gb": 3.02,
+      "price_per_gb": 1.57,
       "providers": 17
     },
     {
@@ -52054,7 +52069,7 @@
       "lng": -106.3468,
       "offers": 70,
       "price_avg": 24.93,
-      "price_per_gb": 3.38,
+      "price_per_gb": 1.72,
       "providers": 17
     },
     {
@@ -52064,7 +52079,7 @@
       "lng": 15.473,
       "offers": 66,
       "price_avg": 30.37,
-      "price_per_gb": 2.74,
+      "price_per_gb": 1.5,
       "providers": 18
     },
     {
@@ -52074,7 +52089,7 @@
       "lng": -51.9253,
       "offers": 63,
       "price_avg": 27.91,
-      "price_per_gb": 2.66,
+      "price_per_gb": 1.54,
       "providers": 16
     }
   ],
@@ -52432,27 +52447,27 @@
     "version_a_mybestsim": [
       {
         "provider": "Yesim",
-        "score": 78.4,
+        "score": 72.2,
         "editorial_source": "mybestsim"
       },
       {
         "provider": "Saily",
-        "score": 72.0,
-        "editorial_source": "mybestsim"
-      },
-      {
-        "provider": "Roamic",
-        "score": 66.8,
+        "score": 68.5,
         "editorial_source": "mybestsim"
       },
       {
         "provider": "Holafly",
-        "score": 66.4,
+        "score": 58.6,
+        "editorial_source": "mybestsim"
+      },
+      {
+        "provider": "Roamic",
+        "score": 58.3,
         "editorial_source": "mybestsim"
       },
       {
         "provider": "Airalo",
-        "score": 62.1,
+        "score": 56.8,
         "editorial_source": "mybestsim"
       },
       {
@@ -52523,63 +52538,63 @@
     ],
     "version_b_trustpilot": [
       {
-        "provider": "Flexiroam",
-        "score": 86.0,
-        "editorial_source": "trustpilot"
-      },
-      {
-        "provider": "Saily",
-        "score": 85.2,
-        "editorial_source": "trustpilot"
-      },
-      {
-        "provider": "Yesim",
+        "provider": "Ubigi",
         "score": 85.0,
         "editorial_source": "trustpilot"
       },
       {
-        "provider": "Ubigi",
-        "score": 84.4,
+        "provider": "Flexiroam",
+        "score": 81.7,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Saily",
+        "score": 81.7,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Jetpac",
-        "score": 83.0,
+        "score": 80.8,
         "editorial_source": "trustpilot"
       },
       {
-        "provider": "Holafly",
-        "score": 82.6,
-        "editorial_source": "trustpilot"
-      },
-      {
-        "provider": "aloSIM",
-        "score": 82.0,
+        "provider": "Yesim",
+        "score": 78.8,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "GigSky",
-        "score": 80.8,
+        "score": 78.3,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "aloSIM",
+        "score": 77.7,
+        "editorial_source": "trustpilot"
+      },
+      {
+        "provider": "Holafly",
+        "score": 74.8,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Nomad",
-        "score": 80.8,
+        "score": 72.0,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Roamic",
-        "score": 75.2,
+        "score": 66.7,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Airalo",
-        "score": 69.3,
+        "score": 64.0,
         "editorial_source": "trustpilot"
       },
       {
         "provider": "Maya Mobile",
-        "score": 68.8,
+        "score": 62.2,
         "editorial_source": "trustpilot"
       },
       {
@@ -52616,75 +52631,75 @@
     "version_c_sans_editorial": [
       {
         "provider": "Ubigi",
-        "score": 88.1
-      },
-      {
-        "provider": "aloSIM",
-        "score": 84.9
-      },
-      {
-        "provider": "Yesim",
-        "score": 83.6
+        "score": 89.6
       },
       {
         "provider": "eSIMX",
-        "score": 79.9
+        "score": 74.9
       },
       {
-        "provider": "Flexiroam",
-        "score": 73.9
+        "provider": "aloSIM",
+        "score": 74.3
+      },
+      {
+        "provider": "Yesim",
+        "score": 67.9
       },
       {
         "provider": "GigSky",
-        "score": 73.1
+        "score": 66.8
       },
       {
-        "provider": "Nomad",
-        "score": 73.1
-      },
-      {
-        "provider": "JamboSIM",
-        "score": 72.4
+        "provider": "Flexiroam",
+        "score": 63.2
       },
       {
         "provider": "Saily",
-        "score": 72.0
-      },
-      {
-        "provider": "Jetpac",
-        "score": 66.4
-      },
-      {
-        "provider": "Holafly",
-        "score": 65.4
+        "score": 63.2
       },
       {
         "provider": "Truphone",
-        "score": 60.1
+        "score": 62.5
       },
       {
-        "provider": "Instabridge",
-        "score": 59.0
-      },
-      {
-        "provider": "Airalo",
-        "score": 47.2
-      },
-      {
-        "provider": "Roamic",
-        "score": 46.9
+        "provider": "Jetpac",
+        "score": 61.0
       },
       {
         "provider": "Yatelo",
-        "score": 39.0
+        "score": 57.9
+      },
+      {
+        "provider": "Nomad",
+        "score": 51.0
+      },
+      {
+        "provider": "Holafly",
+        "score": 46.0
+      },
+      {
+        "provider": "JamboSIM",
+        "score": 41.9
+      },
+      {
+        "provider": "Airalo",
+        "score": 34.0
+      },
+      {
+        "provider": "Instabridge",
+        "score": 34.0
+      },
+      {
+        "provider": "Roamic",
+        "score": 25.8
       },
       {
         "provider": "Maya Mobile",
-        "score": 37.1
+        "score": 20.6
       },
       {
         "provider": "4S eSIM",
-        "score": 13.5
+        "score": 15.4
       }
     ],
     "excluded_from_editorial": {

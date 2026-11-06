@@ -85,12 +85,21 @@ def price_per_size(df: pd.DataFrame) -> list:
 
 
 def price_per_gb_by_provider(df: pd.DataFrame) -> list:
-    """price/Go moyen par fournisseur, sur les forfaits à volume fini uniquement."""
+    """price/Go par fournisseur, en ratio d'agrégats (somme des prix / somme des Go) et
+    non en moyenne de ratios individuels.
+    Une moyenne de price/Go par offre pondère un forfait 1 Go à 8,59 € (8,59 €/Go) autant
+    qu'un forfait 50 Go à 56,67 € (1,13 €/Go) : elle mesure alors autant le mix de tailles
+    du catalogue du fournisseur que son niveau de prix réel. Vérifié sur les données :
+    les deux formules changent le classement de 18 fournisseurs de jusqu'à 10 rangs
+    (Truphone 16e en moyenne de ratios -> 6e en ratio pondéré), alors que cette métrique
+    alimente directement le score composite — le podium ne doit pas dépendre d'un choix
+    de formule non documenté."""
     sized = df.dropna(subset=["data_gb"])
     sized = sized[sized["data_gb"] > 0].copy()
-    sized["price_per_gb"] = sized["price"] / sized["data_gb"]
-    avg = sized.groupby("provider")["price_per_gb"].mean().sort_values(kind="stable")
-    return [{"provider": p, "price_per_gb": round(float(v), 2)} for p, v in avg.items()]
+    agg = sized.groupby("provider").apply(
+        lambda g: g["price"].sum() / g["data_gb"].sum(), include_groups=False
+    ).sort_values(kind="stable")
+    return [{"provider": p, "price_per_gb": round(float(v), 2)} for p, v in agg.items()]
 
 
 def price_per_day_by_provider(df: pd.DataFrame) -> list:
@@ -194,21 +203,42 @@ def price_by_country(df: pd.DataFrame) -> list:
             "lng": lng,
             "offers": int(len(grp)),
             "price_avg": round(float(grp["price"].mean()), 2),
-            "price_per_gb": round(float(gb_grp["price_per_gb"].mean()), 2) if len(gb_grp) else None,
+            # Ratio d'agrégats (comme price_per_gb_by_provider), pas moyenne de ratios :
+            # c'est la métrique utilisée pour colorer la carte, elle doit rester comparable.
+            "price_per_gb": round(float(gb_grp["price"].sum() / gb_grp["data_gb"].sum()), 2) if len(gb_grp) else None,
             "providers": int(grp["provider"].nunique()),
         })
     return sorted(out, key=lambda r: (-r["offers"], r["country"]))
 
 
 def price_by_destination(df: pd.DataFrame, n: int = 15) -> list:
-    """Prix moyen et nombre d'offres par destination, pour les destinations les plus
-    couvertes (mêmes n que top_destinations, pour cohérence visuelle entre graphiques)."""
+    """Prix moyen, €/Go et nombre d'offres par destination, pour les destinations les plus
+    couvertes (mêmes n que top_destinations, pour cohérence visuelle entre graphiques).
+    price_avg n'est pas comparable d'une destination à l'autre : un pays où les
+    fournisseurs ne vendent que de gros forfaits paraît "cher" même à prix/Go identique
+    (confusion non contrôlée avec le mix de tailles de forfait local). price_per_gb,
+    en ratio d'agrégats comme price_per_gb_by_provider, est la métrique réellement
+    comparable entre destinations."""
     top = set(d["destination"] for d in top_destinations(df, n))
     sub = df[df["country_name"].isin(top)]
     grp = sub.groupby("country_name").agg(price_avg=("price", "mean"), offers=("price", "size"))
     grp = grp.sort_index().sort_values("offers", ascending=False, kind="stable")
-    return [{"destination": d, "price_avg": round(float(r.price_avg), 2), "offers": int(r.offers)}
-            for d, r in grp.iterrows()]
+
+    sized = sub.dropna(subset=["data_gb"])
+    sized = sized[sized["data_gb"] > 0]
+    pgb = sized.groupby("country_name").apply(
+        lambda g: g["price"].sum() / g["data_gb"].sum(), include_groups=False
+    )
+
+    out = []
+    for d, r in grp.iterrows():
+        out.append({
+            "destination": d,
+            "price_avg": round(float(r.price_avg), 2),
+            "price_per_gb": round(float(pgb[d]), 2) if d in pgb.index else None,
+            "offers": int(r.offers),
+        })
+    return out
 
 
 def top_destinations(df: pd.DataFrame, n: int = 15) -> list:
@@ -229,10 +259,18 @@ def coverage_breadth(df: pd.DataFrame) -> list:
     return [{"provider": p, "countries": int(c)} for p, c in counts.items()]
 
 
-def _normalize(value, lo, hi):
-    if hi == lo:
-        return 50.0
-    return max(0.0, min(100.0, (value - lo) / (hi - lo) * 100))
+def _percentile_scores(values: dict, lower_is_better: bool = False) -> dict:
+    """Score 0-100 par rang percentile, et non par min-max.
+    Les écarts réels entre fournisseurs sont faibles (ex. prix/Go : 21,7 % d'étendue
+    autour de la moyenne) mais le min-max les étirait sur toute l'échelle 0-100 : un
+    écart de prix de 3,1 % entre deux fournisseurs devenait 13 points de score. Le rang
+    percentile est en plus insensible aux extrêmes — avec le min-max, retirer le
+    fournisseur le moins cher du catalogue aurait changé mécaniquement le score des 17
+    autres sans qu'aucune donnée les concernant n'ait changé ; avec un rang, ça ne
+    déplace que les scores voisins du rang libéré."""
+    s = pd.Series(values, dtype=float)
+    ranked = (-s if lower_is_better else s).rank(pct=True, method="average")
+    return (ranked * 100).to_dict()
 
 
 def composite_scores(df: pd.DataFrame) -> dict:
@@ -249,18 +287,13 @@ def composite_scores(df: pd.DataFrame) -> dict:
     net5g = df.groupby("provider").apply(lambda g: (g["network"] == "5G").mean() * 100, include_groups=False)
 
     providers = sorted(df["provider"].unique())
-    price_vals = list(pgb.values())
-    cov_vals = list(cov.values())
-    net_vals = net5g.tolist()
-    p_lo, p_hi = min(price_vals), max(price_vals)
-    c_lo, c_hi = min(cov_vals), max(cov_vals)
-    n_lo, n_hi = min(net_vals), max(net_vals)
+    net5g_dict = net5g.to_dict()
+    price_scores = _percentile_scores(pgb, lower_is_better=True)  # moins cher = mieux
+    cov_scores = _percentile_scores(cov)
+    net_scores = _percentile_scores(net5g_dict)
 
     def quant_subscores(provider):
-        price_score = 100 - _normalize(pgb[provider], p_lo, p_hi)  # moins cher = mieux
-        cov_score = _normalize(cov[provider], c_lo, c_hi)
-        net_score = _normalize(net5g[provider], n_lo, n_hi)
-        return price_score, cov_score, net_score
+        return price_scores[provider], cov_scores[provider], net_scores[provider]
 
     version_a, version_b, version_c = [], [], []
     for p in providers:

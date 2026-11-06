@@ -199,17 +199,17 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     <p class="sec">Volume d'offres et compétitivité tarifaire. Le prix au Go ne porte que sur les forfaits à volume fini : les offres illimitées n'ont pas de prix au Go définissable.</p>
     <div class="grid2">
       <div class="card"><h3>Produits par fournisseur</h3><p class="hint">Trié par volume d'offres</p><div class="chart tall" id="c-providers"></div></div>
-      <div class="card"><h3>€/Go moyen</h3><p class="hint">Le plus bas en tête</p><div class="chart tall" id="c-pergb"></div></div>
+      <div class="card"><h3>€/Go</h3><p class="hint">Ratio somme des prix / somme des Go — le plus bas en tête</p><div class="chart tall" id="c-pergb"></div></div>
     </div>
 
     <h2 class="sec" id="s-carte">Carte mondiale du catalogue</h2>
-    <p class="sec">Chaque point représente un pays couvert. La taille indique le nombre d'offres disponibles, la couleur le prix moyen — les zones les plus foncées sont les destinations les plus chères. La carte suit les filtres.</p>
+    <p class="sec">Chaque point représente un pays couvert. La taille indique le nombre d'offres disponibles, la couleur le prix au Go — les zones les plus foncées sont les plus chères à volume comparable. Le prix moyen brut n'est pas utilisé pour colorer la carte : un pays où ne circulent que de gros forfaits paraîtrait "cher" même à prix/Go identique à un pays en petits forfaits. La carte suit les filtres.</p>
     <div class="card">
       <div class="map-head"><h3 style="margin:0">Couverture géographique</h3><span class="pill" id="map-count">—</span></div>
       <div id="map"></div>
       <div class="map-legend">
         <div class="scale"><span class="dot" style="width:8px;height:8px"></span><span class="dot" style="width:13px;height:13px"></span><span class="dot" style="width:18px;height:18px"></span><span>Nombre d'offres</span></div>
-        <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#7dd3fc,#f97316)"></span><span>Prix moyen croissant</span></div>
+        <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#7dd3fc,#f97316)"></span><span>Prix/Go croissant</span></div>
         <div style="color:var(--ink-3)">Les forfaits multi-pays (Europe, Asie, Monde) ne sont pas cartographiables et sont exclus de cette vue.</div>
       </div>
     </div>
@@ -253,10 +253,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
 
     <h2 class="sec" id="s-destinations">Destinations les plus couvertes</h2>
-    <p class="sec">Catalogue complet, filtres non appliqués — il s'agit du classement de référence des destinations.</p>
+    <p class="sec">Catalogue complet, filtres non appliqués — il s'agit du classement de référence des destinations. Le prix moyen n'est pas comparable d'une destination à l'autre (il dépend du mix de tailles de forfait local) : c'est le prix/Go qui permet de comparer deux destinations équitablement.</p>
     <div class="card">
       <table class="t">
-        <thead><tr><th>Destination</th><th class="num">Offres</th><th class="num">Prix moyen</th><th class="num">Fournisseurs</th></tr></thead>
+        <thead><tr><th>Destination</th><th class="num">Offres</th><th class="num">Prix moyen</th><th class="num">€/Go</th><th class="num">Fournisseurs</th></tr></thead>
         <tbody id="dest-body"></tbody>
       </table>
     </div>
@@ -386,16 +386,19 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     for(const r of rows){
       const c = r.country_code;
       if(!c || !coords[c]) continue;           // zones multi-pays : pas de point unique
-      if(!byCode.has(c)) byCode.set(c, {code:c, country:r.country_name, prices:[], perGb:[], provs:new Set()});
+      if(!byCode.has(c)) byCode.set(c, {code:c, country:r.country_name, prices:[], sumPrice:0, sumGb:0, provs:new Set()});
       const e = byCode.get(c);
       e.prices.push(r.price);
       e.provs.add(r.provider);
-      if(r.data_gb != null && r.data_gb > 0) e.perGb.push(r.price / r.data_gb);
+      if(r.data_gb != null && r.data_gb > 0){ e.sumPrice += r.price; e.sumGb += r.data_gb; }
     }
     return [...byCode.values()].map(e => ({
       code:e.code, country:e.country, lat:coords[e.code].lat, lng:coords[e.code].lng,
       offers:e.prices.length, price_avg:+mean(e.prices).toFixed(2),
-      price_per_gb: e.perGb.length ? +mean(e.perGb).toFixed(2) : null,
+      // Ratio d'agrégats (somme des prix / somme des Go), pas moyenne de ratios par
+      // offre : cohérent avec price_per_gb_by_provider côté Python, et c'est la métrique
+      // utilisée pour colorer la carte — elle doit rester comparable entre pays.
+      price_per_gb: e.sumGb>0 ? +(e.sumPrice/e.sumGb).toFixed(2) : null,
       providers:e.provs.size
     })).sort((a,b)=>b.offers-a.offers);
   }
@@ -414,8 +417,13 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     markers.clearLayers();
     document.getElementById('map-count').textContent = pts.length + (pts.length>1?' pays affichés':' pays affiché');
     if(!pts.length) return;
-    const prices = pts.map(p=>p.price_avg);
-    const pMin = Math.min(...prices), pMax = Math.max(...prices);
+    // Couleur = prix/Go, pas prix moyen brut : le prix moyen mélange toutes les tailles
+    // de forfait vendues dans le pays, un pays qui ne liste que des forfaits 50 Go
+    // ressortirait "cher" même à prix/Go rigoureusement identique à un pays en 1 Go.
+    // Repli sur le prix moyen pour les rares pays sans aucun forfait à volume fini.
+    const gbPts = pts.filter(p=>p.price_per_gb!=null);
+    const vals = (gbPts.length ? gbPts : pts).map(p=>p.price_per_gb ?? p.price_avg);
+    const pMin = Math.min(...vals), pMax = Math.max(...vals);
     const offMax = Math.max(...pts.map(p=>p.offers));
     // Échelle séquentielle bleu ciel -> orange (charte MyBestSim) : le prix est une
     // magnitude, pas une polarité. Sur fond sombre, une rampe claire->foncée s'écraserait.
@@ -423,15 +431,16 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const colorFor = v => ramp[Math.min(ramp.length-1, Math.floor((v-pMin)/((pMax-pMin)||1)*ramp.length))];
 
     pts.forEach((p, i) => {
+      const colorVal = p.price_per_gb ?? p.price_avg;
       const m = L.circleMarker([p.lat, p.lng], {
         radius: 5 + Math.sqrt(p.offers/offMax)*13,
-        fillColor: colorFor(p.price_avg), color:'rgba(241,245,249,.85)', weight:1.2,
+        fillColor: colorFor(colorVal), color:'rgba(241,245,249,.85)', weight:1.2,
         opacity:0, fillOpacity:0
       }).addTo(markers).bindPopup(
         `<div style="font-weight:600;margin-bottom:4px;color:#f1f5f9">${p.country}</div>
          <div style="font-size:12px;color:#94a3b8;line-height:1.6">
-           Prix moyen : <b style="color:#0ea5e9">${p.price_avg.toFixed(2)} €</b><br>
            ${p.price_per_gb!=null?`Prix/Go : <b style="color:#0ea5e9">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
+           Prix moyen : <b style="color:#0ea5e9">${p.price_avg.toFixed(2)} €</b> <span style="color:#64748b">(toutes tailles de forfait confondues, non comparable entre pays)</span><br>
            Offres : <b style="color:#f1f5f9">${p.offers}</b><br>
            Fournisseurs : <b style="color:#f1f5f9">${p.providers}</b>
          </div>`);
@@ -607,6 +616,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       const c = byCode.get(d.destination);
       return `<tr><td>${d.destination}</td><td class="num">${nf(d.offers)}</td>
         <td class="num">${d.price_avg.toFixed(2)} €</td>
+        <td class="num">${d.price_per_gb!=null? d.price_per_gb.toFixed(2)+' €':'—'}</td>
         <td class="num">${c? c.providers : '—'}</td></tr>`;
     }).join('');
   }
