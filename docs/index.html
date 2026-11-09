@@ -329,7 +329,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     <div class="head">
       <div>
         <h1 id="s-apercu">Catalogue eSIM — vue d'ensemble</h1>
-        <p>Statistiques consolidées de 18 fournisseurs, enrichies de métriques dérivées calculées depuis les fichiers sources : prix au Go, dispersion régionale, prime réseau contrôlée par destination.</p>
+        <p>Statistiques consolidées de <span id="hdr-prov">18</span> fournisseurs, enrichies de métriques dérivées calculées depuis les fichiers sources : prix au Go, dispersion régionale, prime réseau contrôlée par destination.</p>
       </div>
     </div>
 
@@ -406,9 +406,9 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
     <div class="tab-panel" id="panel-a">
       <div class="note"><div class="note-row">
-        <p>Score publié par <a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">MyBestSim</a>, affiché tel quel. Disponible pour 5 fournisseurs sur 18 — les autres sont marqués indisponibles plutôt qu'estimés.</p>
+        <p>Score publié par <a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">MyBestSim</a>, affiché tel quel. Disponible pour <span id="a-cover">5 fournisseurs sur 18</span> — les autres sont marqués indisponibles plutôt qu'estimés.</p>
         <div class="note-chips">
-          <span class="chip muted">60 % éditorial (eux)</span><span class="chip muted">16 % prix (eux)</span><span class="chip muted">14 % couverture (eux)</span><span class="chip muted">10 % réseau + illimité (eux)</span><span class="chip">5 / 18 fournisseurs</span>
+          <span class="chip muted">60 % éditorial (eux)</span><span class="chip muted">16 % prix (eux)</span><span class="chip muted">14 % couverture (eux)</span><span class="chip muted">10 % réseau + illimité (eux)</span><span class="chip" id="a-chip">5 / 18 fournisseurs</span>
         </div>
       </div></div>
       <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-a"></div></div>
@@ -417,16 +417,16 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <div class="note"><div class="note-row">
         <p>Composante éditoriale = note Trustpilot (>2 500 avis seulement, pour écarter les échantillons non représentatifs), rescalée sur 100 par min-max entre 1 étoile (0) et 5 étoiles (100) — Trustpilot n'autorisant pas de note à 0 étoile.</p>
         <div class="note-chips">
-          <span class="chip">60 % éditorial</span><span class="chip">16 % prix</span><span class="chip">14 % couverture</span><span class="chip">10 % réseau + illimité</span><span class="chip muted">12 / 18 fournisseurs</span>
+          <span class="chip">60 % éditorial</span><span class="chip">16 % prix</span><span class="chip">14 % couverture</span><span class="chip">10 % réseau + illimité</span><span class="chip muted" id="b-chip">12 / 18 fournisseurs</span>
         </div>
       </div></div>
       <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-b"></div></div>
     </div>
     <div class="tab-panel" id="panel-c" hidden>
       <div class="note"><div class="note-row">
-        <p>Aucune composante éditoriale : seuls les 3 critères mesurables dans le catalogue, repondérés à 100 % en conservant leurs poids relatifs d'origine. Seule version couvrant les 18 fournisseurs.</p>
+        <p>Aucune composante éditoriale : seuls les 3 critères mesurables dans le catalogue, repondérés à 100 % en conservant leurs poids relatifs d'origine. Seule version couvrant les <span id="c-cover">18</span> fournisseurs.</p>
         <div class="note-chips">
-          <span class="chip">40 % prix</span><span class="chip">35 % couverture</span><span class="chip">25 % réseau + illimité</span><span class="chip muted">18 / 18 fournisseurs</span>
+          <span class="chip">40 % prix</span><span class="chip">35 % couverture</span><span class="chip">25 % réseau + illimité</span><span class="chip muted" id="c-chip">18 / 18 fournisseurs</span>
         </div>
       </div></div>
       <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-c"></div></div>
@@ -442,7 +442,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
 
     <footer>
-      Source : 18 fichiers CSV fournisseurs (5 056 produits). Scores éditoriaux externes sourcés et datés dans <code>scripts/editorial_sources.py</code>.<br>
+      Source : les catalogues de <span id="ft-prov">18</span> fournisseurs (<span id="ft-rows">5 056</span> produits). Scores éditoriaux externes sourcés et datés dans <code>scripts/editorial_sources.py</code>.<br>
       Carte : tuiles OpenStreetMap, filtre clair ou sombre appliqué côté client selon le thème actif. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
     </footer>
   </main>
@@ -762,7 +762,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
     // Pas de carte "Produits" ici : le total et le nombre de fournisseurs du CATALOGUE
     // COMPLET sont déjà dans la sidebar. Attention, ce n'est pas tout à fait la même
-    // information — la sidebar ne suit pas les filtres (toujours 5 056), alors que cette
+    // information — la sidebar ne suit pas les filtres (toujours le catalogue entier), alors que cette
     // rangée de KPI oui. Demandé explicitement malgré cette nuance.
     const before = [...document.querySelectorAll('#kpi-row .v')].map(e=>e.textContent);
     document.getElementById('kpi-row').innerHTML = [
@@ -976,8 +976,27 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     // Médiane €/Go retirée d'ici : désormais une carte KPI dédiée dans le corps de page,
     // qui en plus suit les filtres — doublon inutile une fois celle-ci en place.
     document.getElementById('sb-total').textContent = nf(ROWS.length);
-    document.getElementById('sb-prov').textContent = new Set(ROWS.map(r=>r.provider)).size + ' fournisseurs · 5 056 lignes';
+    document.getElementById('sb-prov').textContent = new Set(ROWS.map(r=>r.provider)).size + ' fournisseurs · ' + nf(ROWS.length) + ' lignes';
     document.getElementById('sb-pays').textContent = DATA.price_by_country.length;
+    compteurs();
+  }
+
+  // Tous les nombres cités dans les textes de la page viennent des données, jamais d'une
+  // valeur écrite en dur : un 19e fournisseur ou de nouvelles lignes doivent se refléter
+  // dans les légendes sans qu'on touche à ce fichier.
+  function compteurs(){
+    const total = new Set(ROWS.map(r=>r.provider)).size;
+    const dispo = cle => (DATA.composite_scores[cle]||[])
+      .filter(r=>r.score !== null && r.score !== undefined).length;
+    const txt = (id, valeur) => { const n = document.getElementById(id); if(n) n.textContent = valeur; };
+    txt('hdr-prov', total);
+    txt('ft-prov', total);
+    txt('ft-rows', nf(ROWS.length));
+    txt('a-cover', dispo('version_a_mybestsim') + ' fournisseurs sur ' + total);
+    txt('a-chip', dispo('version_a_mybestsim') + ' / ' + total + ' fournisseurs');
+    txt('b-chip', dispo('version_b_trustpilot') + ' / ' + total + ' fournisseurs');
+    txt('c-cover', dispo('version_c_sans_editorial'));
+    txt('c-chip', dispo('version_c_sans_editorial') + ' / ' + total + ' fournisseurs');
   }
 
   function render(){
