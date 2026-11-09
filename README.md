@@ -25,10 +25,13 @@ portent sur le catalogue complet.
 ## Structure du dépôt
 
 ```
-data/                   18 CSV fournisseurs (données sources)
+data/                   18 CSV fournisseurs (données de repli et de test)
+data_sources.csv        liens Google Drive des CSV (un fichier par ligne : nom,lien)
 scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
+  fetch_sources.py      télécharge les CSV listés dans data_sources.csv depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
+  check_editorial.py    compare les scores MyBestSim stockés à leur page publique
   country_coords.py     centroïdes des pays, pour la carte
 docs/                    site statique (GitHub Pages)
   index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
@@ -36,24 +39,28 @@ docs/                    site statique (GitHub Pages)
   data.json               généré par compute_metrics.py, ne pas éditer à la main
   internet-en-croisiere-esim.html   article SEO (partie 2 du test)
   assets/                 logo et images de l'article
-tests/
-  test_compute_metrics.py 34 tests
-.github/workflows/ci.yml  tests + régénération de data.json à chaque push
+tests/                    58 tests (calculs, récupération Drive, dérive éditoriale, parité
+                          Python/navigateur)
+.github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
+requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
 ```
 
 ## Utiliser
 
 ```bash
-pip install -r requirements.txt
-pytest tests/                                 # 34 tests
-python scripts/compute_metrics.py             # régénère docs/data.json
+pip install -r requirements-dev.txt && playwright install chromium   # une fois
+pytest tests/                                 # 58 tests (le test navigateur est ignoré
+                                              # sans Playwright)
+python scripts/compute_metrics.py             # régénère docs/data.json depuis data/
+python scripts/fetch_sources.py               # (option) télécharge les CSV depuis Drive
+python scripts/check_editorial.py             # compare les scores MyBestSim stockés au site
 python -m http.server 8600 --directory docs   # prévisualiser en local
 ```
 
 `compute_metrics.py` accepte `--source <dossier>` pour pointer vers n'importe quel dossier
-de CSV — chemin local, réseau ou dossier Drive/OneDrive synchronisé. Un nouveau fournisseur
-est pris en compte automatiquement : il suffit d'ajouter son CSV au dossier source, aucune
-modification de code n'est nécessaire.
+de CSV — chemin local, réseau ou dossier synchronisé. Un nouveau fournisseur est pris en
+compte automatiquement : il suffit d'ajouter son CSV au dossier source (ou une ligne dans
+`data_sources.csv`), aucune modification de code n'est nécessaire.
 
 ## Architecture
 
@@ -65,9 +72,25 @@ Le pipeline a deux étapes distinctes, pour que le dashboard reste consultable s
    sont embarquées dans `data.json`, et les filtres (fournisseur, réseau, durée) recalculent
    les graphiques et la carte directement dans le navigateur, sans second appel serveur.
 
-La CI (GitHub Actions) relance les tests à chaque push, régénère `data.json` et échoue si le
-résultat diffère de la version commitée — une garantie que les données publiées sont
-reproductibles et à jour avec le code.
+## Automatisation
+
+Le workflow GitHub Actions (`.github/workflows/ci.yml`) tourne à chaque push sur `main`, à
+chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Actions) :
+
+- **test** : les 58 tests.
+- **parity** : charge le dashboard dans Chromium et compare les chiffres recalculés en
+  JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
+  5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
+  test, l'un pourrait dériver de l'autre sans que rien ne le signale.
+- **deploy** (hors pull request) : récupère les CSV depuis Google Drive, génère `data.json`
+  et publie le site sur GitHub Pages. Si `data_sources.csv` est vide, il utilise le dossier
+  `data/` du dépôt. Tout autre échec (fichier non partagé, réseau) arrête le déploiement
+  plutôt que de publier des données périmées sans le dire. `docs/data.json` commité n'est
+  donc qu'un instantané : la version publiée est régénérée à chaque exécution.
+- **editorial-drift** (quotidien uniquement) : compare `MYBESTSIM_SCORES` à la page
+  publique de MyBestSim et échoue si un score a changé. Les notes Trustpilot ne sont pas
+  vérifiées automatiquement : leur site refuse les requêtes de scripts (403) et leurs
+  conditions interdisent le scraping — elles restent à relever à la main.
 
 ## Méthodologie
 
