@@ -1,13 +1,20 @@
-name: Tests et régénération des données
+name: Tests, données et déploiement
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # Chaque jour à 05:00 UTC : récupère les CSV depuis Google Drive et republie le site.
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  test-and-build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,16 +26,95 @@ jobs:
       - name: Installe les dépendances
         run: pip install -r requirements.txt
 
+      # Le test de parité navigateur est ignoré ici (playwright n'est pas installé) :
+      # il tourne dans le job « parity ».
       - name: Lance les tests
         run: pytest tests/ -v
 
-      - name: Régénère docs/data.json depuis les CSV
-        run: python scripts/compute_metrics.py
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Vérifie l'absence de changement non commité dans data.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installe les dépendances (avec Playwright)
+        run: pip install -r requirements-dev.txt
+
+      - name: Installe Chromium
+        run: playwright install --with-deps chromium
+
+      - name: Compare les chiffres du navigateur à ceux de Python
+        run: pytest tests/test_parity_browser.py -v
+
+  deploy:
+    needs: [test, parity]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installe les dépendances
+        run: pip install -r requirements.txt
+
+      # data_sources.csv liste les fichiers Google Drive. Tant qu'il est vide (code 3), on
+      # utilise le dossier data/ du dépôt ; tout autre échec (fichier non partagé, réseau)
+      # arrête le déploiement plutôt que de publier des données périmées sans le dire.
+      - name: Récupère les CSV (Google Drive, sinon data/)
+        id: source
+        shell: bash
         run: |
-          if ! git diff --quiet docs/data.json; then
-            echo "docs/data.json n'est pas à jour avec les CSV — relancer compute_metrics.py et commiter."
-            git diff docs/data.json
-            exit 1
+          set +e
+          python scripts/fetch_sources.py --out build/data
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "dir=build/data" >> "$GITHUB_OUTPUT"
+          elif [ "$code" -eq 3 ]; then
+            echo "dir=data" >> "$GITHUB_OUTPUT"
+          else
+            exit "$code"
           fi
+
+      - name: Génère data.json et assemble le site
+        run: |
+          mkdir -p site
+          cp -r docs/. site/
+          python scripts/compute_metrics.py --source "${{ steps.source.outputs.dir }}" --out site/data.json
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  editorial-drift:
+    # Alerte (job en échec, donc e-mail GitHub) quand les scores MyBestSim saisis à la main
+    # ne correspondent plus à leur page publique. Indépendant du déploiement.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compare les scores stockés à la page MyBestSim
+        shell: bash
+        run: python scripts/check_editorial.py | tee -a "$GITHUB_STEP_SUMMARY"
