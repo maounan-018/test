@@ -276,6 +276,19 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 }
 @media (max-width:560px){
   .kpis{grid-template-columns:1fr}
+  /* La barre de filtres est collée en haut : sur un téléphone elle occupait 332 px, soit
+     39 % de l'écran, et masquait le haut de chaque graphique au défilement. Mesuré en
+     375 px de large. On la compacte sans rien lui retirer : la liste des fournisseurs
+     prend toute la largeur mais moins de hauteur (elle reste défilable), et les deux
+     listes déroulantes passent côte à côte au lieu d'être empilées. */
+  .toolbar{padding:10px 12px; gap:9px; margin-bottom:16px}
+  .toolbar > div:first-child{flex:1 1 100%}
+  .toolbar > div:nth-child(2), .toolbar > div:nth-child(3){flex:1 1 0; min-width:0}
+  .toolbar select{min-width:0; width:100%; padding:6px 8px}
+  .toolbar label{margin-bottom:3px}
+  .provider-picker{width:100%; max-height:84px}
+  .prov-opt{padding:5px 10px}
+  .toolbar .reset{padding:6px 12px}
 }
 </style>
 </head>
