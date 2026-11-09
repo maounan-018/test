@@ -1,0 +1,8 @@
+# Sources des CSV fournisseurs : un fichier Google Drive par ligne, au format  nom,lien
+# Chaque fichier doit être partagé en « Tous les utilisateurs disposant du lien — Lecteur ».
+# Tant que ce fichier ne contient aucune ligne, le pipeline utilise le dossier data/ du dépôt.
+# Pour ajouter un fournisseur : ajouter une ligne ici, rien d'autre.
+#
+# Exemple :
+# airalo,https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz012345/view?usp=sharing
+name,url
