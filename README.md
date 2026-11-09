@@ -44,7 +44,7 @@ scripts/
                         jamais relevés
   catalog_providers.py  liste les fournisseurs du catalogue et rapproche leurs noms
   country_coords.py     centroïdes des pays, pour la carte
-docs/                    le site publié
+docs/                    le site, publié sur Cloudflare Pages
   index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
                          clair par défaut, bascule vers le thème sombre dans la sidebar
   data.json               généré par compute_metrics.py et régénéré à chaque publication :
@@ -97,7 +97,9 @@ chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Ac
   JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
   5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
   test, l'un pourrait dériver de l'autre sans que rien ne le signale.
-- **deploy** (hors pull request) : récupère les CSV, régénère `data.json` et publie le site.
+- **deploy** (hors pull request) : récupère les CSV, régénère `data.json` et publie le site
+  sur Cloudflare Pages, par téléversement direct depuis l'action — sans intégration Git, pour
+  que l'adresse du dashboard ne soit pas annoncée sur le dépôt.
   Le manifeste des liens est fourni à l'exécution, jamais stocké dans le dépôt ; sans lui,
   le pipeline utilise le dossier `data/`. Tout autre échec — fichier non partagé, réseau —
   arrête la publication plutôt que de mettre en ligne des données périmées sans le dire.
