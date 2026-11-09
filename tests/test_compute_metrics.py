@@ -22,6 +22,7 @@ from compute_metrics import (
     build_dataset,
     _percentile_scores,
 )
+from editorial_sources import MYBESTSIM_SCORES
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -217,6 +218,41 @@ class TestCompositeScores:
         # quantitatifs valent tous 100 (seul fournisseur du jeu de test) pour 40 pts.
         # Règle de trois (x20) aurait donné 84.0*0.6 + 40 = 90.4 à la place de 88.0.
         assert row["score"] == pytest.approx(88.0, abs=0.1)
+
+    def test_version_a_is_published_score_not_recombined(self):
+        """Régression : MYBESTSIM_SCORES contient le score FINAL publié par MyBestSim,
+        déjà mélangé (60 % éditorial + 40 % bonus data). Le recombiner avec nos propres
+        notes prix/couverture/réseau comptait la dimension quantitative deux fois. La
+        version A doit être ce score publié, tel quel, quelles que soient nos données."""
+        df = pd.DataFrame([
+            {"provider": "Airalo", "country_code": "FR", "price": 10.0, "data_gb": 1,
+             "network": "4G", "validity_days": 7},
+            {"provider": "Roamic", "country_code": "FR", "price": 90.0, "data_gb": 1,
+             "network": "5G", "validity_days": 7},
+            {"provider": "Roamic", "country_code": "DE", "price": 90.0, "data_gb": 1,
+             "network": "5G", "validity_days": 7},
+        ])
+        scores = composite_scores(df)
+        by_provider = {r["provider"]: r for r in scores["version_a_mybestsim"]}
+        for p in ("Airalo", "Roamic"):
+            assert by_provider[p]["score"] == pytest.approx(float(MYBESTSIM_SCORES[p]))
+            assert by_provider[p]["editorial_source"] == "mybestsim"
+
+    def test_network_criterion_counts_unlimited_not_only_5g(self):
+        """MyBestSim décrit ce critère comme « 5G + unlimited ». Deux fournisseurs
+        identiques en prix/Go, couverture et part de 5G (nulle), qui ne diffèrent que par
+        la présence d'une offre illimitée : celui qui en propose doit obtenir le meilleur
+        score de la version C. Avant correction seule la 5G était mesurée et les deux
+        scores étaient égaux."""
+        rows = []
+        for provider, de_data in (("X", None), ("Y", 1)):  # None = illimité
+            rows.append({"provider": provider, "country_code": "FR", "price": 10.0,
+                         "data_gb": 1, "network": "4G", "validity_days": 7})
+            rows.append({"provider": provider, "country_code": "DE", "price": 10.0,
+                         "data_gb": de_data, "network": "4G", "validity_days": 7})
+        scores = composite_scores(pd.DataFrame(rows))
+        by_provider = {r["provider"]: r["score"] for r in scores["version_c_sans_editorial"]}
+        assert by_provider["X"] > by_provider["Y"]
 
 
 class TestDeterministicOrdering:

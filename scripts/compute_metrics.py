@@ -281,22 +281,31 @@ def _percentile_scores(values: dict, lower_is_better: bool = False) -> dict:
 
 def composite_scores(df: pd.DataFrame) -> dict:
     """Calcule les 3 versions du score composite par fournisseur.
-    Version A : pondération MyBestSim intégrale (60% éditorial + 16/14/10 quantitatifs),
-                éditorial = score MyBestSim réel si connu, sinon Trustpilot, sinon indisponible.
+    Version A : score MyBestSim publié tel quel (pas de recombinaison — voir plus bas
+                pourquoi), sinon indisponible.
     Version B : pondération Trustpilot comme seule source éditoriale (60/16/14/10),
                 fournisseurs sans Trustpilot fiable (<2500 avis) marqués indisponibles.
     Version C : sans éditorial, 3 critères quantitatifs seuls rescalés à 100%
-                (40% prix / 35% couverture / 25% réseau 5G).
+                (40% prix / 35% couverture / 25% réseau 5G + illimité).
     """
     pgb = {r["provider"]: r["price_per_gb"] for r in price_per_gb_by_provider(df)}
     cov = {r["provider"]: r["countries"] for r in coverage_breadth(df)}
-    net5g = df.groupby("provider").apply(lambda g: (g["network"] == "5G").mean() * 100, include_groups=False)
+    # Critère réseau = moyenne de deux pourcentages du catalogue du fournisseur : offres
+    # en 5G et offres en data illimitée. MyBestSim décrit ce critère comme "5G + unlimited
+    # : feature availability" (vérifié sur mybestsim.com/en/best-esim-providers/) — avant
+    # cette correction, seule la part de 5G était mesurée, l'illimité était ignoré.
+    # Moyenne des deux pourcentages plutôt qu'un simple "a au moins une offre illimitée"
+    # binaire : reste cohérent avec la façon dont la 5G était déjà mesurée (part du
+    # catalogue, pas juste présence/absence).
+    pct_5g = df.groupby("provider").apply(lambda g: (g["network"] == "5G").mean() * 100, include_groups=False)
+    pct_unlimited = df.groupby("provider").apply(lambda g: g["data_gb"].isna().mean() * 100, include_groups=False)
+    net_feat = (pct_5g + pct_unlimited) / 2
 
     providers = sorted(df["provider"].unique())
-    net5g_dict = net5g.to_dict()
+    net_feat_dict = net_feat.to_dict()
     price_scores = _percentile_scores(pgb, lower_is_better=True)  # moins cher = mieux
     cov_scores = _percentile_scores(cov)
-    net_scores = _percentile_scores(net5g_dict)
+    net_scores = _percentile_scores(net_feat_dict)
 
     def quant_subscores(provider):
         return price_scores[provider], cov_scores[provider], net_scores[provider]
@@ -309,13 +318,18 @@ def composite_scores(df: pd.DataFrame) -> dict:
         score_c = round(price_score * 0.40 + cov_score * 0.35 + net_score * 0.25, 1)
         version_c.append({"provider": p, "score": score_c})
 
-        # Composante quantitative commune à A et B, poids MyBestSim bruts 16/14/10 (=40 pts)
+        # Composante quantitative commune à B, poids MyBestSim bruts 16/14/10 (=40 pts)
         quant_40 = price_score * 0.16 + cov_score * 0.14 + net_score * 0.10
 
-        # Version A : éditorial = MyBestSim réel si connu
+        # Version A : score MyBestSim publié, SANS recombinaison avec nos notes
+        # quantitatives. MYBESTSIM_SCORES contient leur score final déjà mélangé (60%
+        # éditorial + 40% bonus data — vérifié : nos valeurs matchent exactement les
+        # scores affichés sur mybestsim.com/en/best-esim-providers/, ex. Roamic 80/100).
+        # Ce n'est PAS une note éditoriale isolée : ils ne publient jamais ce sous-score
+        # séparément. Le recombiner avec quant_40 comptait deux fois la dimension
+        # quantitative (une fois dans leur score déjà mélangé, une fois en plus ici).
         if p in MYBESTSIM_SCORES:
-            editorial = MYBESTSIM_SCORES[p]
-            score_a = round(editorial * 0.60 + quant_40, 1)
+            score_a = round(float(MYBESTSIM_SCORES[p]), 1)
             version_a.append({"provider": p, "score": score_a, "editorial_source": "mybestsim"})
         else:
             version_a.append({"provider": p, "score": None, "editorial_source": "indisponible"})

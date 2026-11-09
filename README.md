@@ -30,11 +30,14 @@ scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
   country_coords.py     centroïdes des pays, pour la carte
-docs/                    dashboard statique (GitHub Pages)
-  index.html             page unique : HTML, CSS, JavaScript
+docs/                    site statique (GitHub Pages)
+  index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
+                         clair par défaut, bascule vers le thème sombre dans la sidebar
   data.json               généré par compute_metrics.py, ne pas éditer à la main
+  internet-en-croisiere-esim.html   article SEO (partie 2 du test)
+  assets/                 logo et images de l'article
 tests/
-  test_compute_metrics.py 32 tests
+  test_compute_metrics.py 34 tests
 .github/workflows/ci.yml  tests + régénération de data.json à chaque push
 ```
 
@@ -42,7 +45,7 @@ tests/
 
 ```bash
 pip install -r requirements.txt
-pytest tests/                                 # 32 tests
+pytest tests/                                 # 34 tests
 python scripts/compute_metrics.py             # régénère docs/data.json
 python -m http.server 8600 --directory docs   # prévisualiser en local
 ```
@@ -87,12 +90,25 @@ est chère.
 bruts. Plutôt que d'en inventer une seule version présentée comme vérité, trois sont
 calculées :
 
-- **Version A** — pondération MyBestSim (60 % éditorial, 16 % prix, 14 % couverture,
-  10 % réseau 5G), éditorial = score publié par MyBestSim. Couvre 5 fournisseurs sur 18.
-- **Version B** — même pondération, éditorial = note Trustpilot (fournisseurs à plus de
-  2 500 avis uniquement). Couvre 12 fournisseurs sur 18.
+- **Version A** — score MyBestSim publié, tel quel. MyBestSim décrit sa propre méthode
+  comme 60 % éditorial + 40 % bonus data (16 % prix, 14 % couverture, 10 % réseau,
+  vérifié sur mybestsim.com/en/best-esim-providers/), mais ce score publié est déjà le
+  résultat final de ce mélange — ils ne communiquent jamais la part éditoriale isolée.
+  On ne le recombine donc pas avec nos propres notes quantitatives (ça compterait deux
+  fois la dimension quantitative, une fois dans leur score, une fois dans la nôtre) : on
+  l'affiche directement comme référence. Couvre 5 fournisseurs sur 18, les autres restent
+  indisponibles plutôt qu'estimés.
+- **Version B** — pondération 60 % éditorial / 16 % prix / 14 % couverture / 10 % réseau,
+  éditorial = note Trustpilot (fournisseurs à plus de 2 500 avis uniquement). Contrairement
+  au score MyBestSim, une note Trustpilot est une mesure de satisfaction isolée — elle ne
+  mélange pas déjà prix et couverture — donc la recombiner avec nos notes quantitatives
+  n'a pas le même problème. Couvre 12 fournisseurs sur 18.
 - **Version C** — sans composante éditoriale, les 3 critères mesurables repondérés à
-  100 % (40 % prix, 35 % couverture, 25 % réseau 5G). Couvre les 18 fournisseurs.
+  100 % (40 % prix, 35 % couverture, 25 % réseau). Couvre les 18 fournisseurs.
+
+Le critère réseau (10 % en B, 25 % en C) mesure la part du catalogue du fournisseur en 5G
+**et** en data illimitée (moyenne des deux pourcentages) — MyBestSim définit ce critère
+comme "5G + unlimited : feature availability", pas la 5G seule.
 
 Les sous-scores quantitatifs sont normalisés par rang percentile plutôt que par min-max :
 les écarts réels entre fournisseurs sont faibles (quelques pour cent) et un min-max les
