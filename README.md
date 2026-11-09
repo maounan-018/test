@@ -1,51 +1,58 @@
 # Catalogue eSIM — MyBestSim
 
 Dashboard du catalogue eSIM pour le test de recrutement MyBestSim (Stagiaire Développeur
-IA & Automatisation). Lit 18 fichiers CSV fournisseurs, calcule toutes les statistiques
-demandées et les publie comme une page web statique, consultable dans un navigateur sans
-rien installer ni avoir les fichiers sources en local.
+IA & Automatisation). Un script lit les 18 fichiers CSV fournisseurs et calcule toutes les
+statistiques demandées ; le résultat est publié comme une page autonome, servie telle quelle,
+sans serveur applicatif ni base de données. Elle se consulte dans un navigateur sans rien
+installer et sans avoir les fichiers sources en local.
 
-## Chiffres clés du catalogue
+« Servie telle quelle » ne veut pas dire figée : la page embarque les lignes du catalogue et
+recalcule tous ses chiffres dans le navigateur à chaque changement de filtre. Ce qui est
+statique, c'est l'hébergement — pas le contenu.
 
-| Métrique | Valeur |
+## Ce que mesure le dashboard
+
+| Métrique | Ce qu'elle mesure |
 |---|---|
-| Produits | 5 056 |
-| Fournisseurs | 18 |
-| Fourchette de prix | 5,36 € – 154,63 € |
-| Prix moyen | 29,30 € |
-| Produits > 100 € | 56 (1,1 %) |
-| Data moyenne (forfaits à volume fini) | 14,49 Go |
-| Forfaits illimités | 653 |
-| Pays cartographiés | 50 |
-| Prime réseau 5G vs 4G (à destination égale) | 0,3 %, sur 50 pays comparables |
+| Produits | nombre d'offres du catalogue |
+| Fournisseurs | nombre de marques distinctes |
+| Fourchette de prix | le forfait le moins cher et le plus cher, toutes tailles confondues : une étendue, pas une moyenne |
+| Prix moyen | moyenne du prix affiché, sans pondération par le volume — un forfait 1 Go y pèse autant qu'un 50 Go |
+| Produits > 100 € | nombre d'offres au-dessus de 100 €, et leur part du catalogue |
+| Data moyenne | volume moyen des forfaits à volume fini ; les illimités en sont exclus, n'ayant pas de volume |
+| Forfaits illimités | nombre d'offres sans volume fini |
+| Médiane €/Go | prix au Go du forfait médian : la moitié des forfaits à volume fini coûtent moins cher au Go |
+| Pays cartographiés | pays réels positionnés sur la carte, zones multi-pays exclues |
+| Prime réseau 5G vs 4G | écart de prix entre 5G et 4G à destination égale |
 
-Ces chiffres sont recalculés à chaque changement de filtre dans le dashboard ; ici ils
-portent sur le catalogue complet.
+Les valeurs changent à chaque mise à jour du catalogue et le dashboard les affiche à jour.
+Dans la page, les cartes KPI portent sur la sélection filtrée et se recalculent à chaque
+filtre, tandis que la sidebar rappelle en permanence les chiffres du catalogue complet.
 
 ## Structure du dépôt
 
 ```
 data/                   18 CSV fournisseurs (données de repli et de test)
-data_sources.csv        modèle commenté : AUCUN lien réel ici (le dépôt peut être public)
-data_sources.local.csv  les vrais liens, format nom,lien — ignoré par git, jamais commité
+data_sources.csv        modèle commenté : aucun lien réel n'est stocké dans le dépôt
 scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
   fetch_sources.py      télécharge les CSV du manifeste depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
   check_editorial.py    compare les scores MyBestSim stockés à leur page, et y cherche
                         le score des fournisseurs qu'on n'a pas encore relevés
-  check_freshness.py    surveille l'âge des notes Trustpilot relevées à la main
+  check_freshness.py    surveille l'âge des relevés Trustpilot et signale les fournisseurs
+                        jamais relevés
   catalog_providers.py  liste les fournisseurs du catalogue et rapproche leurs noms
   country_coords.py     centroïdes des pays, pour la carte
-docs/                    site statique (GitHub Pages)
+docs/                    le site publié
   index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
                          clair par défaut, bascule vers le thème sombre dans la sidebar
-  data.json               généré par compute_metrics.py, ne pas éditer à la main
-  internet-en-croisiere-esim.html   article SEO (partie 2 du test)
-  assets/                 logo et images de l'article
-tests/                    94 tests (calculs, récupération Drive, dérive éditoriale, parité
-                          Python/navigateur)
-.github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
+  data.json               généré par compute_metrics.py et régénéré à chaque publication :
+                          une retouche à la main serait écrasée au passage suivant
+  assets/                 logo MyBestSim
+tests/                    94 tests (calculs, récupération des CSV, contrôles éditoriaux,
+                          parité Python/navigateur)
+.github/workflows/ci.yml  tests, parité, publication quotidienne et alerte de dérive
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
 ```
 
@@ -61,12 +68,10 @@ python scripts/check_editorial.py             # compare les scores MyBestSim sto
 python -m http.server 8600 --directory docs   # prévisualiser en local
 ```
 
-Le manifeste des liens Drive est choisi dans cet ordre : l'option `--manifest`, puis
-`data_sources.local.csv` s'il existe, puis `data_sources.csv`. Seul le dernier est suivi par
-git, et c'est un modèle commenté : un lien de partage donne accès au fichier à qui le
-possède, il n'a donc rien à faire dans un dépôt. En CI, le secret `DRIVE_SOURCES`
-(Settings > Secrets and variables > Actions) est écrit dans le fichier local au moment de
-l'exécution. Un test échoue si un vrai lien se retrouve dans `data_sources.csv`.
+Les liens de partage des CSV ne sont jamais stockés dans le dépôt : un lien donne accès au
+fichier à qui le possède. `fetch_sources.py` lit un manifeste fourni à l'exécution et, à
+défaut, le pipeline utilise le dossier `data/`. Un test échoue si un lien réel se retrouve
+dans un fichier suivi par git.
 
 `compute_metrics.py` accepte `--source <dossier>` pour pointer vers n'importe quel dossier
 de CSV — chemin local, réseau ou dossier synchronisé. Pour intégrer un nouveau fournisseur,
@@ -92,13 +97,12 @@ chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Ac
   JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
   5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
   test, l'un pourrait dériver de l'autre sans que rien ne le signale.
-- **deploy** (hors pull request) : récupère les CSV depuis Google Drive, génère `data.json`
-  et publie le site sur GitHub Pages. Les liens de partage viennent du secret
-  `DRIVE_SOURCES`, que le workflow écrit dans `data_sources.local.csv` au moment de
-  l'exécution : ils ne sont donc jamais dans le dépôt, qui peut être public sans donner
-  accès aux CSV. Sans ce secret, le pipeline utilise le dossier `data/` du dépôt. Tout autre échec (fichier non partagé, réseau) arrête le déploiement
-  plutôt que de publier des données périmées sans le dire. `docs/data.json` commité n'est
-  donc qu'un instantané : la version publiée est régénérée à chaque exécution.
+- **deploy** (hors pull request) : récupère les CSV, régénère `data.json` et publie le site.
+  Le manifeste des liens est fourni à l'exécution, jamais stocké dans le dépôt ; sans lui,
+  le pipeline utilise le dossier `data/`. Tout autre échec — fichier non partagé, réseau —
+  arrête la publication plutôt que de mettre en ligne des données périmées sans le dire.
+  `docs/data.json` commité n'est donc qu'un instantané : la version publiée est régénérée à
+  chaque exécution.
 - **editorial-drift** (quotidien uniquement) : compare `MYBESTSIM_SCORES` à la page
   publique de MyBestSim et échoue si un score a changé. Les notes Trustpilot, elles, ne
   peuvent pas être vérifiées automatiquement : leur `robots.txt` interdit tout le site aux
@@ -148,11 +152,10 @@ multi-pays n'a pas de position unique sur une carte.
 Trois façons d'alimenter le dossier source, de la plus simple à la plus automatique :
 
 1. **Dossier du dépôt** (`data/`) : déposer le fichier, rien d'autre.
-2. **Google Drive** (en place aujourd'hui) : une ligne `nom,lien` par fichier, dans
-   `data_sources.local.csv` en local et dans le secret `DRIVE_SOURCES` pour la CI. C'est le
-   seul geste manuel qui reste — le téléchargement, le contrôle de structure, le calcul et la
-   publication sont automatiques.
-3. **Lecture du dossier entier** : non implémenté, et c'est un choix. Les deux appels
+2. **Google Drive** (en place aujourd'hui) : une ligne `nom,lien` à ajouter au manifeste.
+   C'est le seul geste manuel qui reste — le téléchargement, le contrôle de structure, le
+   calcul et la publication sont automatiques.
+3. **Lecture du dossier entier** : non implémenté. Les deux appels
    nécessaires sont `files.list?q='<ID_DOSSIER>' in parents` pour l'API Google Drive, et
    `/shares/{lien encodé}/driveItem?$expand=children` pour Microsoft Graph (OneDrive,
    SharePoint) — même principe, lister puis télécharger. Côté Drive, une clé d'API suffit pour
@@ -188,19 +191,15 @@ est chère.
 bruts. Plutôt que d'en inventer une seule version présentée comme vérité, trois sont
 calculées :
 
-- **Version A** — score MyBestSim publié, tel quel. MyBestSim décrit sa propre méthode
-  comme 60 % éditorial + 40 % bonus data (16 % prix, 14 % couverture, 10 % réseau,
-  vérifié sur mybestsim.com/en/best-esim-providers/), mais ce score publié est déjà le
-  résultat final de ce mélange — ils ne communiquent jamais la part éditoriale isolée.
-  On ne le recombine donc pas avec nos propres notes quantitatives (ça compterait deux
-  fois la dimension quantitative, une fois dans leur score, une fois dans la nôtre) : on
-  l'affiche directement comme référence. Couvre 5 fournisseurs sur 18, les autres restent
-  indisponibles plutôt qu'estimés.
+- **Version A** — le score que MyBestSim publie lui-même, lu sur
+  mybestsim.com/en/best-esim-providers/ et affiché sans retraitement, comme référence
+  externe. Couvre 5 fournisseurs sur 18 ; les autres restent indisponibles plutôt
+  qu'estimés.
 - **Version B** — pondération 60 % éditorial / 16 % prix / 14 % couverture / 10 % réseau,
-  éditorial = note Trustpilot (fournisseurs à plus de 2 500 avis uniquement). Contrairement
-  au score MyBestSim, une note Trustpilot est une mesure de satisfaction isolée — elle ne
-  mélange pas déjà prix et couverture — donc la recombiner avec nos notes quantitatives
-  n'a pas le même problème. Couvre 12 fournisseurs sur 18.
+  avec la note Trustpilot comme composante éditoriale (fournisseurs à plus de 2 500 avis
+  uniquement). Une note Trustpilot mesure la satisfaction et rien d'autre : elle ne contient
+  ni prix ni couverture, on peut donc la combiner à nos notes quantitatives sans compter deux
+  fois la même chose. Couvre 12 fournisseurs sur 18.
 - **Version C** — sans composante éditoriale, les 3 critères mesurables repondérés à
   100 % (40 % prix, 35 % couverture, 25 % réseau). Couvre les 18 fournisseurs.
 
@@ -216,9 +215,9 @@ fournisseurs les plus extrêmes du catalogue.
 Conséquence à connaître : un rang percentile est **relatif au catalogue**. Ajouter un
 fournisseur déplace les notes de tous les autres. Vérifié en ajoutant un 19e fournisseur :
 les 18 scores de la version C bougent et 11 changements de rang apparaissent, alors que la
-version A (score MyBestSim repris tel quel) ne bouge pas d'un point — ce qui confirme au
-passage qu'elle est bien un passe-plat. Deux scores publiés à des dates différentes ne sont
-donc comparables que si le catalogue est le même.
+version A ne bouge pas d'un point, puisqu'elle ne fait que reprendre un score calculé
+ailleurs. Deux scores publiés à des dates différentes ne sont donc comparables que si le
+catalogue est le même.
 
 La note Trustpilot (sur 5) est rescalée sur 100 par min-max entre 1 étoile et 5 étoiles, et
 non par une simple règle de trois : Trustpilot ne permet pas de note à 0 étoile, le minimum
@@ -229,7 +228,21 @@ Sources et dates de capture des scores éditoriaux : voir les commentaires de
 
 ## Tests
 
-32 tests couvrant les calculs (formules vérifiées à la main sur des cas simples), les cas
-limites (filtre sans résultat, zones multi-pays, forfaits illimités) et plusieurs
-régressions trouvées en cours de développement — dont la lecture du code pays « NA »
-(Amérique du Nord), que pandas interprète par défaut comme une valeur manquante.
+94 tests, répartis ainsi :
+
+- **35 sur les calculs** : formules vérifiées à la main sur des cas simples, cas limites
+  (filtre sans résultat, zones multi-pays, forfaits illimités), régressions trouvées en cours
+  de route — dont la lecture du code pays « NA » (Amérique du Nord), que pandas interprète
+  par défaut comme une valeur manquante — et la correspondance entre `docs/data.json` et les
+  CSV du dépôt.
+- **26 sur la fraîcheur des relevés Trustpilot** : calcul de l'âge, seuil configurable, date
+  de relevé incohérente, détection d'un fournisseur jamais relevé, et vérification qu'aucun
+  module réseau n'est importé par le script — leurs conditions d'utilisation l'interdisent.
+- **18 sur la récupération des CSV** : extraction de l'identifiant d'un lien de partage,
+  réponse HTML renvoyée à la place d'un CSV, échecs groupés, choix du manifeste, et garde-fou
+  contre un lien réel laissé dans un fichier suivi par git.
+- **12 sur la dérive des scores MyBestSim** : lecture de leur page, écart avec les valeurs
+  stockées, découverte du score d'un fournisseur non encore relevé, refus des rapprochements
+  de noms approximatifs.
+- **3 de parité Python / navigateur** : les chiffres recalculés en JavaScript à chaque filtre
+  doivent être identiques à ceux de Python sur les mêmes lignes.
