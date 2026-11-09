@@ -12,6 +12,7 @@ fichier est ignoré ; sans chromium, il est ignoré en local mais échoue en CI.
 """
 import functools
 import http.server
+import json
 import math
 import os
 import re
@@ -21,11 +22,11 @@ import threading
 import pytest
 
 sync_api = pytest.importorskip("playwright.sync_api")
+pd = pytest.importorskip("pandas")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
 from compute_metrics import (  # noqa: E402
-    load_catalog,
     network_premium_by_country,
     price_per_gb_by_provider,
     regional_dispersion,
@@ -33,7 +34,6 @@ from compute_metrics import (  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 DOCS_DIR = os.path.join(ROOT, "docs")
-DATA_DIR = os.path.join(ROOT, "data")
 
 SCENARIOS = [
     pytest.param("", "", id="sans-filtre"),
@@ -72,7 +72,17 @@ def browser():
 
 @pytest.fixture(scope="module")
 def catalog():
-    return load_catalog(DATA_DIR)
+    """Les lignes telles que la page les reçoit, lues dans le data.json servi.
+
+    Lire les CSV de data/ à la place ferait tenir au test une hypothèse invisible : que
+    docs/data.json a bien été généré depuis ce dossier. Un data.json régénéré depuis le
+    Drive, ou contenant un fournisseur de plus, ferait alors échouer le test pour une
+    raison qui n'a rien à voir avec la parité. La parité, c'est : sur les MÊMES lignes,
+    le JavaScript et Python doivent trouver la même chose.
+    """
+    with open(os.path.join(DOCS_DIR, "data.json"), encoding="utf-8") as f:
+        rows = json.load(f)["rows"]
+    return pd.DataFrame(rows)
 
 
 @pytest.fixture

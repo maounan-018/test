@@ -410,3 +410,25 @@ class TestFullPipeline:
         for row in dataset["provider_breakdown"]:
             assert row["count"] > 0
         assert len(dataset["provider_breakdown"]) == 18
+
+
+class TestInstantaneCommite:
+    """docs/data.json est un instantané : il doit correspondre aux CSV du dépôt.
+
+    Le test de parité navigateur portait cette hypothèse en silence — il lisait les CSV de
+    data/ pour juger une page alimentée par docs/data.json. Elle est maintenant vérifiée
+    ici, explicitement, et le test de parité compare ce que la page reçoit vraiment.
+    """
+
+    def test_data_json_correspond_aux_csv(self):
+        import json
+
+        racine = os.path.join(os.path.dirname(__file__), "..")
+        from compute_metrics import build_dataset
+
+        attendu = build_dataset(os.path.join(racine, "data"))
+        with open(os.path.join(racine, "docs", "data.json"), encoding="utf-8") as f:
+            commite = json.load(f)
+        assert commite == attendu, (
+            "docs/data.json ne correspond plus aux CSV de data/ : relancer "
+            "python scripts/compute_metrics.py")
