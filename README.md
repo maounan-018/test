@@ -32,6 +32,7 @@ scripts/
   fetch_sources.py      télécharge les CSV listés dans data_sources.csv depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
   check_editorial.py    compare les scores MyBestSim stockés à leur page publique
+  check_freshness.py    surveille l'âge des notes Trustpilot relevées à la main
   country_coords.py     centroïdes des pays, pour la carte
 docs/                    site statique (GitHub Pages)
   index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
@@ -39,7 +40,7 @@ docs/                    site statique (GitHub Pages)
   data.json               généré par compute_metrics.py, ne pas éditer à la main
   internet-en-croisiere-esim.html   article SEO (partie 2 du test)
   assets/                 logo et images de l'article
-tests/                    58 tests (calculs, récupération Drive, dérive éditoriale, parité
+tests/                    78 tests (calculs, récupération Drive, dérive éditoriale, parité
                           Python/navigateur)
 .github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
@@ -88,9 +89,14 @@ chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Ac
   plutôt que de publier des données périmées sans le dire. `docs/data.json` commité n'est
   donc qu'un instantané : la version publiée est régénérée à chaque exécution.
 - **editorial-drift** (quotidien uniquement) : compare `MYBESTSIM_SCORES` à la page
-  publique de MyBestSim et échoue si un score a changé. Les notes Trustpilot ne sont pas
-  vérifiées automatiquement : leur site refuse les requêtes de scripts (403) et leurs
-  conditions interdisent le scraping — elles restent à relever à la main.
+  publique de MyBestSim et échoue si un score a changé. Les notes Trustpilot, elles, ne
+  peuvent pas être vérifiées automatiquement : leur `robots.txt` interdit tout le site aux
+  robots (`User-agent: *` puis `Disallow: /`), leurs pages comme `api.trustpilot.com`
+  répondent 403, et la seule voie officielle (API Data Solutions) passe par un contrat
+  commercial. Ce qui est automatisable, c'est de ne pas les laisser vieillir en silence :
+  `check_freshness.py` compare la date de relevé de chaque fournisseur à la date du jour et
+  fait échouer le job au-delà de 30 jours, avec la liste des pages à ouvrir. La mise à jour
+  reste humaine (`--checklist` imprime le relevé à cocher).
 
 ## Méthodologie
 
