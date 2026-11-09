@@ -53,7 +53,7 @@ requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
 
 ```bash
 pip install -r requirements-dev.txt && playwright install chromium   # une fois
-pytest tests/                                 # 58 tests (le test navigateur est ignoré
+pytest tests/                                 # 93 tests (le test navigateur est ignoré
                                               # sans Playwright)
 python scripts/compute_metrics.py             # régénère docs/data.json depuis data/
 python scripts/fetch_sources.py               # (option) télécharge les CSV depuis Drive
