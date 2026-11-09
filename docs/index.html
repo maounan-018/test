@@ -288,7 +288,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   .toolbar label{margin-bottom:3px}
   .provider-picker{width:100%; max-height:84px}
   .prov-opt{padding:5px 10px}
-  .toolbar .reset{padding:6px 12px}
+  /* La barre aligne ses éléments en haut : le bouton se retrouvait à hauteur des
+     intitulés « RÉSEAU » et « DURÉE DE VALIDITÉ » plutôt que des listes elles-mêmes.
+     align-self le descend sur la ligne des listes déroulantes. */
+  .toolbar .reset{padding:6px 12px; align-self:flex-end}
 }
 </style>
 </head>
