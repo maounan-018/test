@@ -72,6 +72,23 @@ jobs:
       # data_sources.csv liste les fichiers Google Drive. Tant qu'il est vide (code 3), on
       # utilise le dossier data/ du dépôt ; tout autre échec (fichier non partagé, réseau)
       # arrête le déploiement plutôt que de publier des données périmées sans le dire.
+      # Les liens de partage Drive ne sont pas dans le dépôt : ils vivent dans le secret
+      # DRIVE_SOURCES (Settings > Secrets and variables > Actions), au format « nom,lien »,
+      # une ligne par fichier. Le dépôt peut donc être public sans donner accès aux CSV.
+      # Sans ce secret, le pipeline utilise le dossier data/ du dépôt.
+      - name: Écrit le manifeste depuis le secret DRIVE_SOURCES
+        shell: bash
+        env:
+          DRIVE_SOURCES: ${{ secrets.DRIVE_SOURCES }}
+        run: |
+          if [ -z "$DRIVE_SOURCES" ]; then
+            echo "Secret DRIVE_SOURCES absent : le dossier data/ du dépôt sera utilisé."
+            exit 0
+          fi
+          echo "$DRIVE_SOURCES" > data_sources.local.csv
+          liens=$(grep -c "drive.google.com" data_sources.local.csv || true)
+          echo "Manifeste écrit depuis le secret : $liens lien(s)."
+
       - name: Récupère les CSV (Google Drive, sinon data/)
         id: source
         shell: bash
@@ -121,6 +138,23 @@ jobs:
 
       # Les deux contrôles ci-dessous comparent les sources éditoriales au catalogue RÉEL,
       # pour repérer un fournisseur ajouté depuis le dernier commit de docs/data.json.
+      # Les liens de partage Drive ne sont pas dans le dépôt : ils vivent dans le secret
+      # DRIVE_SOURCES (Settings > Secrets and variables > Actions), au format « nom,lien »,
+      # une ligne par fichier. Le dépôt peut donc être public sans donner accès aux CSV.
+      # Sans ce secret, le pipeline utilise le dossier data/ du dépôt.
+      - name: Écrit le manifeste depuis le secret DRIVE_SOURCES
+        shell: bash
+        env:
+          DRIVE_SOURCES: ${{ secrets.DRIVE_SOURCES }}
+        run: |
+          if [ -z "$DRIVE_SOURCES" ]; then
+            echo "Secret DRIVE_SOURCES absent : le dossier data/ du dépôt sera utilisé."
+            exit 0
+          fi
+          echo "$DRIVE_SOURCES" > data_sources.local.csv
+          liens=$(grep -c "drive.google.com" data_sources.local.csv || true)
+          echo "Manifeste écrit depuis le secret : $liens lien(s)."
+
       - name: Régénère la liste des fournisseurs du catalogue
         id: catalogue
         shell: bash

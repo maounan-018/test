@@ -102,3 +102,43 @@ class TestFetchAll:
         assert "2 fichier(s) sur 3" in message
         assert "prive" in message and "dossier" in message
         assert not (tmp_path / "out" / "prive.csv").exists()
+
+
+class TestResolveManifest:
+    """Les liens de partage ne doivent pas vivre dans le dépôt : le fichier local (ignoré
+    par git, écrit en CI depuis le secret DRIVE_SOURCES) a la priorité sur le modèle."""
+
+    def test_option_explicite_gagne(self, tmp_path):
+        from fetch_sources import resolve_manifest
+        (tmp_path / "data_sources.local.csv").write_text("name,url\n", encoding="utf-8")
+        assert resolve_manifest(str(tmp_path), "ailleurs.csv") == "ailleurs.csv"
+
+    def test_fichier_local_prefere_au_modele(self, tmp_path):
+        import os
+        from fetch_sources import resolve_manifest
+        (tmp_path / "data_sources.csv").write_text("name,url\n", encoding="utf-8")
+        (tmp_path / "data_sources.local.csv").write_text("name,url\n", encoding="utf-8")
+        assert resolve_manifest(str(tmp_path)) == os.path.join(str(tmp_path),
+                                                               "data_sources.local.csv")
+
+    def test_modele_utilise_si_pas_de_fichier_local(self, tmp_path):
+        import os
+        from fetch_sources import resolve_manifest
+        (tmp_path / "data_sources.csv").write_text("name,url\n", encoding="utf-8")
+        assert resolve_manifest(str(tmp_path)) == os.path.join(str(tmp_path),
+                                                               "data_sources.csv")
+
+
+class TestAucunLienDansLeDepot:
+    def test_le_modele_ne_contient_aucun_lien_reel(self):
+        """Garde-fou : un lien de partage collé dans data_sources.csv serait publié avec le
+        dépôt. Seul l'exemple commenté est toléré."""
+        import io
+        import os
+        chemin = os.path.join(os.path.dirname(__file__), "..", "data_sources.csv")
+        for ligne in io.open(chemin, encoding="utf-8"):
+            nue = ligne.strip()
+            if nue and not nue.startswith("#"):
+                assert "drive.google.com" not in nue, (
+                    "data_sources.csv contient un lien réel : le mettre dans "
+                    "data_sources.local.csv (ignoré par git) ou dans le secret DRIVE_SOURCES")

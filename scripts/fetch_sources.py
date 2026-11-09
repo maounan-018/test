@@ -1,6 +1,13 @@
-"""Télécharge les CSV fournisseurs depuis Google Drive, d'après data_sources.csv.
+"""Télécharge les CSV fournisseurs depuis Google Drive, d'après un manifeste « nom,url ».
 
-Usage: python fetch_sources.py [--manifest data_sources.csv] [--out dossier]
+Usage: python fetch_sources.py [--manifest FICHIER] [--out dossier]
+
+Le manifeste est choisi dans cet ordre : l'option --manifest si elle est donnée, sinon
+data_sources.local.csv s'il existe, sinon data_sources.csv. Les liens de partage ne sont
+pas dans le dépôt : data_sources.csv n'est qu'un modèle commenté, et les vrais liens vivent
+dans data_sources.local.csv, qui est ignoré par git. En CI, ce fichier est écrit au moment
+de l'exécution depuis le secret DRIVE_SOURCES. Un dépôt public n'expose donc jamais les
+liens, qui donnent accès aux fichiers à qui les possède.
 
 Chaque ligne du manifeste (nom,url) pointe vers UN fichier Drive partagé en « Tous les
 utilisateurs disposant du lien ». Le fichier est enregistré sous <out>/<nom>.csv, prêt à
@@ -42,6 +49,20 @@ def extract_drive_id(url: str) -> str:
         if m:
             return m.group(1)
     raise ValueError(f"identifiant Drive introuvable dans : {url!r}")
+
+
+LOCAL_MANIFEST = "data_sources.local.csv"
+REPO_MANIFEST = "data_sources.csv"
+
+
+def resolve_manifest(root: str, explicite=None) -> str:
+    """Chemin du manifeste à lire : option explicite, puis fichier local, puis modèle."""
+    if explicite:
+        return explicite
+    local = os.path.join(root, LOCAL_MANIFEST)
+    if os.path.exists(local):
+        return local
+    return os.path.join(root, REPO_MANIFEST)
 
 
 def read_manifest(path: str) -> list:
@@ -113,13 +134,16 @@ def fetch_all(entries: list, out_dir: str, downloader=download) -> list:
 def main() -> int:
     root = os.path.join(os.path.dirname(__file__), "..")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--manifest", default=os.path.join(root, "data_sources.csv"))
+    parser.add_argument("--manifest", default=None,
+                        help="manifeste à lire (défaut : data_sources.local.csv s'il "
+                             "existe, sinon data_sources.csv)")
     parser.add_argument("--out", default=os.path.join(root, "build", "data"))
     args = parser.parse_args()
 
-    entries = read_manifest(args.manifest) if os.path.exists(args.manifest) else []
+    manifest = resolve_manifest(root, args.manifest)
+    entries = read_manifest(manifest) if os.path.exists(manifest) else []
     if not entries:
-        print(f"Aucune source configurée dans {args.manifest}.", file=sys.stderr)
+        print(f"Aucune source configurée dans {manifest}.", file=sys.stderr)
         return EXIT_NOTHING_CONFIGURED
     try:
         written = fetch_all(entries, args.out)

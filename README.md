@@ -26,10 +26,11 @@ portent sur le catalogue complet.
 
 ```
 data/                   18 CSV fournisseurs (données de repli et de test)
-data_sources.csv        liens Google Drive des CSV (un fichier par ligne : nom,lien)
+data_sources.csv        modèle commenté : AUCUN lien réel ici (le dépôt peut être public)
+data_sources.local.csv  les vrais liens, format nom,lien — ignoré par git, jamais commité
 scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
-  fetch_sources.py      télécharge les CSV listés dans data_sources.csv depuis Google Drive
+  fetch_sources.py      télécharge les CSV du manifeste depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
   check_editorial.py    compare les scores MyBestSim stockés à leur page, et y cherche
                         le score des fournisseurs qu'on n'a pas encore relevés
@@ -42,7 +43,7 @@ docs/                    site statique (GitHub Pages)
   data.json               généré par compute_metrics.py, ne pas éditer à la main
   internet-en-croisiere-esim.html   article SEO (partie 2 du test)
   assets/                 logo et images de l'article
-tests/                    89 tests (calculs, récupération Drive, dérive éditoriale, parité
+tests/                    93 tests (calculs, récupération Drive, dérive éditoriale, parité
                           Python/navigateur)
 .github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
@@ -59,6 +60,13 @@ python scripts/fetch_sources.py               # (option) télécharge les CSV de
 python scripts/check_editorial.py             # compare les scores MyBestSim stockés au site
 python -m http.server 8600 --directory docs   # prévisualiser en local
 ```
+
+Le manifeste des liens Drive est choisi dans cet ordre : l'option `--manifest`, puis
+`data_sources.local.csv` s'il existe, puis `data_sources.csv`. Seul le dernier est suivi par
+git, et c'est un modèle commenté : un lien de partage donne accès au fichier à qui le
+possède, il n'a donc rien à faire dans un dépôt. En CI, le secret `DRIVE_SOURCES`
+(Settings > Secrets and variables > Actions) est écrit dans le fichier local au moment de
+l'exécution. Un test échoue si un vrai lien se retrouve dans `data_sources.csv`.
 
 `compute_metrics.py` accepte `--source <dossier>` pour pointer vers n'importe quel dossier
 de CSV — chemin local, réseau ou dossier synchronisé. Pour intégrer un nouveau fournisseur,
@@ -79,14 +87,16 @@ Le pipeline a deux étapes distinctes, pour que le dashboard reste consultable s
 Le workflow GitHub Actions (`.github/workflows/ci.yml`) tourne à chaque push sur `main`, à
 chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Actions) :
 
-- **test** : les 89 tests.
+- **test** : les 93 tests.
 - **parity** : charge le dashboard dans Chromium et compare les chiffres recalculés en
   JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
   5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
   test, l'un pourrait dériver de l'autre sans que rien ne le signale.
 - **deploy** (hors pull request) : récupère les CSV depuis Google Drive, génère `data.json`
-  et publie le site sur GitHub Pages. Si `data_sources.csv` est vide, il utilise le dossier
-  `data/` du dépôt. Tout autre échec (fichier non partagé, réseau) arrête le déploiement
+  et publie le site sur GitHub Pages. Les liens de partage viennent du secret
+  `DRIVE_SOURCES`, que le workflow écrit dans `data_sources.local.csv` au moment de
+  l'exécution : ils ne sont donc jamais dans le dépôt, qui peut être public sans donner
+  accès aux CSV. Sans ce secret, le pipeline utilise le dossier `data/` du dépôt. Tout autre échec (fichier non partagé, réseau) arrête le déploiement
   plutôt que de publier des données périmées sans le dire. `docs/data.json` commité n'est
   donc qu'un instantané : la version publiée est régénérée à chaque exécution.
 - **editorial-drift** (quotidien uniquement) : compare `MYBESTSIM_SCORES` à la page
@@ -138,9 +148,10 @@ multi-pays n'a pas de position unique sur une carte.
 Trois façons d'alimenter le dossier source, de la plus simple à la plus automatique :
 
 1. **Dossier du dépôt** (`data/`) : déposer le fichier, rien d'autre.
-2. **Google Drive** (en place aujourd'hui) : une ligne `nom,lien` dans `data_sources.csv` par
-   fichier. C'est le seul geste manuel qui reste — le téléchargement, le contrôle de
-   structure, le calcul et la publication sont automatiques.
+2. **Google Drive** (en place aujourd'hui) : une ligne `nom,lien` par fichier, dans
+   `data_sources.local.csv` en local et dans le secret `DRIVE_SOURCES` pour la CI. C'est le
+   seul geste manuel qui reste — le téléchargement, le contrôle de structure, le calcul et la
+   publication sont automatiques.
 3. **Lecture du dossier entier** : non implémenté, et c'est un choix. Les deux appels
    nécessaires sont `files.list?q='<ID_DOSSIER>' in parents` pour l'API Google Drive, et
    `/shares/{lien encodé}/driveItem?$expand=children` pour Microsoft Graph (OneDrive,
