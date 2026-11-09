@@ -4,43 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catalogue eSIM — MyBestSim</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<script>
+// Pose l'attribut de thème avant le premier paint : sans ça, une préférence "sombre"
+// enregistrée s'appliquerait seulement après le script principal en bas de page, avec un
+// flash visible de la version claire au chargement.
+(function(){ try{ if(localStorage.getItem('mb-theme')==='dark') document.documentElement.setAttribute('data-theme','dark'); }catch(e){} })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@500;600;700&family=Bricolage+Grotesque:wght@600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-/* Charte MyBestSim relevée sur mybestsim.com : fond navy #0f172a, accent bleu ciel
-   #0ea5e9/#0284c7, accents chauds orange #f97316 et or #f7b500.
-   60-30-10 : 60% navy de fond, 30% surfaces et textes, 10% accent bleu ciel. */
+/* Thème CLAIR par défaut, reproduisant le vrai registre visuel de mybestsim.com, établi
+   en naviguant réellement sur 8 pages du site (homepage, pages pays, articles de blog)
+   pour l'article — fond blanc, cartes blanches à ombre bleu ciel colorée, Poppins au
+   corps, "Bricolage Grotesque" pour les titres, accent bleu réel #1e63d7, barre dorée
+   #f7b500 sous les titres de section, rouge de marque #e2001a pour les alertes réelles.
+   La sidebar reste en navy sombre dans les deux thèmes — un repère de navigation
+   volontairement contrasté, pas une incohérence. Seul fichier de travail désormais : le
+   mode sombre (ex-index.html séparé) est fusionné ici sous :root[data-theme="dark"],
+   activé par la bascule dans la sidebar plutôt que par un second fichier à maintenir. */
 :root{
   --sidebar:#0b1120; --sidebar-2:#172442;
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f6f8fc;
+  --border:#e6eef6; --border-2:#cbd5e1;
+  --ink:#0e2b4d; --ink-2:#334155; --ink-3:#64748b;
+  --accent:#1e63d7; --accent-2:#0284c7; --accent-soft:rgba(30,99,215,.10);
+  --bar:#94a3b8;
+  --warm:#f97316; --gold:#f7b500;
+  --good:#16a34a; --good-soft:rgba(22,163,74,.12);
+  --warn:#d97706; --warn-soft:rgba(217,119,6,.12);
+  --bad:#e2001a; --bad-soft:rgba(226,0,26,.10);
+  --net-a:#1e63d7; --net-b:#f97316;
+  /* La même ombre bleu ciel colorée que sur les vraies cartes du site (pages d'avis,
+     pages pays) — jamais une ombre grise/noire générique. */
+  --shadow:0 16px 32px -18px rgba(30,99,215,.3);
+  --shadow-up:0 20px 40px -18px rgba(30,99,215,.4);
+}
+/* Mode sombre : activé en posant data-theme="dark" sur <html> (bascule JS, persistée en
+   localStorage). Mêmes valeurs que l'ancienne version index.html séparée — on ne les
+   maintient plus que dans ce seul fichier. --sidebar/--warm/--gold ne sont pas redéfinis :
+   la sidebar reste navy sombre et l'or/l'orange de marque ne changent pas avec le thème. */
+:root[data-theme="dark"]{
   --bg:#0f172a; --surface:#16233f; --surface-2:#1c2b4a;
   --border:rgba(148,163,184,.14); --border-2:rgba(148,163,184,.26);
-  /* --ink-3 éclairci par rapport au slate-500 habituel : sur le fond navy des cartes,
-     #64748b ne donnait que 3.3:1, sous le seuil WCAG AA de 4.5:1. #7d8da5 atteint 4.6:1. */
   --ink:#f1f5f9; --ink-2:#94a3b8; --ink-3:#7d8da5;
   --accent:#0ea5e9; --accent-2:#0284c7; --accent-soft:rgba(14,165,233,.14);
   --bar:#475569;
-  --warm:#f97316; --gold:#f7b500;
   --good:#34d399; --good-soft:rgba(52,211,153,.14);
   --warn:#fbbf24; --warn-soft:rgba(251,191,36,.14);
-  --bad:#f87171; --bad-soft:rgba(248,113,113,.14);
+  --bad:#f0354f; --bad-soft:rgba(226,0,26,.16);
   --net-a:#0ea5e9; --net-b:#f97316;
-  --shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 12px 28px -12px rgba(0,0,0,.6);
-  --shadow-up:0 1px 0 rgba(255,255,255,.07) inset, 0 18px 36px -14px rgba(0,0,0,.7);
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 14px 30px -14px rgba(30,99,215,.4);
+  --shadow-up:0 1px 0 rgba(255,255,255,.07) inset, 0 20px 40px -16px rgba(30,99,215,.5);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased}
+body{margin:0; font-family:'Poppins','Inter',-apple-system,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased; transition:background-color .25s ease, color .25s ease}
+h1, h2.sec, .card h3, .kpi .v, .brand .name{font-family:'Bricolage Grotesque','Poppins',-apple-system,sans-serif}
 
 .shell{display:flex; min-height:100vh}
 
 /* ---- sidebar (30%) ---- */
 .sidebar{width:230px; flex:0 0 230px; background:var(--sidebar); color:#e2e8f0; padding:22px 18px; position:sticky; top:0; height:100vh; overflow-y:auto}
 .brand{display:flex; align-items:center; gap:10px; margin-bottom:26px}
-.brand .mark{width:30px; height:30px; border-radius:8px; background:linear-gradient(140deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#fff; box-shadow:0 4px 12px -4px rgba(14,165,233,.7)}
+.brand .mark{height:32px; width:auto; display:block; flex:0 0 auto}
 .brand .name{font-size:14.5px; font-weight:600; color:#fff; letter-spacing:-0.01em}
 .brand .sub{font-size:10.5px; color:#8fa3bd; margin-top:1px}
+
+/* Bascule clair/sombre : vit dans la sidebar, qui reste navy sombre dans les deux cas —
+   pas besoin de variante de thème pour ce composant précis. */
+.theme-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; padding:0 2px}
+.theme-row span{font-size:12px; color:#94a3b8; font-weight:500}
+.switch{width:38px; height:22px; border-radius:99px; background:rgba(148,163,184,.25); border:none; position:relative; cursor:pointer; padding:0; flex:0 0 auto; transition:background .2s ease}
+.switch:hover{background:rgba(148,163,184,.4)}
+.switch .switch-thumb{position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:transform .2s ease; box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"] .switch-thumb{transform:translateX(16px)}
+
 .nav{display:flex; flex-direction:column; gap:1px}
 .nav a{font-size:13px; color:#94a3b8; padding:8px 11px; border-radius:7px; text-decoration:none; transition:.15s; border-left:2px solid transparent}
 .nav a:hover{background:var(--accent-soft); color:#fff; border-left-color:var(--accent)}
@@ -56,7 +97,16 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 .head h1{font-size:21px; font-weight:700; margin:0 0 4px; letter-spacing:-0.02em}
 .head p{margin:0; font-size:13px; color:var(--ink-2); max-width:none; line-height:1.5}
 
-.toolbar{display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 15px; margin-bottom:22px; box-shadow:var(--shadow)}
+/* Sticky : le lecteur ne doit jamais remonter en haut de page pour changer un filtre
+   ou réinitialiser — c'est un tableau de bord de lecture instantanée, pas un formulaire
+   qu'on remplit une fois. top:0 car .main n'a pas son propre scroll (c'est la fenêtre
+   qui défile) ; z-index au-dessus des cartes et de la carte Leaflet. */
+/* align-items:flex-start (plutôt que flex-end) : le bloc Fournisseur est bien plus haut
+   que les deux <select> à côté (liste à cocher de 150px vs un simple menu déroulant).
+   En flex-end, Réseau/Durée de validité/Réinitialiser se retrouvaient plaqués en bas de
+   cette hauteur, avec un grand vide au-dessus — alignés en haut, ils remontent au niveau
+   du libellé "FOURNISSEUR" comme demandé. */
+.toolbar{display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 15px; margin-bottom:22px; box-shadow:var(--shadow); position:sticky; top:0; z-index:30; transition:background-color .25s}
 .toolbar label{display:block; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); margin-bottom:5px}
 .toolbar select{font:13px 'Inter'; padding:7px 9px; border:1px solid var(--border-2); border-radius:7px; background:var(--surface-2); color:var(--ink); min-width:165px}
 .toolbar select:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
@@ -76,48 +126,77 @@ body{margin:0; font-family:'Inter',-apple-system,sans-serif; background:var(--bg
 .toolbar .reset{margin-left:auto; font:600 12px 'Inter'; color:var(--accent); background:var(--accent-soft); border:1px solid rgba(14,165,233,.3); border-radius:7px; padding:8px 14px; cursor:pointer; transition:.15s}
 .toolbar .reset:hover{background:var(--accent); color:#fff}
 
-/* niveau 1 : KPI cards, couleur réservée aux pastilles de contexte */
-.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; margin-bottom:26px}
-/* Liseré supérieur sur TOUTES les cartes KPI, pas seulement la première : sa couleur
-   suit celle de la pastille de la carte (accent par défaut, vert/ambre/rouge pour la
-   seule carte à jugement de valeur, la prime réseau), pour que la carte et sa pastille
-   racontent la même chose d'un coup d'œil. */
-.kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2)); border:1px solid var(--border); border-top:2px solid var(--accent); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s}
-.kpi.good{border-top-color:var(--good)}
-.kpi.warn{border-top-color:var(--warn)}
-.kpi.bad{border-top-color:var(--bad)}
+/* niveau 1 : KPI cards. Toutes le même liseré bleu, sans exception — y compris la carte
+   "Surcoût 5G vs 4G" qui prenait avant une couleur verte/ambre/rouge selon son seuil :
+   demandé explicitement de rester uniforme, aucune carte ne doit se distinguer des
+   autres par sa couleur. */
+/* 3 colonnes fixes (plutôt qu'auto-fit) : avec la carte "Produits" retirée (déjà visible
+   dans la sidebar), il reste exactement 6 cartes — 3 colonnes donnent deux rangées
+   pleines de 3, demandé explicitement, plutôt qu'un nombre de colonnes qui varie avec la
+   largeur d'écran. Gap élargi (12px → 18px) pour mieux espacer des cartes qui portent
+   maintenant un paragraphe explicatif, pas seulement un chiffre. */
+.kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:26px}
+/* display:flex + column + margin-top:auto sur .pill : la grille étire déjà toutes les
+   cartes d'une même rangée à la hauteur de la plus haute, mais sans ça chaque pastille
+   restait collée à SA valeur, à des hauteurs différentes selon que le libellé fasse 1
+   ou 2 lignes. Avec margin-top:auto, les pastilles s'alignent toutes sur le bas de la
+   rangée, quelle que soit la hauteur du contenu au-dessus. */
+.kpi{background:linear-gradient(165deg,var(--surface),var(--surface-2)); border:1px solid var(--border); border-top:2px solid var(--accent); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); transition:transform .18s, box-shadow .18s, border-color .18s, background-color .25s; display:flex; flex-direction:column}
 .kpi:hover{transform:translateY(-2px); box-shadow:var(--shadow-up); border-color:var(--border-2)}
 .kpi .l{font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2)}
-.kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1; color:var(--ink)}
-.pill{display:inline-block; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:rgba(148,163,184,.14); color:var(--ink-2)}
-.pill.good{background:var(--good-soft); color:var(--good)}
-.pill.warn{background:var(--warn-soft); color:var(--warn)}
-.pill.bad{background:var(--bad-soft); color:var(--bad)}
-.pill.accent{background:var(--accent-soft); color:var(--accent)}
+/* white-space:nowrap : le symbole € ne doit jamais passer seul à la ligne suivante. Les
+   libellés et valeurs sont volontairement assez courts pour tenir sur une ligne à cette
+   taille et cette largeur de carte — voir kpis() côté JS (ex. la fourchette de prix est
+   arrondie à l'euro, pas affichée à 2 décimales, pour rester courte). */
+.kpi .v{font-size:25px; font-weight:700; margin:6px 0 7px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1.1; color:var(--ink); white-space:nowrap}
+/* Plus de margin-top:auto sur .pill : ça plaquait pastille (et, désormais, le paragraphe
+   qui suit) en bas de la carte pour aligner toutes les pastilles d'une même rangée. Avec
+   un paragraphe explicatif de longueur variable selon la carte, ce même réflexe aurait
+   laissé un vide incohérent entre la valeur et la pastille sur les cartes les plus
+   courtes. Le contenu s'empile maintenant simplement de haut en bas ; l'espace résiduel
+   (la grille étire toujours les cartes d'une rangée à la même hauteur) se retrouve en
+   bas de carte, ce qui est le comportement attendu pour un paragraphe de longueur libre. */
+.pill{display:inline-block; align-self:flex-start; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; background:var(--accent-soft); color:var(--accent)}
+.kpi .exp{font-size:11.5px; color:var(--ink-2); line-height:1.55; margin:10px 0 0; padding-top:10px; border-top:1px solid var(--border)}
 
-h2.sec{font-size:15px; font-weight:700; margin:30px 0 3px; letter-spacing:-0.01em}
-p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; line-height:1.5}
+/* Barre dorée au-dessus de chaque titre de section, reprise telle quelle du traitement
+   des H2 de l'article (vu sur les vraies pages du blog MyBestSim) : un repère visuel
+   commun entre les deux livrables, pas juste un détail de l'article isolé. */
+h2.sec{font-size:15px; font-weight:700; margin:30px 0 3px; letter-spacing:-0.01em; position:relative; padding-top:12px}
+h2.sec::before{content:''; position:absolute; top:0; left:0; width:34px; height:3px; border-radius:99px; background:var(--gold)}
+/* Pas de max-width : demandé explicitement que ce texte utilise toute la largeur
+   réellement disponible (celle de .main n'est elle-même plafonnée nulle part), plutôt
+   que de rester capé à 95 caractères par ligne et paraître coincé à gauche sur un grand
+   écran. */
+p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; line-height:1.5}
 
 .grid2{display:grid; grid-template-columns:1.35fr 1fr; gap:14px; margin-bottom:14px}
 .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px}
-.card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:17px; box-shadow:var(--shadow); transition:border-color .18s}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:17px; box-shadow:var(--shadow); transition:border-color .18s, background-color .25s}
 .card:hover{border-color:var(--border-2)}
 .card h3{margin:0 0 2px; font-size:13px; font-weight:600; color:var(--ink)}
 .card .hint{margin:0 0 12px; font-size:11.5px; color:var(--ink-2)}
 .chart{width:100%; height:270px}
-.chart.tall{height:330px}
+/* 480px (au lieu de 330px) : avec jusqu'à 18 fournisseurs sur l'ordonnée, 330px ne
+   laissait que ~18px par barre — labels et barres finissaient par se chevaucher
+   visuellement au point de rendre à peine 8-9 fournisseurs lisibles sur 18 réellement
+   tracés (vérifié : les 18 catégories étaient bien dans les données du graphique). */
+.chart.tall{height:480px}
 
 .empty{background:var(--surface); border:1px dashed var(--border-2); border-radius:14px; padding:28px; text-align:center; color:var(--ink-2); font-size:13px; margin-bottom:22px}
-.chart-empty{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; height:140px; border:1px dashed var(--border-2); border-radius:9px; color:var(--ink-2); font-size:12.5px; text-align:center; padding:0 28px; line-height:1.5}
-.empty svg, .chart-empty svg{stroke:var(--ink-3); opacity:.8}
+.empty svg{stroke:var(--ink-3); opacity:.8}
 .map-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
 .map-head h3{font-size:13px; font-weight:600}
 #map{height:430px; width:100%; border-radius:9px; z-index:0}
-.leaflet-container{font-family:'Inter',sans-serif; background:#0b1120}
-/* Fond de carte sombre obtenu depuis OSM : niveaux de gris puis inversion, ce qui évite
-   de dépendre d'un fournisseur de tuiles sombres exigeant une clé API (cas de CARTO).
-   Le filtre ne porte que sur le fond, les marqueurs gardent leur couleur. */
-.leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.78) contrast(1.1) opacity(.45)}
+.leaflet-container{font-family:'Inter',sans-serif; background:#eef3f8; transition:background-color .25s ease}
+/* Fond de carte clair et désaturé depuis OSM — pas d'inversion ici (c'était le filtre
+   de la version sombre) : une simple désaturation + éclaircissement donne un fond pastel
+   qui laisse les marqueurs colorés ressortir, sans dépendre d'un fournisseur de tuiles
+   clair tiers exigeant une clé API. En mode sombre, le filtre bascule vers l'inversion
+   en niveaux de gris qu'utilisait l'ancien index.html séparé. */
+.leaflet-tile-pane{filter:grayscale(.6) brightness(1.12) saturate(.7); transition:filter .25s ease}
+:root[data-theme="dark"] .leaflet-container{background:#0b1120}
+:root[data-theme="dark"] .leaflet-tile-pane{filter:grayscale(1) invert(1) brightness(.78) contrast(1.1) opacity(.45)}
 .leaflet-overlay-pane path{transition:fill-opacity .45s ease-out, stroke-opacity .45s ease-out}
 .leaflet-popup-content-wrapper{background:var(--surface-2); color:var(--ink); border:1px solid var(--border-2); border-radius:10px; box-shadow:var(--shadow-up)}
 .leaflet-popup-tip{background:var(--surface-2)}
@@ -134,8 +213,48 @@ p.sec{font-size:12.5px; color:var(--ink-2); margin:0 0 14px; max-width:95ch; lin
 .tabs button:hover{color:var(--ink-2)}
 .tabs button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent)}
 .tab-panel[hidden]{display:none}
-.note{font-size:12px; color:var(--ink-2); background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:11px 13px; margin-bottom:12px; line-height:1.5; box-shadow:var(--shadow)}
+/* Titre d'ordonnée pour les graphiques à catégories horizontales (un fournisseur par
+   ligne) : ECharts positionne mal un nom d'axe pivoté à 90° à côté d'une colonne dense
+   de libellés texte (texte qui se chevauche avec les noms de fournisseurs). Une légende
+   HTML simple au-dessus du graphique est fiable, là où la rotation native ne l'est pas. */
+/* margin-bottom relevé (4px → 12px) : collé au graphique, le titre touchait presque les
+   premiers libellés de fournisseurs en haut de l'axe des catégories — trop serré pour
+   se lire comme un titre distinct plutôt que comme une étiquette de plus. */
+.axis-cap{font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; color:var(--ink-3); margin:0 0 12px}
+/* Légende HTML au-dessus du graphique, plutôt que la légende native ECharts en haut à
+   droite du canevas : même raisonnement que pour les titres d'axe pivotés plus haut dans
+   ce fichier — une légende en canevas, positionnée en top:0/right:0 par-dessus la zone de
+   tracé, peut chevaucher son propre contenu selon la largeur réelle du conteneur et le
+   rendu des polices. Une rangée HTML simple ne dépend d'aucun de ces calculs internes. */
+/* justify-content:flex-end : alignée à gauche, la légende se retrouvait collée sous
+   ".axis-cap" (le libellé "ORDONNÉE : FOURNISSEUR" juste au-dessus), au point de pouvoir
+   se lire comme si elle en faisait partie. À droite, les deux lignes restent distinctes
+   au premier coup d'œil. */
+.chart-legend{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:14px 18px; margin:0 0 10px}
+.chart-legend span{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:500; color:var(--ink-2)}
+.chart-legend i{width:8px; height:8px; border-radius:50%; display:inline-block; flex:0 0 auto}
+/* La boîte elle-même est déjà sur 100% de la largeur disponible (aucune contrainte de
+   largeur ailleurs) : sur un écran large, une phrase courte à 12px ne remplissait qu'une
+   fraction de cette largeur avant de passer à la ligne, ce qui donnait l'impression d'un
+   texte coincé dans le coin gauche d'une boîte bien plus grande que lui. Police et
+   padding agrandis pour que le texte occupe davantage l'espace réellement disponible. */
+/* Agrandir la police seule ne suffit pas à faire "remplir tout l'écran" une phrase
+   courte : au-delà d'une certaine largeur de fenêtre, la phrase tient sur une seule
+   ligne et du vide reste quand même à droite — du texte en flux libre ne peut pas
+   s'étirer pour occuper un espace qu'il n'a pas besoin de remplir. La seule façon fiable
+   d'occuper réellement toute la largeur, quelle que soit celle de l'écran, c'est de
+   répartir le contenu en plusieurs blocs distincts sur une ligne (texte + pastilles de
+   pondération) avec justify-content:space-between, qui s'écartent pour utiliser tout
+   l'espace disponible au lieu de dépendre de la longueur naturelle d'une phrase.
+   .note-row porte cette répartition ; .note garde juste l'habillage (fond, bordure). */
+.note{font-size:14px; color:var(--ink-2); background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:15px 20px; margin-bottom:12px; line-height:1.6; box-shadow:var(--shadow)}
 .note a{color:var(--accent); font-weight:600}
+.note-row{display:flex; align-items:center; justify-content:space-between; gap:18px 28px; flex-wrap:wrap}
+.note-row p{margin:0; flex:2 1 320px}
+.note-chips{display:flex; gap:8px; flex-wrap:wrap; flex:1 1 280px; justify-content:flex-end}
+.note-chips .chip{background:var(--accent-soft); color:var(--accent); font-size:12px; font-weight:700; padding:5px 12px; border-radius:99px; white-space:nowrap}
+.note-chips .chip.muted{background:var(--surface-2); color:var(--ink-2)}
+@media (max-width:1000px){ .note-chips{justify-content:flex-start} }
 
 table.t{width:100%; border-collapse:collapse; font-size:12.5px}
 table.t th, table.t td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
@@ -152,7 +271,11 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   .nav{flex-direction:row; flex-wrap:wrap}
   .nav-label, .side-stat{display:none}
   .grid2,.grid3{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
   .main{padding:20px 18px 50px}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -161,11 +284,15 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   <aside class="sidebar">
     <div class="brand">
-      <div class="mark">M</div>
+      <img class="mark" src="assets/mybestsim-logo.png" alt="MyBestSim">
       <div>
         <div class="name">MyBestSim</div>
         <div class="sub">Catalogue eSIM</div>
       </div>
+    </div>
+    <div class="theme-row">
+      <span>Mode sombre</span>
+      <button class="switch" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Activer le mode sombre"><span class="switch-thumb"></span></button>
     </div>
     <nav class="nav">
       <a href="#s-apercu">Vue d'ensemble</a>
@@ -175,20 +302,14 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <a href="#s-scores">Scores de recommandation</a>
       <a href="#s-destinations">Destinations</a>
     </nav>
+    <div class="nav-label">Sélection filtrée</div>
+    <div class="side-stat"><div class="k">Produits</div><div class="v" id="sb-filtered">—</div><div class="n" id="sb-filtered-n">—</div></div>
     <div class="nav-label">Catalogue complet</div>
     <div class="side-stat"><div class="k">Produits</div><div class="v" id="sb-total">—</div><div class="n" id="sb-prov">—</div></div>
-    <div class="side-stat"><div class="k">Prix médian/Go</div><div class="v" id="sb-pergb">—</div><div class="n">tous forfaits à volume fini</div></div>
     <div class="side-stat"><div class="k">Pays cartographiés</div><div class="v" id="sb-pays">—</div><div class="n">hors forfaits multi-pays</div></div>
   </aside>
 
   <main class="main">
-    <div class="head">
-      <div>
-        <h1 id="s-apercu">Catalogue eSIM — vue d'ensemble</h1>
-        <p>Statistiques consolidées de 18 fournisseurs, enrichies de métriques dérivées calculées depuis les fichiers sources : prix au Go, dispersion régionale, prime réseau contrôlée par destination.</p>
-      </div>
-    </div>
-
     <div class="toolbar">
       <div>
         <label for="f-provider" id="f-provider-label">Fournisseur</label>
@@ -205,6 +326,13 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <button class="reset" id="reset-filters">Réinitialiser</button>
     </div>
 
+    <div class="head">
+      <div>
+        <h1 id="s-apercu">Catalogue eSIM — vue d'ensemble</h1>
+        <p>Statistiques consolidées de 18 fournisseurs, enrichies de métriques dérivées calculées depuis les fichiers sources : prix au Go, dispersion régionale, prime réseau contrôlée par destination.</p>
+      </div>
+    </div>
+
     <div class="kpis" id="kpi-row"></div>
 
     <div class="empty" id="empty-state" hidden>
@@ -213,10 +341,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     </div>
 
     <h2 class="sec" id="s-fournisseurs">Fournisseurs</h2>
-    <p class="sec">Volume d'offres et compétitivité tarifaire. Le prix au Go ne porte que sur les forfaits à volume fini : les offres illimitées n'ont pas de prix au Go définissable.</p>
+    <p class="sec">Nombre d'offres et compétitivité tarifaire. Le prix au Go ne porte que sur les forfaits à volume fini : les offres illimitées n'ont pas de prix au Go définissable.</p>
     <div class="grid2">
-      <div class="card"><h3>Produits par fournisseur</h3><p class="hint">Trié par volume d'offres</p><div class="chart tall" id="c-providers"></div></div>
-      <div class="card"><h3>€/Go</h3><p class="hint">Ratio somme des prix / somme des Go — le plus bas en tête</p><div class="chart tall" id="c-pergb"></div></div>
+      <div class="card"><h3>Produits par fournisseur</h3><p class="hint">Trié par nombre d'offres</p><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-providers"></div></div>
+      <div class="card"><h3>Prix au Go par fournisseur</h3><p class="hint">Ratio somme des prix / somme du volume de Go — le ratio le plus faible est le plus compétitif</p><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-pergb"></div></div>
     </div>
 
     <h2 class="sec" id="s-carte">Carte mondiale du catalogue</h2>
@@ -225,7 +353,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <div class="map-head"><h3 style="margin:0">Couverture géographique</h3><span class="pill" id="map-count">—</span></div>
       <div id="map"></div>
       <div class="map-legend">
-        <div class="scale"><span class="dot" style="width:8px;height:8px"></span><span class="dot" style="width:13px;height:13px"></span><span class="dot" style="width:18px;height:18px"></span><span>Nombre d'offres</span></div>
+        <div class="scale"><span class="dot" style="width:18px;height:18px"></span><span>Taille du point = nombre d'offres</span></div>
         <div class="scale"><span style="display:inline-block;width:56px;height:9px;border-radius:3px;background:linear-gradient(90deg,#7dd3fc,#f97316)"></span><span>Prix/Go croissant</span></div>
         <div style="color:var(--ink-3)">Les forfaits multi-pays (Europe, Asie, Monde) ne sont pas cartographiables et sont exclus de cette vue.</div>
       </div>
@@ -234,19 +362,39 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     <h2 class="sec" id="s-structure">Structure du catalogue</h2>
     <p class="sec">Comment l'offre se répartit par volume de data, durée et génération réseau.</p>
     <div class="grid2">
-      <div class="card"><h3>Prix au Go par palier de volume</h3><p class="hint">Dégressivité réelle : le Go coûte moins cher sur les gros forfaits</p><div class="chart" id="c-bysize"></div></div>
+      <div class="card"><h3>Prix au Go par palier de volume</h3><p class="hint">Dégressivité réelle : le Go coûte moins cher sur les gros forfaits</p><div class="axis-cap">Ordonnée : prix moyen au Go (€)</div><div class="chart" id="c-bysize"></div></div>
       <div class="card"><h3>Réseau 4G / 5G</h3><p class="hint">Répartition des offres filtrées</p><div class="chart" id="c-network"></div></div>
     </div>
-    <div class="grid3">
-      <div class="card"><h3>Durée de validité</h3><p class="hint">Nombre d'offres</p><div class="chart" id="c-validity"></div></div>
-      <div class="card"><h3>Intensité d'usage</h3><p class="hint">Nombre d'offres par profil de consommation (Go de data / jour de validité)</p><div class="chart" id="c-intensity"></div></div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Réseau par fournisseur</h3>
+      <p class="hint">Nombre d'offres 4G et 5G proposées par chaque fournisseur</p>
+      <div class="axis-cap">Ordonnée : fournisseur</div>
+      <div class="chart-legend"><span><i style="background:var(--accent)"></i>4G</span><span><i style="background:var(--warm)"></i>5G</span></div>
+      <div class="chart tall" id="c-network-by-provider"></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Durée de validité</h3><p class="hint">Nombre d'offres</p><div class="axis-cap">Ordonnée : nombre d'offres</div><div class="chart" id="c-validity"></div></div>
       <div class="card"><h3>Recharge possible</h3><p class="hint">Option top-up</p><div class="chart" id="c-topup"></div></div>
     </div>
     <div class="card" style="margin-bottom:14px">
+      <h3>Recharge par fournisseur</h3>
+      <p class="hint">Nombre d'offres avec et sans option recharge, par fournisseur</p>
+      <div class="axis-cap">Ordonnée : fournisseur</div>
+      <div class="chart-legend"><span><i style="background:var(--accent)"></i>Recharge possible</span><span><i style="background:#475569"></i>Non rechargeable</span></div>
+      <div class="chart tall" id="c-topup-by-provider"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Intensité d'usage par fournisseur</h3>
+      <p class="hint">Pour chaque forfait, le volume de data est rapporté à sa durée de validité (Go par jour), puis classé en trois profils : léger (moins de 0,3 Go/j — messagerie, cartes), moyen (0,3 à 1 Go/j) ou lourd (1 Go/j et plus — streaming, usage intensif). Ce graphique révèle si un fournisseur vend surtout de petits forfaits légers ou surtout de gros forfaits taillés pour un usage intensif — une information que le total d'offres seul, juste au-dessus, ne montre pas.</p>
+      <div class="axis-cap">Ordonnée : fournisseur</div>
+      <div class="chart-legend"><span><i style="background:var(--accent)"></i>Léger (&lt; 0,3 Go/j)</span><span><i style="background:var(--gold)"></i>Moyen (0,3 à 1 Go/j)</span><span><i style="background:var(--warm)"></i>Lourd (&ge; 1 Go/j)</span></div>
+      <div class="chart tall" id="c-intensity"></div>
+    </div>
+    <div class="card" id="card-dispersion" style="margin-bottom:14px">
       <h3>Dispersion des prix par zone multi-pays</h3>
-      <p class="hint">Pour les forfaits vendus sur une zone entière (Europe, Asie, Amérique du Nord, Monde) plutôt que sur un seul pays : le coefficient de variation (écart-type du €/Go ÷ moyenne du €/Go) mesure si les offres de cette zone se ressemblent ou non. Près de 0 : les fournisseurs pratiquent des prix proches. Au-delà de 0,5 : certaines offres coûtent nettement plus cher que d'autres pour la même zone — « hétérogène » veut dire ça, pas que la zone elle-même est chère ou bon marché.</p>
-      <div class="chart" id="c-dispersion"></div>
-      <div class="chart-empty" id="c-dispersion-empty" hidden><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15v-3M13 15V9M18 15v-5"/></svg>Le catalogue complet contient assez d'offres multi-pays, mais pas <b>cette sélection</b> : le calcul exige au moins deux offres à volume fini dans une même zone, et les filtres actifs (fournisseur, réseau ou durée) l'ont réduite sous ce seuil. Élargissez les filtres pour revoir ce graphique.</div>
+      <p class="hint">Pour les forfaits vendus sur une zone entière (Europe, Asie, Amérique du Nord, Monde) plutôt que sur un seul pays : le coefficient de variation (écart-type du €/Go ÷ moyenne du €/Go) mesure si les offres de cette zone se ressemblent ou non. Près de 0 : les fournisseurs pratiquent des prix proches. Au-delà de 0,5 : certaines offres coûtent nettement plus cher que d'autres pour la même zone.</p>
+      <div class="axis-cap">Ordonnée : coefficient de variation du €/Go</div>
+      <div class="chart tall" id="c-dispersion"></div>
     </div>
 
     <h2 class="sec" id="s-scores">Score de recommandation — 3 méthodologies</h2>
@@ -257,16 +405,31 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       <button role="tab" aria-selected="false" data-tab="c">C · Sans éditorial</button>
     </div>
     <div class="tab-panel" id="panel-a">
-      <div class="note">Composante éditoriale = score publié par <a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">MyBestSim</a>, pondération d'origine conservée (60 % éditorial, 16 % prix, 14 % couverture, 10 % réseau 5G). Disponible pour 5 fournisseurs sur 18 — les autres sont marqués indisponibles plutôt qu'estimés.</div>
-      <div class="card"><div class="chart tall" id="c-score-a"></div></div>
+      <div class="note"><div class="note-row">
+        <p>Score publié par <a href="https://mybestsim.com/en/best-esim-providers/" target="_blank" rel="noopener">MyBestSim</a>, affiché tel quel. Disponible pour 5 fournisseurs sur 18 — les autres sont marqués indisponibles plutôt qu'estimés.</p>
+        <div class="note-chips">
+          <span class="chip muted">60 % éditorial (eux)</span><span class="chip muted">16 % prix (eux)</span><span class="chip muted">14 % couverture (eux)</span><span class="chip muted">10 % réseau + illimité (eux)</span><span class="chip">5 / 18 fournisseurs</span>
+        </div>
+      </div></div>
+      <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-a"></div></div>
     </div>
     <div class="tab-panel" id="panel-b" hidden>
-      <div class="note">Composante éditoriale = note Trustpilot, retenue uniquement au-delà de 2 500 avis pour écarter les échantillons non représentatifs. Rescalée sur 100 par min-max entre 1 étoile (0/100) et 5 étoiles (100/100) — Trustpilot ne permettant pas de note à 0 étoile, une simple règle de trois (×20) aurait valorisé artificiellement la pire note possible. 12 fournisseurs sur 18 couverts.</div>
-      <div class="card"><div class="chart tall" id="c-score-b"></div></div>
+      <div class="note"><div class="note-row">
+        <p>Composante éditoriale = note Trustpilot (>2 500 avis seulement, pour écarter les échantillons non représentatifs), rescalée sur 100 par min-max entre 1 étoile (0) et 5 étoiles (100) — Trustpilot n'autorisant pas de note à 0 étoile.</p>
+        <div class="note-chips">
+          <span class="chip">60 % éditorial</span><span class="chip">16 % prix</span><span class="chip">14 % couverture</span><span class="chip">10 % réseau + illimité</span><span class="chip muted">12 / 18 fournisseurs</span>
+        </div>
+      </div></div>
+      <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-b"></div></div>
     </div>
     <div class="tab-panel" id="panel-c" hidden>
-      <div class="note">Aucune composante éditoriale : seuls les 3 critères mesurables dans le catalogue, repondérés à 100 % en conservant leurs poids relatifs d'origine (40 % prix, 35 % couverture, 25 % réseau 5G). Seule version couvrant les 18 fournisseurs.</div>
-      <div class="card"><div class="chart tall" id="c-score-c"></div></div>
+      <div class="note"><div class="note-row">
+        <p>Aucune composante éditoriale : seuls les 3 critères mesurables dans le catalogue, repondérés à 100 % en conservant leurs poids relatifs d'origine. Seule version couvrant les 18 fournisseurs.</p>
+        <div class="note-chips">
+          <span class="chip">40 % prix</span><span class="chip">35 % couverture</span><span class="chip">25 % réseau + illimité</span><span class="chip muted">18 / 18 fournisseurs</span>
+        </div>
+      </div></div>
+      <div class="card"><div class="axis-cap">Ordonnée : fournisseur</div><div class="chart tall" id="c-score-c"></div></div>
     </div>
 
     <h2 class="sec" id="s-destinations">Destinations les plus couvertes</h2>
@@ -280,23 +443,51 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
     <footer>
       Source : 18 fichiers CSV fournisseurs (5 056 produits). Scores éditoriaux externes sourcés et datés dans <code>scripts/editorial_sources.py</code>.<br>
-      Carte : tuiles OpenStreetMap, rendu sombre appliqué côté client. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
+      Carte : tuiles OpenStreetMap, filtre clair ou sombre appliqué côté client selon le thème actif. Centroïdes pays approximatifs, à visée illustrative et non cartographique stricte.
     </footer>
   </main>
 </div>
 
 <script>
 (function(){
-  // Couleurs reprises de la charte MyBestSim (relevée sur mybestsim.com).
-  const C = {
-    accent:'#0ea5e9', accent2:'#0284c7', bar:'#475569', barSoft:'#334155',
-    warm:'#f97316', gold:'#f7b500',
-    good:'#34d399', warn:'#fbbf24', bad:'#f87171',
-    netA:'#0ea5e9', netB:'#f97316',
-    ink:'#f1f5f9', ink2:'#94a3b8', ink3:'#7d8da5',
-    grid:'rgba(148,163,184,.12)', axis:'rgba(148,163,184,.22)',
-    surface2:'#1c2b4a'
-  };
+  // Couleurs reprises de la charte MyBestSim réelle (étude directe du site, pas d'un
+  // relevé de variables CSS seul). Les deux palettes (claire et sombre, ex-index.html
+  // séparé) vivent ici dans un seul fichier : colorsFor() en choisit une selon le thème
+  // actif, et C est réaffecté au lieu d'être figé à l'initialisation, pour que la bascule
+  // sombre/clair redessine tout avec les bonnes couleurs sans recharger la page.
+  function colorsFor(theme){
+    if(theme === 'dark') return {
+      accent:'#0ea5e9', accent2:'#0284c7', bar:'#475569', barSoft:'#334155',
+      warm:'#f97316', gold:'#f7b500',
+      good:'#34d399', warn:'#fbbf24', bad:'#f0354f',
+      netA:'#0ea5e9', netB:'#f97316',
+      ink:'#f1f5f9', ink2:'#94a3b8', ink3:'#7d8da5',
+      grid:'rgba(148,163,184,.12)', axis:'rgba(148,163,184,.22)',
+      surface2:'#1c2b4a',
+      tooltipBg:'#1c2b4a', tooltipBorder:'rgba(148,163,184,.26)',
+      tooltipShadow:'0 18px 36px -14px rgba(0,0,0,.7)',
+      strokeOnSurface:'#16233f', countsText:'#94a3b8',
+      mapPopupTitle:'#f1f5f9', mapPopupText:'#94a3b8', mapPopupAccent:'#0ea5e9', mapPopupMuted:'#94a3b8',
+      mapMarkerStroke:'rgba(241,245,249,.85)'
+    };
+    return {
+      accent:'#1e63d7', accent2:'#0284c7', bar:'#94a3b8', barSoft:'#cbd5e1',
+      warm:'#f97316', gold:'#f7b500',
+      good:'#16a34a', warn:'#d97706', bad:'#e2001a',
+      netA:'#1e63d7', netB:'#f97316',
+      ink:'#0e2b4d', ink2:'#334155', ink3:'#64748b',
+      grid:'rgba(15,23,42,.08)', axis:'rgba(15,23,42,.16)',
+      surface2:'#f6f8fc',
+      tooltipBg:'#ffffff', tooltipBorder:'rgba(15,23,42,.1)',
+      tooltipShadow:'0 18px 36px -16px rgba(30,99,215,.35)',
+      strokeOnSurface:'#ffffff', countsText:'#64748b',
+      mapPopupTitle:'#0e2b4d', mapPopupText:'#334155', mapPopupAccent:'#1e63d7', mapPopupMuted:'#64748b',
+      mapMarkerStroke:'rgba(14,43,77,.55)'
+    };
+  }
+  let currentTheme = localStorage.getItem('mb-theme') === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  let C = colorsFor(currentTheme);
 
   // Dégradé vertical/horizontal pour les barres : un aplat paraît plat sur fond sombre.
   const grad = (from, to, horizontal) =>
@@ -309,19 +500,27 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     animationEasing: 'cubicOut',
     textStyle:{fontFamily:'Inter'},
     tooltip:{
-      backgroundColor:C.surface2, borderColor:'rgba(148,163,184,.26)', borderWidth:1,
+      backgroundColor:C.tooltipBg, borderColor:C.tooltipBorder, borderWidth:1,
       borderRadius:10, padding:[9,12],
       textStyle:{color:C.ink, fontSize:12, fontFamily:'Inter'},
-      extraCssText:'box-shadow:0 18px 36px -14px rgba(0,0,0,.7)'
+      extraCssText:'box-shadow:'+C.tooltipShadow
     }
   });
   const splitLine = {lineStyle:{color:C.grid, type:'dashed'}};
+  // Titre d'axe façon papier millimétré : chaque graphique à barres/ligne précise ce que
+  // représente son abscisse ET son ordonnée, même quand ça paraît déductible des étiquettes
+  // (ex. des noms de fournisseurs) — un axe sans titre oblige à deviner.
+  const nameStyle = {color:C.ink3, fontSize:11, fontWeight:600, fontFamily:'Inter'};
+  const axisName = (label, rotate) => label
+    ? {name:label, nameLocation:'middle', nameGap: rotate?30:26, nameRotate: rotate?90:0, nameTextStyle:nameStyle}
+    : {};
   let DATA=null, ROWS=[], map=null, markers=null;
   const charts={};
   // Graphiques recalculés à chaque filtre, par opposition à c-score-a/b/c qui portent
   // volontairement sur le catalogue complet et ne doivent jamais être vidés.
   const DYNAMIC_CHARTS = ['c-providers','c-pergb','c-network','c-topup','c-validity',
-                          'c-intensity','c-bysize','c-dispersion'];
+                          'c-intensity','c-bysize','c-dispersion',
+                          'c-network-by-provider','c-topup-by-provider'];
 
   const nf = n => Math.round(n).toLocaleString('fr-FR');
   const ef = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
@@ -331,17 +530,28 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const c = getChart(id);
     const base = o.color || C.accent;
     const fill = o.flat ? base : grad(base, o.color2 || C.accent2, o.horizontal);
+    // Marge basse/gauche élargie quand un titre d'axe est fourni, pour lui faire de la
+    // place sous les libellés numériques (abscisse) ou à gauche des valeurs (ordonnée).
+    // Pas de marge gauche supplémentaire en mode horizontal : l'ordonnée y est une
+    // catégorie (fournisseurs), son titre passe par la légende HTML .axis-cap au-dessus
+    // du graphique plutôt que par un nom d'axe ECharts pivoté (voir commentaire CSS).
+    const bottomPad = (o.zoom?46:34) + (o.xLabel?22:0);
+    const leftPad = 46;
     c.setOption({
       ...chartTheme(),
-      grid:{left:46, right:18, top:12, bottom:o.zoom?46:34, containLabel:true},
+      grid:{left:leftPad, right:18, top:12, bottom:bottomPad, containLabel:true},
       tooltip:{...chartTheme().tooltip, trigger:'axis', axisPointer:{type:'shadow', shadowStyle:{color:'rgba(14,165,233,.08)'}}, valueFormatter:o.fmt},
       xAxis: o.horizontal
-        ? {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
-        : {type:'category', data:cats, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+        ? {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)}
+        : {type:'category', data:cats, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
       // inverse:true pour les barres horizontales : sans ça, ECharts place l'index 0 du
       // tableau de données tout en BAS (convention Cartésienne, l'axe Y croît vers le
       // haut), donc la première entrée — la plus attractive quand les données sont déjà
       // triées pour la mettre en avant — se retrouvait en bas, hors du premier regard.
+      // Pas de nom d'axe ECharts pivoté sur l'ordonnée, catégorie ou valeur : avec des
+      // libellés à 4 chiffres (ex. "1 800"), le nom chevauchait les nombres plutôt que de
+      // se placer proprement à côté (même défaut que sur l'axe catégoriel, juste révélé
+      // par des valeurs plus larges). Le titre passe par la légende HTML .axis-cap.
       yAxis: o.horizontal
         ? {type:'category', data:cats, inverse:true, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
         : {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
@@ -368,7 +578,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       legend:{bottom:0, icon:'circle', itemWidth:8, itemHeight:8, textStyle:{color:C.ink2, fontSize:11.5}},
       series:[{type:'pie', radius:['52%','74%'], center:['50%','45%'], avoidLabelOverlap:true,
         data:data.map(d=>({...d, itemStyle:{color:colorMap[d.name]||C.barSoft}})),
-        itemStyle:{borderColor:'#16233f', borderWidth:3},
+        itemStyle:{borderColor:C.strokeOnSurface, borderWidth:3},
         emphasis:{scaleSize:6},
         label:{formatter:'{d}%', fontSize:11.5, color:C.ink2}}]
     }, true);
@@ -378,7 +588,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const c = getChart(id);
     c.setOption({
       ...chartTheme(),
-      grid:{left:46, right:18, top:12, bottom:34, containLabel:true},
+      grid:{left:46, right:18, top:12, bottom:34+(o.xLabel?22:0), containLabel:true},
       // Le support est affiché dans l'infobulle : les paliers extrêmes (50, 100 Go)
       // ne reposent que sur une poignée d'offres, une moyenne y est peu robuste.
       tooltip:{...chartTheme().tooltip, trigger:'axis',
@@ -387,13 +597,35 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
           const i = p[0].dataIndex;
           const v = o.fmt ? o.fmt(p[0].value) : p[0].value;
           return `<b>${p[0].axisValue}</b><br>${v}` +
-            (o.counts ? `<br><span style="color:#94a3b8">${o.counts[i]} offre${o.counts[i]>1?'s':''}</span>` : '');
+            (o.counts ? `<br><span style="color:${C.countsText}">${o.counts[i]} offre${o.counts[i]>1?'s':''}</span>` : '');
         }},
-      xAxis:{type:'category', data:cats, boundaryGap:false, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      xAxis:{type:'category', data:cats, boundaryGap:false, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
       yAxis:{type:'value', splitLine, axisLine:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:3, color:C.accent},
-        itemStyle:{color:C.accent, borderColor:'#16233f', borderWidth:2},
+        itemStyle:{color:C.accent, borderColor:C.strokeOnSurface, borderWidth:2},
         areaStyle:{color:grad('rgba(14,165,233,.28)','rgba(14,165,233,0)')}}]
+    }, true);
+  }
+
+  // Barres horizontales empilées : une catégorie par fournisseur, N séries empilées
+  // (ex. 4G/5G, ou Oui/Non) — permet de voir d'un coup qui vend quoi, plutôt que de
+  // deviner la répartition par fournisseur en croisant le camembert avec le filtre.
+  function stackedBar(id, cats, series, o={}){
+    const c = getChart(id);
+    // Plus de légende native ECharts ici (elle se chevauchait selon la largeur réelle du
+    // conteneur) : la légende vit maintenant en HTML, au-dessus du graphique (voir
+    // .chart-legend dans le HTML de chaque carte) — top redescendu à 12, plus besoin de
+    // réserver de la place dans le canevas pour elle.
+    // Pas de nom d'axe ECharts sur l'ordonnée : toujours une catégorie (fournisseurs)
+    // ici, son titre passe par la légende HTML .axis-cap au-dessus du graphique.
+    c.setOption({
+      ...chartTheme(),
+      grid:{left:110, right:18, top:12, bottom:34+(o.xLabel?22:0), containLabel:true},
+      tooltip:{...chartTheme().tooltip, trigger:'axis', axisPointer:{type:'shadow', shadowStyle:{color:'rgba(14,165,233,.08)'}}},
+      xAxis:{type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
+      yAxis:{type:'category', data:cats, inverse:true, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      series: series.map(s => ({type:'bar', name:s.name, stack:'t', data:s.data, barMaxWidth:16,
+        itemStyle:{color:s.color}, emphasis:{focus:'series'}}))
     }, true);
   }
 
@@ -445,7 +677,15 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const gbPts = pts.filter(p=>p.price_per_gb!=null);
     const vals = (gbPts.length ? gbPts : pts).map(p=>p.price_per_gb ?? p.price_avg);
     const pMin = Math.min(...vals), pMax = Math.max(...vals);
+    // Échelle de taille bornée sur le min ET le max réellement observés, pas sur 0..max :
+    // avec sqrt(offers/offMax), un pays a 104 offres au plus et 63 au moins dans ce jeu de
+    // données (aucun pays à 2-3 offres comme l'échelle le supposait) — tous les rayons
+    // réels tombaient entre 11 et 13 px, invisibles à l'œil nu malgré un vrai écart de
+    // 65 % entre pays. Recaler sur [offMin, offMax] étire ce même écart sur toute
+    // l'échelle visuelle (5 à 16 px) au lieu de l'écraser dans son dernier cinquième.
     const offMax = Math.max(...pts.map(p=>p.offers));
+    const offMin = Math.min(...pts.map(p=>p.offers));
+    const offSpan = (offMax - offMin) || 1;
     // Échelle séquentielle bleu ciel -> orange (charte MyBestSim) : le prix est une
     // magnitude, pas une polarité. Sur fond sombre, une rampe claire->foncée s'écraserait.
     const ramp = ['#7dd3fc','#38bdf8','#0ea5e9','#fb923c','#f97316'];
@@ -454,16 +694,18 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     pts.forEach((p, i) => {
       const colorVal = p.price_per_gb ?? p.price_avg;
       const m = L.circleMarker([p.lat, p.lng], {
-        radius: 4 + Math.sqrt(p.offers/offMax)*9,
-        fillColor: colorFor(colorVal), color:'rgba(241,245,249,.85)', weight:1.2,
+        radius: 5 + Math.sqrt((p.offers-offMin)/offSpan)*11,
+        // Contour sombre sur fond clair, clair sur fond sombre : C.mapMarkerStroke
+        // s'inverse avec le thème pour rester visible sur les deux fonds de carte.
+        fillColor: colorFor(colorVal), color:C.mapMarkerStroke, weight:1.2,
         opacity:0, fillOpacity:0
       }).addTo(markers).bindPopup(
-        `<div style="font-weight:600;margin-bottom:4px;color:#f1f5f9">${p.country}</div>
-         <div style="font-size:12px;color:#94a3b8;line-height:1.6">
-           ${p.price_per_gb!=null?`Prix/Go : <b style="color:#0ea5e9">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
-           Prix moyen : <b style="color:#0ea5e9">${p.price_avg.toFixed(2)} €</b> <span style="color:#64748b">(toutes tailles de forfait confondues, non comparable entre pays)</span><br>
-           Offres : <b style="color:#f1f5f9">${p.offers}</b><br>
-           Fournisseurs : <b style="color:#f1f5f9">${p.providers}</b>
+        `<div style="font-weight:600;margin-bottom:4px;color:${C.mapPopupTitle}">${p.country}</div>
+         <div style="font-size:12px;color:${C.mapPopupText};line-height:1.6">
+           ${p.price_per_gb!=null?`Prix/Go : <b style="color:${C.mapPopupAccent}">${p.price_per_gb.toFixed(2)} €</b><br>`:''}
+           Prix moyen : <b style="color:${C.mapPopupAccent}">${p.price_avg.toFixed(2)} €</b> <span style="color:${C.mapPopupMuted}">(toutes tailles de forfait confondues, non comparable entre pays)</span><br>
+           Offres : <b style="color:${C.mapPopupTitle}">${p.offers}</b><br>
+           Fournisseurs : <b style="color:${C.mapPopupTitle}">${p.providers}</b>
          </div>`);
       // Apparition en fondu : à chaque filtre la carte est redessinée, un affichage sec
       // ne laisse pas voir qu'elle a réagi. La transition est portée par le CSS sur
@@ -491,30 +733,61 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   function kpis(rows){
     const n = rows.length, prices = rows.map(r=>r.price);
-    const sized = rows.filter(r=>r.data_gb!=null);
+    // >0 en plus de !=null : aligné sur le filtre utilisé partout ailleurs (dynamicCharts,
+    // networkPremium, sidebar) pour écarter un volume nul ou négatif, qui n'aurait pas de
+    // sens inclus dans une moyenne de Go ni dans un prix au Go (division par zéro ou
+    // valeur aberrante). Sans effet sur le jeu de données actuel (aucune ligne à 0 ou
+    // moins), mais la définition de « taille de forfait valide » doit rester identique
+    // partout dans le fichier, pas seulement là où ça se trouve changer quelque chose.
+    const sized = rows.filter(r=>r.data_gb!=null && r.data_gb>0);
     const over = rows.filter(r=>r.price>100).length;
     const unl = n - sized.length;
     const np = networkPremium(rows);
     const prem = np.premium_pct;
-    const premCls = prem==null ? '' : Math.abs(prem)<5 ? 'good' : Math.abs(prem)<20 ? 'warn' : 'bad';
-    // cls colore à la fois la pastille et le liseré supérieur de la carte, pour que les
-    // deux racontent la même chose. Les 5 premières cartes n'ont pas de jugement de
-    // valeur propre (pas de seuil bon/mauvais) : elles restent en accent, la couleur
-    // neutre de la marque. Seule la prime réseau a un seuil et prend good/warn/bad.
-    const card = (l,v,pill,cls='accent') =>
-      `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div><span class="pill ${cls}">${pill}</span></div>`;
+    // Médiane du prix au Go produit par produit, sur la SÉLECTION filtrée — même calcul
+    // que le repère catalogue complet de la sidebar, mais recalculé sur `rows` au lieu de
+    // `ROWS` pour suivre les filtres comme les autres cartes. Une médiane doit porter sur
+    // les valeurs individuelles (pas sur une somme de prix ÷ somme de Go) : c'est la seule
+    // façon de demander « quelle est la valeur du milieu », une somme agrégée ne répond
+    // pas à cette question-là.
+    const perGb = sized.map(r=>r.price/r.data_gb);
+    // Toutes les cartes restent en accent, sans exception : une seule couleur de liseré
+    // et de pastille pour toute la rangée, y compris la prime réseau (elle prenait avant
+    // du vert/ambre/rouge selon un seuil — explicitement écarté, ça devait rester uniforme).
+    // exp (optionnel) : paragraphe expliquant ce que mesure la carte, affiché sous la
+    // pastille — demandé explicitement pour que chaque métrique reste compréhensible sans
+    // avoir à deviner sa définition. Omis uniquement sur « Produits », assez explicite.
+    const card = (l,v,pill,exp) =>
+      `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><span class="pill">${pill}</span>${exp?`<p class="exp">${exp}</p>`:''}</div>`;
 
+    // Pas de carte "Produits" ici : le total et le nombre de fournisseurs du CATALOGUE
+    // COMPLET sont déjà dans la sidebar. Attention, ce n'est pas tout à fait la même
+    // information — la sidebar ne suit pas les filtres (toujours 5 056), alors que cette
+    // rangée de KPI oui. Demandé explicitement malgré cette nuance.
     const before = [...document.querySelectorAll('#kpi-row .v')].map(e=>e.textContent);
     document.getElementById('kpi-row').innerHTML = [
-      card('Produits', nf(n), `${new Set(rows.map(r=>r.provider)).size} fournisseurs`),
-      card('Fourchette de prix', n? `${Math.min(...prices).toFixed(2)} – ${Math.max(...prices).toFixed(2)} €`:'—', 'min – max'),
-      card('Prix moyen', n? ef(mean(prices)):'—', `médiane ${n? median(prices).toFixed(2):'—'} €`),
-      card('Data moyenne', sized.length? mean(sized.map(r=>r.data_gb)).toFixed(1)+' Go':'—', `${nf(unl)} forfaits illimités`),
+      // Arrondi à l'euro (pas de décimales) : à 2 décimales la chaîne ne tenait pas sur
+      // une ligne à la même taille de police que les autres cartes sans élargir celle-ci
+      // au-delà des autres — ce qui créait la vraie anomalie visuelle, pas la précision
+      // perdue (c'est une fourchette de repère, pas une valeur calculée à afficher exacte).
+      card('Fourchette de prix globale', n? `${Math.round(Math.min(...prices))} – ${Math.round(Math.max(...prices))} €`:'—', 'min – max',
+        'Prix affiché le plus bas et le plus haut parmi les forfaits de la sélection, toutes tailles de données confondues — un repère d\'étendue, pas une moyenne.'),
+      card('Prix moyen global', n? ef(mean(prices)):'—', `médiane ${n? median(prices).toFixed(2):'—'} €`,
+        'Moyenne (et médiane) du prix affiché de chaque forfait, quel que soit son volume de données : un forfait 1 Go et un forfait 50 Go comptent chacun pour leur prix brut. Ne mesure pas le rapport qualité-prix — voir « Médiane €/Go » ci-contre.'),
+      card('Médiane €/Go', sized.length? median(perGb).toFixed(2)+' €':'—',
+        sized.length? `sur ${nf(sized.length)} forfaits à volume fini`:'aucun forfait à volume fini',
+        'Médiane du prix au Go de chaque forfait pris individuellement (prix ÷ volume) : la moitié des forfaits à volume fini de la sélection coûtent moins cher au Go que cette valeur. C\'est la métrique qui normalise par le volume, là où « Prix moyen global » ne le fait pas.'),
+      card('Data moyenne par carte', sized.length? mean(sized.map(r=>r.data_gb)).toFixed(1)+' Go':'—', `sur ${nf(sized.length)} forfaits à volume fini`,
+        'Volume moyen (en Go) des forfaits à volume fini de la sélection — la pastille indique sur combien de forfaits porte ce calcul. Les forfaits illimités (' + nf(unl) + ' dans la sélection) sont exclus : ils n\'ont pas de volume numérique à moyenner.'),
       // « de la sélection » et non « du catalogue » : le dénominateur est n, les lignes filtrées.
-      card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % de la sélection`:'—'),
-      card('Prime réseau 5G', prem!=null? prem+' %':'n/d',
+      card('Produits > 100 €', nf(over), n? `${(over/n*100).toFixed(1)} % de la sélection`:'—',
+        'Nombre de forfaits à plus de 100 €, et leur part dans la sélection actuellement filtrée — pas dans le catalogue entier.'),
+      // Libellé raccourci (sans le "(€/Go)" final) : avec lui, le texte passait sur 2
+      // lignes dans cette carte précisément, poussant sa valeur plus bas que les 5 autres.
+      card('Surcoût 5G vs 4G', prem!=null? (prem>0?'+':'')+prem+' %':'n/d',
         prem!=null? `à destination égale · ${np.n_countries} pays`
-                  : 'moins de 3 offres 4G et 5G par pays', premCls || 'accent'),
+                  : 'moins de 3 offres 4G et 5G par pays',
+        'Écart moyen de prix au Go entre 5G et 4G, calculé pays par pays (seuil : au moins 3 offres de chaque réseau dans ce pays) puis moyenné sur ces pays à poids égal — pas un simple écart de prix moyen global, qui serait faussé par le mix de destinations de la sélection.'),
     ].join('');
     if(before.length) animateCounters(before);
   }
@@ -580,28 +853,71 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
 
   function dynamicCharts(rows){
     const prov = [...countBy(rows,'provider')].sort((a,b)=>b[1]-a[1]);
-    bar('c-providers', prov.map(e=>e[0]), prov.map(e=>e[1]), {horizontal:true, color:C.accent});
+    bar('c-providers', prov.map(e=>e[0]), prov.map(e=>e[1]), {horizontal:true, color:C.accent,
+      xLabel:'Nombre d\'offres', yLabel:'Fournisseur'});
 
     const sized = rows.filter(r=>r.data_gb!=null && r.data_gb>0);
     const byProv = new Map();
-    sized.forEach(r => { if(!byProv.has(r.provider)) byProv.set(r.provider,[]); byProv.get(r.provider).push(r.price/r.data_gb); });
-    const pg = [...byProv].map(([p,a])=>[p, +mean(a).toFixed(2)]).sort((a,b)=>a[1]-b[1]);
+    // Ratio d'agrégats (somme des prix ÷ somme des Go) par fournisseur, PAS une moyenne
+    // des ratios par offre : un fournisseur vend des forfaits de tailles très différentes
+    // (1 Go à 50 Go), donc le dénominateur n'est pas constant dans le groupe — contrairement
+    // au graphique "Prix au Go par palier de volume" juste en dessous, où grouper par Go
+    // exact rend les deux calculs équivalents. C'était le bug : ce graphique affichait déjà
+    // la légende "Ratio somme des prix / somme du volume de Go" sans la calculer ainsi — il
+    // moyennait les ratios individuels, ce qui laisse un seul très gros ou très petit forfait
+    // peser autant qu'un forfait représentatif du volume réellement vendu. Corrigé pour être
+    // cohérent avec price_per_gb de la carte (sumPrice/sumGb) et la légende déjà affichée.
+    sized.forEach(r => {
+      if(!byProv.has(r.provider)) byProv.set(r.provider, {sumPrice:0, sumGb:0});
+      const e = byProv.get(r.provider);
+      e.sumPrice += r.price; e.sumGb += r.data_gb;
+    });
+    const pg = [...byProv].map(([p,e])=>[p, +(e.sumPrice/e.sumGb).toFixed(2)]).sort((a,b)=>a[1]-b[1]);
     bar('c-pergb', pg.map(e=>e[0]), pg.map(e=>e[1]), {horizontal:true, fmt:v=>v+' €',
-      color:C.gold, color2:C.warm});
+      color:C.gold, color2:C.warm, xLabel:'Prix au Go, ratio agrégé (€)', yLabel:'Fournisseur'});
 
     donut('c-network', [...countBy(rows,'network')].map(([name,value])=>({name,value})), {'4G':C.netA,'5G':C.netB});
     donut('c-topup', [...countBy(rows,'top_up')].map(([name,value])=>({name,value})), {'oui':C.accent,'non':'#475569'});
 
-    const val = [...countBy(rows,'validity_days')].sort((a,b)=>a[0]-b[0]);
-    bar('c-validity', val.map(e=>e[0]+' jours'), val.map(e=>e[1]));
+    // Qui vend quoi : le camembert dit la proportion globale 4G/5G, pas qui la vend.
+    // Barres empilées triées par total décroissant, mêmes fournisseurs que le graphique
+    // "Produits par fournisseur" juste au-dessus pour rester comparable visuellement.
+    const netByProv = new Map();
+    rows.forEach(r => { if(r.network!=='4G' && r.network!=='5G') return;
+      if(!netByProv.has(r.provider)) netByProv.set(r.provider, {'4G':0,'5G':0});
+      netByProv.get(r.provider)[r.network]++; });
+    const npv = [...netByProv].map(([p,v])=>({p, g4:v['4G'], g5:v['5G'], t:v['4G']+v['5G']})).sort((a,b)=>b.t-a.t);
+    stackedBar('c-network-by-provider', npv.map(e=>e.p),
+      [{name:'4G', data:npv.map(e=>e.g4), color:C.netA}, {name:'5G', data:npv.map(e=>e.g5), color:C.netB}],
+      {xLabel:'Nombre d\'offres', yLabel:'Fournisseur'});
 
-    // Les 3 catégories seules (Léger/Moyen/Lourd) ne disaient pas où sont les seuils :
-    // on les intègre directement dans le libellé de l'axe, en Go consommés par jour de
-    // validité (ex. un forfait 10 Go / 15 jours = 0,67 Go/j, catégorie « Moyen »).
-    let l=0,m=0,h=0;
-    sized.forEach(r => { const g=r.data_gb/r.validity_days; if(g<0.3) l++; else if(g<1) m++; else h++; });
-    bar('c-intensity', ['Léger\n< 0,3 Go/j','Moyen\n0,3 à 1 Go/j','Lourd\n≥ 1 Go/j'], [l,m,h],
-      {color:C.warm, color2:'#c2410c', fmt:v=>v+' offres'});
+    const topByProv = new Map();
+    rows.forEach(r => { if(r.top_up!=='oui' && r.top_up!=='non') return;
+      if(!topByProv.has(r.provider)) topByProv.set(r.provider, {oui:0, non:0});
+      topByProv.get(r.provider)[r.top_up]++; });
+    const tpv = [...topByProv].map(([p,v])=>({p, oui:v.oui, non:v.non, t:v.oui+v.non})).sort((a,b)=>b.t-a.t);
+    stackedBar('c-topup-by-provider', tpv.map(e=>e.p),
+      [{name:'Recharge possible', data:tpv.map(e=>e.oui), color:C.accent},
+       {name:'Non rechargeable', data:tpv.map(e=>e.non), color:'#475569'}],
+      {xLabel:'Nombre d\'offres', yLabel:'Fournisseur'});
+
+    const val = [...countBy(rows,'validity_days')].sort((a,b)=>a[0]-b[0]);
+    bar('c-validity', val.map(e=>e[0]+' jours'), val.map(e=>e[1]), {xLabel:'Durée de validité'});
+
+    // Par fournisseur plutôt qu'un simple total à 3 barres : le total seul ne dit pas
+    // si un fournisseur donné vend surtout du léger ou surtout du lourd, seulement le
+    // global de la sélection. Mêmes seuils qu'avant (0,3 et 1 Go/j), au format empilé.
+    const intByProv = new Map();
+    sized.forEach(r => { const g=r.data_gb/r.validity_days;
+      if(!intByProv.has(r.provider)) intByProv.set(r.provider, {leger:0,moyen:0,lourd:0});
+      const e = intByProv.get(r.provider);
+      if(g<0.3) e.leger++; else if(g<1) e.moyen++; else e.lourd++; });
+    const ipv = [...intByProv].map(([p,v])=>({p,...v,t:v.leger+v.moyen+v.lourd})).sort((a,b)=>b.t-a.t);
+    stackedBar('c-intensity', ipv.map(e=>e.p),
+      [{name:'Léger (< 0,3 Go/j)', data:ipv.map(e=>e.leger), color:C.accent},
+       {name:'Moyen (0,3 à 1 Go/j)', data:ipv.map(e=>e.moyen), color:C.gold},
+       {name:'Lourd (≥ 1 Go/j)', data:ipv.map(e=>e.lourd), color:C.warm}],
+      {xLabel:'Nombre d\'offres', yLabel:'Fournisseur'});
 
     // On trace le prix AU GO et non le prix total : le prix total croît forcément avec le
     // volume, il ne montre aucune dégressivité. C'est le €/Go qui décroît (≈7,08 €/Go à
@@ -610,7 +926,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     sized.forEach(r => { if(!bySize.has(r.data_gb)) bySize.set(r.data_gb,[]); bySize.get(r.data_gb).push(r.price/r.data_gb); });
     const sz = [...bySize].sort((a,b)=>a[0]-b[0]);
     line('c-bysize', sz.map(e=>e[0]+' Go'), sz.map(e=>+mean(e[1]).toFixed(2)),
-      {fmt:v=>v+' €/Go', counts: sz.map(e=>e[1].length)});
+      {fmt:v=>v+' €/Go', counts: sz.map(e=>e[1].length), xLabel:'Volume du forfait (Go)'});
   }
 
   // Liste lue depuis data.json plutôt que redéclarée ici : une copie locale avait
@@ -637,7 +953,8 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const score = (id, rows) => {
       // Meilleur score en premier : avec yAxis.inverse, l'index 0 est placé en haut.
       const s = rows.filter(r=>r.score!=null).sort((a,b)=>b.score-a.score);
-      bar(id, s.map(r=>r.provider), s.map(r=>r.score), {horizontal:true, color:C.accent, fmt:v=>v+' / 100'});
+      bar(id, s.map(r=>r.provider), s.map(r=>r.score), {horizontal:true, color:C.accent, fmt:v=>v+' / 100',
+        xLabel:'Score composite (/100)', yLabel:'Fournisseur'});
     };
     score('c-score-a', DATA.composite_scores.version_a_mybestsim);
     score('c-score-b', DATA.composite_scores.version_b_trustpilot);
@@ -656,15 +973,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   }
 
   function sidebar(){
-    const sized = ROWS.filter(r=>r.data_gb!=null && r.data_gb>0);
+    // Médiane €/Go retirée d'ici : désormais une carte KPI dédiée dans le corps de page,
+    // qui en plus suit les filtres — doublon inutile une fois celle-ci en place.
     document.getElementById('sb-total').textContent = nf(ROWS.length);
     document.getElementById('sb-prov').textContent = new Set(ROWS.map(r=>r.provider)).size + ' fournisseurs · 5 056 lignes';
-    // Médiane produit par produit, à ne pas confondre avec la moyenne par fournisseur
-    // affichée dans le graphique €/Go : les deux sont affichées pour lever l'ambiguïté.
-    const perGb = sized.map(r=>r.price/r.data_gb);
-    document.getElementById('sb-pergb').textContent = median(perGb).toFixed(2) + ' €';
-    document.querySelector('#sb-pergb + .n').textContent =
-      `médiane sur ${nf(perGb.length)} produits · moyenne ${mean(perGb).toFixed(2)} €`;
     document.getElementById('sb-pays').textContent = DATA.price_by_country.length;
   }
 
@@ -672,6 +984,15 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
     const rows = filtered();
     const empty = document.getElementById('empty-state');
     empty.hidden = rows.length > 0;
+    // Mis à jour à chaque rendu (donc à chaque changement de filtre), contrairement au
+    // bloc "Catalogue complet" juste en dessous qui reste fixe sur ROWS. Avant cette
+    // carte, retirer le KPI "Produits" (déplacé ici) laissait l'utilisateur sans aucun
+    // repère du nombre de résultats correspondant à sa sélection filtrée.
+    const sameAsCatalog = rows.length === ROWS.length;
+    document.getElementById('sb-filtered').textContent = nf(rows.length);
+    document.getElementById('sb-filtered-n').textContent = sameAsCatalog
+      ? 'aucun filtre actif'
+      : `${new Set(rows.map(r=>r.provider)).size} fournisseur${new Set(rows.map(r=>r.provider)).size>1?'s':''} · sur ${nf(ROWS.length)} au total`;
     kpis(rows);
     if(!rows.length){
       // Sans ce nettoyage, le bandeau « aucun produit » s'affichait pendant que les
@@ -680,26 +1001,41 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       // Les 3 graphiques de score sont statiques (catalogue complet) et restent intacts.
       DYNAMIC_CHARTS.forEach(id => { if(charts[id]) charts[id].clear(); });
       renderMap([]);
-      document.getElementById('c-dispersion').hidden = true;
-      document.getElementById('c-dispersion-empty').hidden = false;
+      document.getElementById('card-dispersion').hidden = true;
       return;
     }
     dynamicCharts(rows);
     renderMap(countryPoints(rows));
 
-    // Un graphique sans données affiche des axes vides sans explication : on montre
-    // plutôt pourquoi il n'y a rien à tracer.
+    // Sous ce seuil (moins de deux offres à volume fini dans une même zone multi-pays),
+    // le coefficient de variation n'a pas de sens statistique. Plutôt qu'expliquer
+    // pourquoi le graphique est vide, la carte entière disparaît : un graphique qui ne
+    // peut rien montrer n'a rien à faire sur l'écran.
     const d = dispersion(rows);
-    document.getElementById('c-dispersion').hidden = !d.length;
-    document.getElementById('c-dispersion-empty').hidden = d.length > 0;
+    document.getElementById('card-dispersion').hidden = !d.length;
     if(d.length){
       bar('c-dispersion', d.map(r=>r.region), d.map(r=>r.cv),
-        {fmt:v=>v.toFixed(3), color:C.warm, color2:'#c2410c'});
+        {fmt:v=>v.toFixed(3), color:C.warm, color2:'#c2410c', xLabel:'Zone multi-pays'});
       // Si la fenêtre a été redimensionnée pendant que ce conteneur était masqué,
       // l'instance ECharts a mémorisé une taille de 0×0 et resterait invisible.
       charts['c-dispersion'].resize();
     }
   }
+
+  // Bascule de thème : réaffecte C puis redessine tout (sidebar, KPI, graphiques
+  // dynamiques, carte, graphiques statiques) avec la nouvelle palette — pas de rechargement
+  // de page, et le choix est mémorisé pour la prochaine visite.
+  const themeToggle = document.getElementById('theme-toggle');
+  function setTheme(theme){
+    currentTheme = theme;
+    localStorage.setItem('mb-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    themeToggle.setAttribute('aria-checked', theme === 'dark');
+    C = colorsFor(theme);
+    if(DATA){ sidebar(); render(); staticCharts(); }
+  }
+  themeToggle.setAttribute('aria-checked', currentTheme === 'dark');
+  themeToggle.addEventListener('click', () => setTheme(currentTheme === 'dark' ? 'light' : 'dark'));
 
   fetch('data.json').then(r=>r.json()).then(d => {
     DATA=d; ROWS=d.rows;
