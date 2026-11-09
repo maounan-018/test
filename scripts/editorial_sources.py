@@ -18,23 +18,48 @@ MYBESTSIM_SCORES = {
     "Roamic": 80,
 }
 
-# Score Trustpilot (/5), retenu uniquement pour les fournisseurs avec >2 500 avis
+# Notes Trustpilot (/5), retenues uniquement pour les fournisseurs à plus de 2 500 avis
 # (seuil fixé pour exclure les échantillons trop petits pour être représentatifs).
-# Sources : pages trustpilot.com/review/<domaine> de chaque fournisseur.
-TRUSTPILOT_SCORES = {
-    "Airalo": 4.2,       # trustpilot.com/review/airalo.com
-    "Saily": 4.7,        # trustpilot.com/review/saily.com
-    "Holafly": 4.7,      # trustpilot.com/review/esim.holafly.com (~96 800 avis)
-    "Yesim": 4.3,        # trustpilot.com/review/yesim.app
-    "Roamic": 4.7,       # trustpilot.com/review/roamic.com (~17 000 avis)
-    "Ubigi": 4.1,         # trustpilot.com/review/cellulardata.ubigi.com (50 918 avis)
-    "Nomad": 4.3,         # trustpilot.com/review/www.nomadesim.com (48 073 avis)
-    "GigSky": 4.3,        # trustpilot.com/review/gigsky.com (8 777 avis)
-    "aloSIM": 4.0,        # trustpilot.com/review/alosim.com (2 676 avis)
-    "Jetpac": 4.7,        # trustpilot.com/review/jetpacglobal.com (3 618 avis)
-    "Flexiroam": 4.7,     # trustpilot.com/review/flexiroam.com (2 878 avis)
-    "Maya Mobile": 4.5,   # trustpilot.com/review/maya.net (12 914 avis)
+#
+# Relevé à la main, et c'est un choix assumé : le robots.txt de Trustpilot interdit tout le
+# site aux robots non autorisés (« User-agent: * » puis « Disallow: / »), ses pages de
+# notation comme api.trustpilot.com répondent 403, et la seule voie officiellement
+# automatisable (API Data Solutions) passe par un contrat commercial. Aucun script de ce
+# dépôt ne va donc interroger Trustpilot : scripts/check_freshness.py surveille l'âge de ces
+# relevés et réclame une vérification humaine quand ils vieillissent.
+#
+# « captured » : jour du relevé. Le relevé initial s'est étalé sur les 5 et 6 novembre 2026
+# sans que le jour exact de chaque fournisseur soit noté — la plus ancienne des deux dates
+# est retenue pour tous, afin de surestimer l'âge plutôt que de le sous-estimer.
+# « reviews » : nombre d'avis au moment du relevé, None quand il n'a pas été noté (à combler
+# au prochain relevé : sans lui, le seuil des 2 500 avis n'est pas re-vérifiable).
+# « reviews_approx » : volume lu en valeur arrondie sur la page, pas au chiffre près.
+TRUSTPILOT_SOURCES = {
+    "Airalo":      {"score": 4.2, "reviews": None,                          "domain": "airalo.com",              "captured": "2026-11-05"},
+    "Saily":       {"score": 4.7, "reviews": None,                          "domain": "saily.com",               "captured": "2026-11-05"},
+    "Holafly":     {"score": 4.7, "reviews": 96800, "reviews_approx": True, "domain": "esim.holafly.com",        "captured": "2026-11-05"},
+    "Yesim":       {"score": 4.3, "reviews": None,                          "domain": "yesim.app",               "captured": "2026-11-05"},
+    "Roamic":      {"score": 4.7, "reviews": 17000, "reviews_approx": True, "domain": "roamic.com",              "captured": "2026-11-05"},
+    "Ubigi":       {"score": 4.1, "reviews": 50918,                         "domain": "cellulardata.ubigi.com",  "captured": "2026-11-05"},
+    "Nomad":       {"score": 4.3, "reviews": 48073,                         "domain": "www.nomadesim.com",       "captured": "2026-11-05"},
+    "GigSky":      {"score": 4.3, "reviews": 8777,                          "domain": "gigsky.com",              "captured": "2026-11-05"},
+    "aloSIM":      {"score": 4.0, "reviews": 2676,                          "domain": "alosim.com",              "captured": "2026-11-05"},
+    "Jetpac":      {"score": 4.7, "reviews": 3618,                          "domain": "jetpacglobal.com",        "captured": "2026-11-05"},
+    "Flexiroam":   {"score": 4.7, "reviews": 2878,                          "domain": "flexiroam.com",           "captured": "2026-11-05"},
+    "Maya Mobile": {"score": 4.5, "reviews": 12914,                         "domain": "maya.net",                "captured": "2026-11-05"},
 }
+
+# Seuil de représentativité appliqué aux notes ci-dessus (voir README, méthodologie du score B).
+TRUSTPILOT_MIN_REVIEWS = 2500
+
+
+def trustpilot_url(domain: str) -> str:
+    """Page publique d'où provient la note — à ouvrir à la main pour la re-vérifier."""
+    return f"https://www.trustpilot.com/review/{domain}"
+
+
+# Interface historique utilisée par compute_metrics.py : {fournisseur: note}.
+TRUSTPILOT_SCORES = {name: entry["score"] for name, entry in TRUSTPILOT_SOURCES.items()}
 
 # Exclus du score éditorial : page Trustpilot avec <2 500 avis (échantillon jugé non
 # représentatif), ou match fournisseur non confirmé avec certitude suffisante.

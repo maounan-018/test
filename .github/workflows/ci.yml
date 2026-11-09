@@ -104,8 +104,9 @@ jobs:
         uses: actions/deploy-pages@v4
 
   editorial-drift:
-    # Alerte (job en échec, donc e-mail GitHub) quand les scores MyBestSim saisis à la main
-    # ne correspondent plus à leur page publique. Indépendant du déploiement.
+    # Alerte (job en échec, donc e-mail GitHub) sur les deux sources saisies à la main :
+    # les scores MyBestSim qui ne correspondent plus à leur page publique, et les notes
+    # Trustpilot dont le relevé a trop vieilli. Indépendant du déploiement.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -118,3 +119,11 @@ jobs:
       - name: Compare les scores stockés à la page MyBestSim
         shell: bash
         run: python scripts/check_editorial.py | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # Trustpilot ne peut pas être interrogé (robots.txt : Disallow: / ; pages en 403), donc
+      # la seule chose automatisable est l'âge du relevé manuel. « always() » pour que le
+      # verdict Trustpilot sorte même quand le contrôle MyBestSim ci-dessus a déjà échoué.
+      - name: Vérifie l'âge des notes Trustpilot relevées à la main
+        if: always()
+        shell: bash
+        run: python scripts/check_freshness.py | tee -a "$GITHUB_STEP_SUMMARY"
