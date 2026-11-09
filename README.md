@@ -197,11 +197,21 @@ calculées :
   mybestsim.com/en/best-esim-providers/ et affiché sans retraitement, comme référence
   externe. Couvre 5 fournisseurs sur 18 ; les autres restent indisponibles plutôt
   qu'estimés.
-- **Version B** — pondération 60 % éditorial / 16 % prix / 14 % couverture / 10 % réseau,
-  avec la note Trustpilot comme composante éditoriale (fournisseurs à plus de 2 500 avis
-  uniquement). Une note Trustpilot mesure la satisfaction et rien d'autre : elle ne contient
-  ni prix ni couverture, on peut donc la combiner à nos notes quantitatives sans compter deux
-  fois la même chose. Couvre 12 fournisseurs sur 18.
+- **Version B** — la version A laisse 13 fournisseurs sur 18 sans aucune appréciation
+  qualitative : MyBestSim n'en note que 5. Pour les autres, le dashboard n'aurait eu à
+  proposer qu'un score purement quantitatif, alors que la satisfaction des clients est
+  précisément ce qui manque aux CSV. Il fallait donc une seconde source, à deux conditions :
+  qu'elle couvre la majeure partie du catalogue, et que ses notes reposent sur assez d'avis
+  pour signifier quelque chose. Trustpilot remplit les deux — **les 18 fournisseurs du
+  catalogue y ont une fiche publique**, et 12 d'entre eux dépassent les 2 500 avis, seuil en
+  dessous duquel nous écartons la note comme non représentative (les 6 autres sont listés
+  dans `EDITORIAL_EXCLUDED` avec leur volume réel). La couverture éditoriale passe ainsi de
+  5 à 12 fournisseurs sur 18.
+
+  La pondération reprend celle de MyBestSim — 60 % éditorial / 16 % prix / 14 % couverture /
+  10 % réseau — avec la note Trustpilot comme composante éditoriale. Une note Trustpilot
+  mesure la satisfaction et rien d'autre : elle ne contient ni prix ni couverture, on peut
+  donc la combiner à nos notes quantitatives sans compter deux fois la même chose.
 - **Version C** — sans composante éditoriale, les 3 critères mesurables repondérés à
   100 % (40 % prix, 35 % couverture, 25 % réseau). Couvre les 18 fournisseurs.
 
