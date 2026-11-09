@@ -43,7 +43,7 @@ docs/                    site statique (GitHub Pages)
   data.json               généré par compute_metrics.py, ne pas éditer à la main
   internet-en-croisiere-esim.html   article SEO (partie 2 du test)
   assets/                 logo et images de l'article
-tests/                    93 tests (calculs, récupération Drive, dérive éditoriale, parité
+tests/                    94 tests (calculs, récupération Drive, dérive éditoriale, parité
                           Python/navigateur)
 .github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
@@ -53,7 +53,7 @@ requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
 
 ```bash
 pip install -r requirements-dev.txt && playwright install chromium   # une fois
-pytest tests/                                 # 93 tests (le test navigateur est ignoré
+pytest tests/                                 # 94 tests (le test navigateur est ignoré
                                               # sans Playwright)
 python scripts/compute_metrics.py             # régénère docs/data.json depuis data/
 python scripts/fetch_sources.py               # (option) télécharge les CSV depuis Drive
@@ -87,7 +87,7 @@ Le pipeline a deux étapes distinctes, pour que le dashboard reste consultable s
 Le workflow GitHub Actions (`.github/workflows/ci.yml`) tourne à chaque push sur `main`, à
 chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Actions) :
 
-- **test** : les 93 tests.
+- **test** : les 94 tests.
 - **parity** : charge le dashboard dans Chromium et compare les chiffres recalculés en
   JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
   5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
@@ -212,6 +212,13 @@ Les sous-scores quantitatifs sont normalisés par rang percentile plutôt que pa
 les écarts réels entre fournisseurs sont faibles (quelques pour cent) et un min-max les
 aurait étirés sur toute l'échelle 0-100, en plus de dépendre entièrement des deux
 fournisseurs les plus extrêmes du catalogue.
+
+Conséquence à connaître : un rang percentile est **relatif au catalogue**. Ajouter un
+fournisseur déplace les notes de tous les autres. Vérifié en ajoutant un 19e fournisseur :
+les 18 scores de la version C bougent et 11 changements de rang apparaissent, alors que la
+version A (score MyBestSim repris tel quel) ne bouge pas d'un point — ce qui confirme au
+passage qu'elle est bien un passe-plat. Deux scores publiés à des dates différentes ne sont
+donc comparables que si le catalogue est le même.
 
 La note Trustpilot (sur 5) est rescalée sur 100 par min-max entre 1 étoile et 5 étoiles, et
 non par une simple règle de trois : Trustpilot ne permet pas de note à 0 étoile, le minimum
