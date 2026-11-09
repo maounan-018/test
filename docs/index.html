@@ -511,6 +511,10 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
   // représente son abscisse ET son ordonnée, même quand ça paraît déductible des étiquettes
   // (ex. des noms de fournisseurs) — un axe sans titre oblige à deviner.
   const nameStyle = {color:C.ink3, fontSize:11, fontWeight:600, fontFamily:'Inter'};
+  // Nombre de graduations des axes de valeurs : réduit sur écran étroit, où 5 graduations
+  // de nombres à 3 chiffres se touchent (constaté sur la page publiée, en 375 px de large).
+  const graduations = () => (window.innerWidth < 600 ? 3 : 5);
+
   const axisName = (label, rotate) => label
     ? {name:label, nameLocation:'middle', nameGap: rotate?30:26, nameRotate: rotate?90:0, nameTextStyle:nameStyle}
     : {};
@@ -542,7 +546,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       grid:{left:leftPad, right:18, top:12, bottom:bottomPad, containLabel:true},
       tooltip:{...chartTheme().tooltip, trigger:'axis', axisPointer:{type:'shadow', shadowStyle:{color:'rgba(14,165,233,.08)'}}, valueFormatter:o.fmt},
       xAxis: o.horizontal
-        ? {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)}
+        ? {type:'value', splitNumber:graduations(), splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11, hideOverlap:true}, ...axisName(o.xLabel)}
         : {type:'category', data:cats, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
       // inverse:true pour les barres horizontales : sans ça, ECharts place l'index 0 du
       // tableau de données tout en BAS (convention Cartésienne, l'axe Y croît vers le
@@ -554,7 +558,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       // par des valeurs plus larges). Le titre passe par la légende HTML .axis-cap.
       yAxis: o.horizontal
         ? {type:'category', data:cats, inverse:true, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}}
-        : {type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+        : {type:'value', splitNumber:graduations(), splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11, hideOverlap:true}},
       dataZoom: o.zoom ? [{type:'inside'},{type:'slider', height:12, bottom:6, borderColor:'transparent',
         backgroundColor:'rgba(148,163,184,.07)', fillerColor:'rgba(14,165,233,.16)',
         handleStyle:{color:C.accent, borderColor:C.accent}, textStyle:{color:C.ink3, fontSize:10},
@@ -600,7 +604,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
             (o.counts ? `<br><span style="color:${C.countsText}">${o.counts[i]} offre${o.counts[i]>1?'s':''}</span>` : '');
         }},
       xAxis:{type:'category', data:cats, boundaryGap:false, splitLine:{show:false}, axisLine:{lineStyle:{color:C.axis}}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
-      yAxis:{type:'value', splitLine, axisLine:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
+      yAxis:{type:'value', splitNumber:graduations(), splitLine, axisLine:{show:false}, axisLabel:{color:C.ink2, fontSize:11, hideOverlap:true}},
       series:[{type:'line', data:vals, smooth:true, symbolSize:6, lineStyle:{width:3, color:C.accent},
         itemStyle:{color:C.accent, borderColor:C.strokeOnSurface, borderWidth:2},
         areaStyle:{color:grad('rgba(14,165,233,.28)','rgba(14,165,233,0)')}}]
@@ -622,7 +626,7 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--border); fo
       ...chartTheme(),
       grid:{left:110, right:18, top:12, bottom:34+(o.xLabel?22:0), containLabel:true},
       tooltip:{...chartTheme().tooltip, trigger:'axis', axisPointer:{type:'shadow', shadowStyle:{color:'rgba(14,165,233,.08)'}}},
-      xAxis:{type:'value', splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}, ...axisName(o.xLabel)},
+      xAxis:{type:'value', splitNumber:graduations(), splitLine, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11, hideOverlap:true}, ...axisName(o.xLabel)},
       yAxis:{type:'category', data:cats, inverse:true, splitLine:{show:false}, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:C.ink2, fontSize:11}},
       series: series.map(s => ({type:'bar', name:s.name, stack:'t', data:s.data, barMaxWidth:16,
         itemStyle:{color:s.color}, emphasis:{focus:'series'}}))
