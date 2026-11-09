@@ -64,3 +64,38 @@ class TestCompare:
         assert len(problems) == 2
         assert any("Roamic" in p and "81" in p for p in problems)
         assert any("Holafly" in p and "absent" in p for p in problems)
+
+
+class TestDiscover:
+    """Un fournisseur du catalogue noté chez MyBestSim doit être trouvé, pas déclaré
+    indisponible. L'inverse aussi : absent de leur page = constat, pas oubli."""
+
+    LIVE = {"Roamic": 80, "Simbye": 72, "Maya Mobile": 65}
+    STORED = {"Roamic": 80}
+
+    def test_trouve_un_score_publie_non_stocke(self):
+        from check_editorial import discover
+        trouves, _, _ = discover(["Roamic", "Simbye"], self.STORED, self.LIVE)
+        assert trouves == [("Simbye", "Simbye", 72)]
+
+    def test_rapproche_les_noms_a_la_casse_et_ponctuation_pres(self):
+        from check_editorial import discover
+        trouves, _, _ = discover(["SIMBYE"], self.STORED, self.LIVE)
+        assert trouves == [("SIMBYE", "Simbye", 72)]
+
+    def test_ressemblance_partielle_signalee_jamais_retenue(self):
+        from check_editorial import discover
+        trouves, a_verifier, sans_trace = discover(["Maya"], self.STORED, self.LIVE)
+        assert trouves == []
+        assert a_verifier == [("Maya", ["Maya Mobile"])]
+        assert sans_trace == []
+
+    def test_absent_de_leur_page_est_un_constat(self):
+        from check_editorial import discover
+        trouves, a_verifier, sans_trace = discover(["Inconnu"], self.STORED, self.LIVE)
+        assert (trouves, a_verifier) == ([], [])
+        assert sans_trace == ["Inconnu"]
+
+    def test_deja_stocke_nest_pas_redecouvert(self):
+        from check_editorial import discover
+        assert discover(["Roamic"], self.STORED, self.LIVE) == ([], [], [])

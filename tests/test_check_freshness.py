@@ -116,3 +116,46 @@ class TestAucunAccesReseau:
         source = io.open(os.path.join(SCRIPTS, "check_freshness.py"), encoding="utf-8").read()
         code = "".join(l for l in source.splitlines(True) if not l.lstrip().startswith("#"))
         assert f"import {module}" not in code
+
+
+class TestJamaisReleves:
+    """« Indisponible » ne doit jamais être un défaut silencieux : un fournisseur du
+    catalogue qui n'a ni note stockée ni exclusion motivée est un oubli à signaler."""
+
+    SOURCES = {"Airalo": {"score": 4.2, "reviews": None, "domain": "airalo.com",
+                          "captured": "2026-11-05"}}
+    EXCLUS = {"Truphone": "Trustpilot : 182 avis (<2500)"}
+
+    def test_nouveau_fournisseur_signale(self):
+        from check_freshness import jamais_releves
+        assert jamais_releves(["Airalo", "Truphone", "Nouveau"], self.SOURCES, self.EXCLUS) \
+            == ["Nouveau"]
+
+    def test_exclusion_motivee_nest_pas_un_oubli(self):
+        from check_freshness import jamais_releves
+        assert jamais_releves(["Truphone"], self.SOURCES, self.EXCLUS) == []
+
+    def test_catalogue_entierement_couvert(self):
+        """État réel du dépôt : 12 notes + 6 exclusions motivées = les 18 fournisseurs."""
+        from catalog_providers import read_catalog_providers
+        from check_freshness import jamais_releves
+        from editorial_sources import EDITORIAL_EXCLUDED, TRUSTPILOT_SOURCES
+        assert jamais_releves(read_catalog_providers(), TRUSTPILOT_SOURCES,
+                              EDITORIAL_EXCLUDED) == []
+
+
+class TestCatalogProviders:
+    def test_normalisation_ignore_casse_et_ponctuation(self):
+        from catalog_providers import normalise
+        assert normalise("4S eSIM") == "4sesim"
+        assert normalise("aloSIM") == normalise("AloSim")
+
+    def test_match_exige_une_egalite_normalisee(self):
+        from catalog_providers import match
+        assert match("alosim", ["aloSIM", "Airalo"]) == "aloSIM"
+        assert match("Maya", ["Maya Mobile"]) is None
+
+    def test_near_matches_detecte_l_inclusion(self):
+        from catalog_providers import near_matches
+        assert near_matches("Maya", ["Maya Mobile", "Airalo"]) == ["Maya Mobile"]
+        assert near_matches("Airalo", ["Airalo"]) == []

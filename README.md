@@ -31,8 +31,10 @@ scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
   fetch_sources.py      télécharge les CSV listés dans data_sources.csv depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
-  check_editorial.py    compare les scores MyBestSim stockés à leur page publique
+  check_editorial.py    compare les scores MyBestSim stockés à leur page, et y cherche
+                        le score des fournisseurs qu'on n'a pas encore relevés
   check_freshness.py    surveille l'âge des notes Trustpilot relevées à la main
+  catalog_providers.py  liste les fournisseurs du catalogue et rapproche leurs noms
   country_coords.py     centroïdes des pays, pour la carte
 docs/                    site statique (GitHub Pages)
   index.html             dashboard : une page unique (HTML, CSS, JavaScript), thème
@@ -40,7 +42,7 @@ docs/                    site statique (GitHub Pages)
   data.json               généré par compute_metrics.py, ne pas éditer à la main
   internet-en-croisiere-esim.html   article SEO (partie 2 du test)
   assets/                 logo et images de l'article
-tests/                    78 tests (calculs, récupération Drive, dérive éditoriale, parité
+tests/                    89 tests (calculs, récupération Drive, dérive éditoriale, parité
                           Python/navigateur)
 .github/workflows/ci.yml  tests, parité, déploiement quotidien et alerte de dérive
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
@@ -59,9 +61,8 @@ python -m http.server 8600 --directory docs   # prévisualiser en local
 ```
 
 `compute_metrics.py` accepte `--source <dossier>` pour pointer vers n'importe quel dossier
-de CSV — chemin local, réseau ou dossier synchronisé. Un nouveau fournisseur est pris en
-compte automatiquement : il suffit d'ajouter son CSV au dossier source (ou une ligne dans
-`data_sources.csv`), aucune modification de code n'est nécessaire.
+de CSV — chemin local, réseau ou dossier synchronisé. Pour intégrer un nouveau fournisseur,
+voir « Ajouter un fournisseur » plus bas.
 
 ## Architecture
 
@@ -78,7 +79,7 @@ Le pipeline a deux étapes distinctes, pour que le dashboard reste consultable s
 Le workflow GitHub Actions (`.github/workflows/ci.yml`) tourne à chaque push sur `main`, à
 chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Actions) :
 
-- **test** : les 58 tests.
+- **test** : les 89 tests.
 - **parity** : charge le dashboard dans Chromium et compare les chiffres recalculés en
   JavaScript à chaque filtre (KPI, prix au Go par fournisseur, dispersion par zone, prime
   5G/4G) à ceux de Python sur les mêmes lignes. Ces calculs existent en double ; sans ce
@@ -97,6 +98,63 @@ chaque pull request, **tous les jours à 05:00 UTC** et à la demande (onglet Ac
   `check_freshness.py` compare la date de relevé de chaque fournisseur à la date du jour et
   fait échouer le job au-delà de 30 jours, avec la liste des pages à ouvrir. La mise à jour
   reste humaine (`--checklist` imprime le relevé à cocher).
+
+## Ajouter un fournisseur
+
+Un CSV de même structure déposé dans le dossier source est intégré **sans toucher au code**.
+Aucun nom de fournisseur n'est codé en dur : `compute_metrics.py` fait un `glob("*.csv")` sur
+le dossier et lit le nom affiché dans la colonne `provider` du fichier. Toutes les
+statistiques, les graphiques, les filtres et les classements se recalculent.
+
+Les deux scores qui dépendent de sources éditoriales externes ne sont pas abandonnés pour
+autant : les contrôles vont chercher le nouveau venu sur les deux sites concernés, chaque
+jour, à partir du catalogue régénéré (et non d'un instantané commité).
+
+- **Score MyBestSim** : `check_editorial.py` lit tout leur classement publié. Pour chaque
+  fournisseur du catalogue dont nous n'avons pas le score, il vérifie s'il y est noté — si
+  oui, il affiche la ligne exacte à coller dans `editorial_sources.py` et fait échouer le job
+  jusqu'à ce que ce soit fait. Le rapprochement des noms se fait à la casse et à la
+  ponctuation près (« aloSIM » = « AloSim ») ; une ressemblance seulement partielle
+  (« Maya » / « Maya Mobile ») est signalée à trancher à la main, jamais retenue
+  automatiquement.
+- **Note Trustpilot** : leur site ne peut pas être interrogé (voir plus haut), donc ce qui
+  est automatisé, c'est la détection, pas le relevé. `check_freshness.py` signale tout
+  fournisseur du catalogue qui n'a ni note stockée ni mention dans `EDITORIAL_EXCLUDED` — la
+  liste des fournisseurs déjà vérifiés et écartés, avec la raison (échantillon sous les 2 500
+  avis, identification incertaine). Il reste alors à ouvrir la page et à inscrire soit la
+  note, soit la raison.
+
+Conséquence : « indisponible » n'apparaît qu'après vérification. Soit le fournisseur est
+réellement absent du classement MyBestSim — le script le dit explicitement, c'est un constat
+daté et non un oubli —, soit son échantillon Trustpilot est trop faible et la raison est
+écrite dans le dépôt. Un nouveau fournisseur ne peut pas rester silencieusement sans score :
+le job quotidien passe au rouge tant que personne n'a tranché.
+
+Une seule limite subsiste, et elle est géographique : un pays dont le code n'est pas dans
+`country_coords.py` n'apparaît pas sur la carte, tout en restant compté dans toutes les autres
+statistiques. Les codes régionaux (`EU`, `AS`, `NA`, `WW`) en sont exclus exprès — un forfait
+multi-pays n'a pas de position unique sur une carte.
+
+Trois façons d'alimenter le dossier source, de la plus simple à la plus automatique :
+
+1. **Dossier du dépôt** (`data/`) : déposer le fichier, rien d'autre.
+2. **Google Drive** (en place aujourd'hui) : une ligne `nom,lien` dans `data_sources.csv` par
+   fichier. C'est le seul geste manuel qui reste — le téléchargement, le contrôle de
+   structure, le calcul et la publication sont automatiques.
+3. **Lecture du dossier entier** : non implémenté, et c'est un choix. Les deux appels
+   nécessaires sont `files.list?q='<ID_DOSSIER>' in parents` pour l'API Google Drive, et
+   `/shares/{lien encodé}/driveItem?$expand=children` pour Microsoft Graph (OneDrive,
+   SharePoint) — même principe, lister puis télécharger. Côté Drive, une clé d'API suffit pour
+   un dossier partagé par lien ; côté Graph, un jeton OAuth est exigé, ce qui demande une
+   inscription d'application. Dropbox, S3, R2 ou un partage WebDAV se traitent de la même
+   façon.
+
+Ce dernier point coûte peu parce que `fetch_sources.py` est le **seul** module qui sait d'où
+viennent les fichiers : tout ce qui est en aval ne demande qu'un dossier local contenant des
+`.csv`. Changer d'hébergeur, ou passer de la liste explicite à la lecture d'un dossier, revient
+à écrire un adaptateur « lister / télécharger » dans ce fichier, sans rien changer ailleurs.
+Le contrôle de structure existant reste commun à tous : un fichier qui n'a pas les colonnes
+d'un catalogue est refusé avec un message clair au lieu de polluer le dashboard.
 
 ## Méthodologie
 

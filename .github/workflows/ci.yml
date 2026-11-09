@@ -116,9 +116,32 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Installe les dépendances
+        run: pip install -r requirements.txt
+
+      # Les deux contrôles ci-dessous comparent les sources éditoriales au catalogue RÉEL,
+      # pour repérer un fournisseur ajouté depuis le dernier commit de docs/data.json.
+      - name: Régénère la liste des fournisseurs du catalogue
+        id: catalogue
+        shell: bash
+        run: |
+          set +e
+          python scripts/fetch_sources.py --out build/data
+          code=$?
+          set -e
+          if [ "$code" -eq 3 ]; then
+            dir=data
+          elif [ "$code" -eq 0 ]; then
+            dir=build/data
+          else
+            exit "$code"
+          fi
+          python scripts/compute_metrics.py --source "$dir" --out build/data.json
+
       - name: Compare les scores stockés à la page MyBestSim
         shell: bash
-        run: python scripts/check_editorial.py | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          python scripts/check_editorial.py --catalog build/data.json | tee -a "$GITHUB_STEP_SUMMARY"
 
       # Trustpilot ne peut pas être interrogé (robots.txt : Disallow: / ; pages en 403), donc
       # la seule chose automatisable est l'âge du relevé manuel. « always() » pour que le
@@ -126,4 +149,5 @@ jobs:
       - name: Vérifie l'âge des notes Trustpilot relevées à la main
         if: always()
         shell: bash
-        run: python scripts/check_freshness.py | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          python scripts/check_freshness.py --catalog build/data.json | tee -a "$GITHUB_STEP_SUMMARY"

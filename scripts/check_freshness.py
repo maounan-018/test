@@ -10,6 +10,13 @@ Il compare donc la date de relevé de chaque fournisseur à la date du jour, et 
 du délai autorisé : le job GitHub passe au rouge, GitHub envoie l'e-mail, et la mise à jour
 reste une décision humaine (ouvrir les pages listées, corriger les notes ET les dates).
 
+Second contrôle, pour qu'un nouveau fournisseur ne soit pas déclaré « indisponible » par
+défaut : tout fournisseur du catalogue qui n'a ni note Trustpilot stockée ni mention dans
+EDITORIAL_EXCLUDED (la liste des fournisseurs déjà vérifiés et écartés, volume d'avis trop
+faible ou identification incertaine) est signalé comme jamais relevé, avec la marche à suivre.
+Trustpilot ne pouvant pas être interrogé, c'est la détection qui est automatique, pas le
+relevé.
+
 Les volumes d'avis non relevés sont signalés sans faire échouer la vérification : c'est une
 lacune connue du relevé initial, à combler au prochain passage, pas une dérive.
 
@@ -20,7 +27,9 @@ import argparse
 import datetime as dt
 import sys
 
+from catalog_providers import DATA_JSON, match, read_catalog_providers
 from editorial_sources import (
+    EDITORIAL_EXCLUDED,
     TRUSTPILOT_MIN_REVIEWS,
     TRUSTPILOT_SOURCES,
     trustpilot_url,
@@ -59,17 +68,32 @@ def format_avis(ligne: dict) -> str:
     return f"{'~' if ligne['reviews_approx'] else ''}{ligne['reviews']:,} avis".replace(",", " ")
 
 
+def jamais_releves(catalog: list, sources: dict, exclus: dict) -> list:
+    """Fournisseurs du catalogue dont la note Trustpilot n'a jamais été cherchée.
+
+    Un fournisseur présent dans EDITORIAL_EXCLUDED a bien été vérifié : sa note existe mais
+    son échantillon est trop faible, ou son identification n'était pas sûre. Ceux-là ne sont
+    pas des oublis. Les autres, si.
+    """
+    return [p for p in catalog
+            if not match(p, sources) and not match(p, exclus)]
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--max-age", type=int, default=DELAI_JOURS, metavar="JOURS",
                         help=f"âge maximum toléré d'un relevé (défaut : {DELAI_JOURS})")
     parser.add_argument("--today", metavar="AAAA-MM-JJ",
                         help="date de référence, pour les tests (défaut : aujourd'hui)")
+    parser.add_argument("--catalog", default=DATA_JSON, metavar="DATA_JSON",
+                        help="data.json d'où lire la liste des fournisseurs du catalogue")
     parser.add_argument("--checklist", action="store_true",
                         help="imprime la liste des pages à ouvrir pour le relevé manuel")
     args = parser.parse_args(argv)
 
     aujourdhui = parse_date(args.today) if args.today else dt.date.today()
+    oublies = jamais_releves(read_catalog_providers(args.catalog),
+                             TRUSTPILOT_SOURCES, EDITORIAL_EXCLUDED)
 
     try:
         lignes = ages(TRUSTPILOT_SOURCES, aujourdhui)
@@ -93,6 +117,13 @@ def main(argv=None) -> int:
         for l in lignes:
             print(f"[ ] {l['provider']:12} stocké : {l['score']} /5, {format_avis(l)}")
             print(f"    {l['url']}")
+        if oublies:
+            print()
+            print("Jamais relevés — chercher leur page sur trustpilot.com, puis soit ajouter")
+            print(f"la note à TRUSTPILOT_SOURCES (si plus de {SEUIL_AFFICHE} avis), soit")
+            print("inscrire la raison de l'exclusion dans EDITORIAL_EXCLUDED :")
+            for provider in oublies:
+                print(f"[ ] {provider}")
         return 0
 
     perimes = [l for l in lignes if l["age"] > args.max_age]
@@ -112,6 +143,18 @@ def main(argv=None) -> int:
               f"des {SEUIL_AFFICHE} avis n'est pas re-vérifiable pour ces fournisseurs.")
         print("À combler au prochain relevé (n'empêche pas la vérification de passer).")
 
+    if oublies:
+        print()
+        print(f"{len(oublies)} fournisseur(s) du catalogue n'ont jamais été cherchés sur "
+              "Trustpilot :")
+        for provider in oublies:
+            print(f"- {provider}")
+        print("Leur score B serait indisponible sans que personne ait vérifié pourquoi.")
+        print(f"Ouvrir leur page Trustpilot, puis soit ajouter la note à TRUSTPILOT_SOURCES")
+        print(f"(plus de {SEUIL_AFFICHE} avis), soit inscrire la raison dans "
+              "EDITORIAL_EXCLUDED,")
+        print("pour que « indisponible » reste un constat vérifié et non un oubli.")
+
     if perimes:
         print(f"\n{len(perimes)} relevé(s) de plus de {args.max_age} jours — à re-vérifier "
               "à la main :")
@@ -120,6 +163,9 @@ def main(argv=None) -> int:
         print("\nTrustpilot ne peut pas être interrogé par un script (robots.txt : "
               "Disallow: / ; pages en 403). Ouvrir les pages ci-dessus, puis mettre à jour "
               "scripts/editorial_sources.py — notes ET dates de relevé.")
+        return 1
+
+    if oublies:
         return 1
 
     plus_vieux = lignes[0]
