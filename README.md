@@ -10,6 +10,8 @@ installer et sans avoir les fichiers sources en local.
 recalcule tous ses chiffres dans le navigateur à chaque changement de filtre. Ce qui est
 statique, c'est l'hébergement — pas le contenu.
 
+**Article associé** — [Internet en croisière : quelle eSIM choisir en 2026 ?](https://mybestsim-internet-en-croisiere-esim-2026.pages.dev/)
+
 ## Ce que mesure le dashboard
 
 | Métrique | Ce qu'elle mesure |
