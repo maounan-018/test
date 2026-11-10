@@ -40,8 +40,9 @@ scripts/
   compute_metrics.py    lit les CSV, calcule toutes les métriques, génère docs/data.json
   fetch_sources.py      télécharge les CSV du manifeste depuis Google Drive
   editorial_sources.py  scores éditoriaux externes (MyBestSim, Trustpilot), sourcés et datés
-  check_editorial.py    compare les scores MyBestSim stockés à leur page, et y cherche
-                        le score des fournisseurs qu'on n'a pas encore relevés
+  check_editorial.py    compare les scores MyBestSim stockés à leur page, y cherche le
+                        score des fournisseurs non relevés, et peut recopier l'écart
+                        dans editorial_sources.py (--apply) pour en faire une PR
   check_freshness.py    surveille l'âge des relevés Trustpilot et signale les fournisseurs
                         jamais relevés
   catalog_providers.py  liste les fournisseurs du catalogue et rapproche leurs noms
@@ -52,9 +53,9 @@ docs/                    le site, publié sur Cloudflare Pages
   data.json               généré par compute_metrics.py et régénéré à chaque publication :
                           une retouche à la main serait écrasée au passage suivant
   assets/                 logo MyBestSim
-tests/                    94 tests (calculs, récupération des CSV, contrôles éditoriaux,
+tests/                    108 tests (calculs, récupération des CSV, contrôles éditoriaux,
                           parité Python/navigateur)
-.github/workflows/ci.yml  tests, parité, publication quotidienne et alerte de dérive
+.github/workflows/ci.yml  tests, parité, publication quotidienne, dérive éditoriale
 requirements-dev.txt      dépendances + Playwright (test de parité navigateur)
 ```
 
@@ -129,9 +130,15 @@ autant : les contrôles vont chercher le nouveau venu sur les deux sites concern
 jour, à partir du catalogue régénéré (et non d'un instantané commité).
 
 - **Score MyBestSim** : `check_editorial.py` lit tout leur classement publié. Pour chaque
-  fournisseur du catalogue dont nous n'avons pas le score, il vérifie s'il y est noté — si
-  oui, il affiche la ligne exacte à coller dans `editorial_sources.py` et fait échouer le job
-  jusqu'à ce que ce soit fait. Le rapprochement des noms se fait à la casse et à la
+  fournisseur du catalogue dont nous n'avons pas le score, il vérifie s'il y est noté.
+  Leur classement est éditorial et il bouge — Holafly est passé de 67 à 75 en cinq jours —
+  donc le contrôle quotidien ne se contente pas d'alerter : quand un score a changé chez
+  eux, il recopie la valeur et la date dans `editorial_sources.py`, régénère `docs/data.json`
+  et **ouvre une pull request**. La fusionner reste une décision humaine, mais elle se prend
+  sur un diff au lieu de se prendre sur un rappel, et le job ne reste pas rouge toutes les
+  nuits en attendant. Deux cas ne sont jamais recopiés et font échouer le job : un score
+  stocké qui a disparu de leur page (l'ont-ils déclassé ou renommé ?) et une page dont on lit
+  moins de cinq scores, signe que leur balisage a changé. Le rapprochement des noms se fait à la casse et à la
   ponctuation près (« aloSIM » = « AloSim ») ; une ressemblance seulement partielle
   (« Maya » / « Maya Mobile ») est signalée à trancher à la main, jamais retenue
   automatiquement.
@@ -255,8 +262,11 @@ Sources et dates de capture des scores éditoriaux : voir les commentaires de
 - **18 sur la récupération des CSV** : extraction de l'identifiant d'un lien de partage,
   réponse HTML renvoyée à la place d'un CSV, échecs groupés, choix du manifeste, et garde-fou
   contre un lien réel laissé dans un fichier suivi par git.
-- **12 sur la dérive des scores MyBestSim** : lecture de leur page, écart avec les valeurs
+- **26 sur la dérive des scores MyBestSim** : lecture de leur page, écart avec les valeurs
   stockées, découverte du score d'un fournisseur non encore relevé, refus des rapprochements
-  de noms approximatifs.
+  de noms approximatifs. Et sur la recopie automatique : elle ne touche que la valeur visée,
+  laisse les relevés Trustpilot intacts, refuse un score hors bornes ou une valeur de départ
+  qui ne correspond plus, et n'écrit rien quand la page est illisible ou qu'un fournisseur a
+  disparu de leur classement.
 - **3 de parité Python / navigateur** : les chiffres recalculés en JavaScript à chaque filtre
   doivent être identiques à ceux de Python sur les mêmes lignes.

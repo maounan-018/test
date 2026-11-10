@@ -4,12 +4,20 @@ Ces valeurs ne sont PAS calculables depuis le catalogue CSV — elles proviennen
 recherches web ciblées (voir research_notes/). Chaque entrée est datée et sourcée pour
 rester vérifiable et ne pas être présentée comme un fait établi sans origine.
 
-Capturé le 2026-11-05/06 ; score Holafly revérifié le 2026-11-10.
+Capturé le 2026-11-05/06 ; pour les scores MyBestSim, voir MYBESTSIM_CAPTURED.
 """
 
 # Score MyBestSim officiel (/100), publié sur leur page de comparaison publique.
 # Source : https://mybestsim.com/en/best-esim-providers/
 # Seuls 10 fournisseurs sont notés sur leur site ; 5 recoupent notre catalogue de 18.
+#
+# Leur classement est éditorial et il bouge : Holafly est passé de 67 à 75 entre le 5 et le
+# 10 novembre 2026. scripts/check_editorial.py compare ces valeurs à leur page chaque nuit et
+# ouvre une pull request quand un score change ; la fusionner reste une décision humaine.
+# MYBESTSIM_CAPTURED est la date du dernier relevé : le script la réécrit avec les valeurs,
+# donc ne pas la modifier à la main sans avoir réellement rouvert la page.
+MYBESTSIM_CAPTURED = "2026-11-10"
+
 MYBESTSIM_SCORES = {
     "Airalo": 72,
     "Saily": 72,

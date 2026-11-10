@@ -127,11 +127,19 @@ jobs:
           command: pages deploy site --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }} --branch=main
 
   editorial-drift:
-    # Alerte (job en échec, donc e-mail GitHub) sur les deux sources saisies à la main :
-    # les scores MyBestSim qui ne correspondent plus à leur page publique, et les notes
-    # Trustpilot dont le relevé a trop vieilli. Indépendant du déploiement.
+    # Surveille les deux sources saisies à la main : les scores MyBestSim qui ne
+    # correspondent plus à leur page publique, et les notes Trustpilot dont le relevé a trop
+    # vieilli. Indépendant du déploiement.
+    #
+    # Leur classement est éditorial et bouge (Holafly : 67 -> 75 en cinq jours). Un échec par
+    # nuit jusqu'à ce qu'un humain édite le fichier ferait du rouge permanent, donc :
+    #   - un score qui change chez eux => pull request, job vert (le diff est le signal) ;
+    #   - un cas qui demande un arbitrage => job en échec, rien n'est écrit.
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -178,10 +186,54 @@ jobs:
           fi
           python scripts/compute_metrics.py --source "$dir" --out build/data.json
 
+      # Codes de sortie de check_editorial.py : 0 rien à faire, 3 valeurs recopiées dans
+      # editorial_sources.py (une PR suit), 1 page illisible ou arbitrage humain (échec).
+      # docs/data.json est régénéré depuis data/ (et non depuis le Drive) pour que la PR ne
+      # contienne que l'effet du score, sans y mêler un changement de catalogue.
       - name: Compare les scores stockés à la page MyBestSim
+        id: derive
         shell: bash
         run: |
-          python scripts/check_editorial.py --catalog build/data.json | tee -a "$GITHUB_STEP_SUMMARY"
+          set +e
+          python scripts/check_editorial.py --catalog build/data.json > rapport.txt
+          code=$?
+          set -e
+          cat rapport.txt
+          cat rapport.txt >> "$GITHUB_STEP_SUMMARY"
+          rm -f rapport.txt
+          if [ "$code" -ne 3 ]; then
+            exit "$code"
+          fi
+          python scripts/check_editorial.py --catalog build/data.json --apply
+          python scripts/compute_metrics.py --source data --out docs/data.json
+          echo "derive=1" >> "$GITHUB_OUTPUT"
+
+      # Branche réservée à ce job : elle est réécrite à chaque dérive, ce qui met à jour la
+      # pull request ouverte au lieu d'en empiler une par nuit. Une PR poussée avec
+      # GITHUB_TOKEN ne redéclenche pas les workflows : les tests tourneront à la fusion.
+      - name: Ouvre la pull request de mise à jour
+        if: steps.derive.outputs.derive == '1'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branche=derive-scores-mybestsim
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branche"
+          git add scripts/editorial_sources.py docs/data.json
+          if git diff --cached --quiet; then
+            echo "Aucun changement à proposer."
+            exit 0
+          fi
+          git commit -m "Aligne les scores MyBestSim sur leur page publique"
+          git push --force origin "$branche"
+          ouverte=$(gh pr list --head "$branche" --state open --json number --jq '.[].number')
+          if [ -n "$ouverte" ]; then
+            echo "Pull request #$ouverte mise à jour."
+            exit 0
+          fi
+          gh pr create --base main --head "$branche"             --title "Aligne les scores MyBestSim sur leur page publique"             --body "Leur page publique ne donne plus les mêmes scores que scripts/editorial_sources.py. Les valeurs et la date de relevé ont été recopiées, et docs/data.json régénéré. Le résumé du run dit quel score a changé. À vérifier sur https://mybestsim.com/en/best-esim-providers/ avant de fusionner."
 
       # Trustpilot ne peut pas être interrogé (robots.txt : Disallow: / ; pages en 403), donc
       # la seule chose automatisable est l'âge du relevé manuel. « always() » pour que le
