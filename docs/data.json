@@ -52466,6 +52466,11 @@
         "editorial_source": "mybestsim"
       },
       {
+        "provider": "Holafly",
+        "score": 75.0,
+        "editorial_source": "mybestsim"
+      },
+      {
         "provider": "Yesim",
         "score": 75.0,
         "editorial_source": "mybestsim"
@@ -52478,11 +52483,6 @@
       {
         "provider": "Saily",
         "score": 72.0,
-        "editorial_source": "mybestsim"
-      },
-      {
-        "provider": "Holafly",
-        "score": 67.0,
         "editorial_source": "mybestsim"
       },
       {

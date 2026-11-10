@@ -4,7 +4,7 @@ Ces valeurs ne sont PAS calculables depuis le catalogue CSV — elles proviennen
 recherches web ciblées (voir research_notes/). Chaque entrée est datée et sourcée pour
 rester vérifiable et ne pas être présentée comme un fait établi sans origine.
 
-Capturé le 2026-11-05/06.
+Capturé le 2026-11-05/06 ; score Holafly revérifié le 2026-11-10.
 """
 
 # Score MyBestSim officiel (/100), publié sur leur page de comparaison publique.
@@ -13,7 +13,7 @@ Capturé le 2026-11-05/06.
 MYBESTSIM_SCORES = {
     "Airalo": 72,
     "Saily": 72,
-    "Holafly": 67,
+    "Holafly": 75,
     "Yesim": 75,
     "Roamic": 80,
 }
